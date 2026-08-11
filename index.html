@@ -225,25 +225,44 @@ function speak(text){
   speechSynthesis.speak(u);
 }
 
-function reply(text){
-  const t=text.trim();
+async function reply(text){
+  let t = text.trim();
   if(!t) return;
 
-  let answer;
+  heard.textContent = "جاري التفكير...";
+  setMode("speaking","AYAI IS THINKING");
 
-  if(/(هلو|مرحبا|السلام|هاي|hello|hi)/i.test(t))
-    answer="هلا بيك. AyAI جاهز.";
-  else if(/(شنو اسمك|اسمك|your name)/i.test(t))
-    answer="اسمي AyAI. مساعدك الشخصي.";
-  else if(/(شلونك|كيفك|how are you)/i.test(t))
-    answer="تمام. كل الأنظمة تعمل بشكل طبيعي.";
-  else if(/(شنو تقدر|ماذا تستطيع|what can you do)/i.test(t))
-    answer="أكدر أساعدك بالأوامر الصوتية، الملفات، الحسابات، المشاريع، والمهام اللي نربطها بالنظام.";
-  else
-    answer="استلمت أمرك. فهمت أنك قلت: "+t;
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: t
+      })
+    });
 
-  heard.textContent=answer;
-  speak(answer);
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "API Error");
+    }
+
+    const answer = data.answer || "ما حصلت جواب.";
+
+    heard.textContent = answer;
+    speak(answer);
+
+  } catch(error) {
+    console.error(error);
+
+    const answer =
+      "صار عندي خطأ بالاتصال بالذكاء الاصطناعي. حاول مرة ثانية.";
+
+    heard.textContent = answer;
+    speak(answer);
+  }
 }
 
 function startRecognition(){
