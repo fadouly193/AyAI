@@ -165,13 +165,629 @@ clearMemory,
 },
 {passive:true}
 );
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>AyAI — Personal AI</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:#000;
+color:#eef9ff;
+font-family:Inter,"Segoe UI",Arial,sans-serif
+}
+
+body{
+min-height:100dvh;
+transition:.5s
+}
+
+#app{
+width:100%;
+height:100%;
+min-height:100dvh;
+position:relative;
+background:#000;
+overflow:hidden
+}
+
+canvas{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+display:block
+}
+
+#status{
+position:absolute;
+top:8%;
+left:50%;
+transform:translateX(-50%);
+direction:ltr;
+font-size:17px;
+letter-spacing:3px;
+font-weight:300;
+white-space:nowrap;
+text-shadow:0 0 18px #78cfff;
+transition:.35s;
+z-index:5
+}
+
+#status:before,
+#status:after{
+content:"";
+display:inline-block;
+width:65px;
+height:1px;
+vertical-align:middle;
+margin:0 17px;
+background:linear-gradient(90deg,transparent,#72caff)
+}
+
+#status:after{
+background:linear-gradient(90deg,#72caff,transparent)
+}
+
+#name{
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+font-size:clamp(45px,7vw,88px);
+font-weight:200;
+letter-spacing:9px;
+direction:ltr;
+text-shadow:0 0 25px rgba(130,210,255,.65);
+pointer-events:none;
+z-index:5;
+transition:
+top .65s cubic-bezier(.2,.8,.2,1),
+transform .65s cubic-bezier(.2,.8,.2,1)
+}
+
+#heard{
+position:absolute;
+left:50%;
+top:65%;
+transform:translateX(-50%);
+width:min(700px,86vw);
+text-align:center;
+color:rgba(220,242,252,.75);
+font-size:15px;
+line-height:1.7;
+min-height:28px;
+direction:rtl;
+z-index:5;
+transition:.3s
+}
+
+/* =========================
+   ANSWER BOX
+========================= */
+
+#answerBox{
+position:absolute;
+left:50%;
+top:48%;
+transform:translate(-50%,30px) scale(.96);
+width:min(720px,88vw);
+max-height:27vh;
+overflow-y:auto;
+
+padding:17px 20px;
+
+background:
+linear-gradient(
+135deg,
+rgba(10,25,34,.78),
+rgba(2,10,15,.68)
+);
+
+border:1px solid rgba(130,215,255,.24);
+border-radius:20px;
+
+box-shadow:
+0 0 40px rgba(50,180,255,.09),
+inset 0 0 30px rgba(80,180,255,.035);
+
+backdrop-filter:blur(18px);
+-webkit-backdrop-filter:blur(18px);
+
+color:#e9f8ff;
+font-size:15px;
+line-height:1.9;
+text-align:right;
+
+opacity:0;
+visibility:hidden;
+pointer-events:none;
+
+transition:
+opacity .5s ease,
+transform .65s cubic-bezier(.2,.8,.2,1);
+
+z-index:8
+}
+
+#answerBox.show{
+opacity:1;
+visibility:visible;
+transform:translate(-50%,0) scale(1)
+}
+
+#answerBox:before{
+content:"AYAI";
+display:block;
+direction:ltr;
+text-align:left;
+font-size:9px;
+letter-spacing:2px;
+color:#70d2ff;
+opacity:.7;
+margin-bottom:7px
+}
+
+/* =========================
+   VOICE BUTTON
+========================= */
+
+#voiceToggle{
+position:absolute;
+right:20px;
+bottom:7%;
+width:44px;
+height:44px;
+border-radius:50%;
+
+border:1px solid rgba(145,220,255,.3);
+background:rgba(3,10,15,.82);
+color:#668795;
+
+display:grid;
+place-items:center;
+
+cursor:pointer;
+z-index:10;
+
+box-shadow:
+0 0 18px rgba(80,190,255,.08);
+
+transition:.25s;
+
+-webkit-tap-highlight-color:transparent
+}
+
+#voiceToggle:hover,
+#voiceToggle.on{
+color:#d9f5ff;
+border-color:#9ce3ff;
+
+box-shadow:
+0 0 26px rgba(80,200,255,.35),
+inset 0 0 14px rgba(80,180,255,.12)
+}
+
+#voiceToggle svg{
+width:20px;
+height:20px;
+fill:none;
+stroke:currentColor;
+stroke-width:1.5;
+stroke-linecap:round;
+stroke-linejoin:round
+}
+
+#mic{
+position:absolute;
+left:50%;
+bottom:6%;
+transform:translateX(-50%);
+width:58px;
+height:58px;
+border-radius:50%;
+border:1px solid rgba(145,220,255,.35);
+background:#030a0f;
+color:#d9f5ff;
+display:grid;
+place-items:center;
+cursor:pointer;
+
+box-shadow:
+0 0 24px rgba(80,190,255,.12);
+
+transition:.25s;
+z-index:9;
+
+-webkit-tap-highlight-color:transparent
+}
+
+#mic:hover,
+#mic.on{
+border-color:#bdeaff;
+
+box-shadow:
+0 0 34px rgba(80,200,255,.45),
+inset 0 0 18px rgba(80,180,255,.12);
+
+transform:translateX(-50%) scale(1.05)
+}
+
+#mic svg{
+width:23px;
+height:23px;
+fill:none;
+stroke:currentColor;
+stroke-width:1.5
+}
+
+#tip{
+position:absolute;
+bottom:2%;
+left:50%;
+transform:translateX(-50%);
+font-size:10px;
+letter-spacing:1.7px;
+color:#53707e;
+direction:ltr;
+white-space:nowrap;
+z-index:5
+}
+
+#memory{
+position:absolute;
+top:14%;
+right:18px;
+font-size:9px;
+letter-spacing:1px;
+color:rgba(120,200,235,.35);
+z-index:5;
+direction:ltr
+}
+
+/* =========================
+   ANSWER ACTIVE
+========================= */
+
+body.answer-active #name{
+top:23%;
+transform:translate(-50%,-50%) scale(.58)
+}
+
+body.answer-active #heard{
+opacity:0;
+transform:translate(-50%,10px)
+}
+
+body.answer-active #answerBox{
+top:42%
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+#status{
+font-size:12px;
+letter-spacing:2px;
+top:7%
+}
+
+#status:before,
+#status:after{
+width:28px;
+margin:0 8px
+}
+
+#name{
+font-size:52px;
+letter-spacing:7px
+}
+
+#heard{
+top:64%;
+width:86vw;
+font-size:14px
+}
+
+#answerBox{
+width:88vw;
+max-height:29vh;
+padding:14px 16px;
+font-size:14px;
+border-radius:18px
+}
+
+body.answer-active #name{
+top:22%;
+transform:translate(-50%,-50%) scale(.56)
+}
+
+body.answer-active #answerBox{
+top:40%
+}
+
+#voiceToggle{
+right:13px;
+bottom:6%;
+width:42px;
+height:42px
+}
+
+#tip{
+font-size:8px;
+letter-spacing:1.1px
+}
+
+#memory{
+top:13%;
+right:10px
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<canvas id="orb"></canvas>
+
+<div id="status">AYAI IS READY</div>
+
+<div id="memory">MEMORY: ON</div>
+
+<div id="name">AyAI</div>
+
+<div id="heard"></div>
+
+<div id="answerBox"></div>
+
+<button
+id="voiceToggle"
+type="button"
+aria-label="Voice On">
+
+<svg viewBox="0 0 24 24">
+<path d="M4 10v4"/>
+<path d="M8 7v10"/>
+<path d="M12 4v16"/>
+<path d="M16 7v10"/>
+<path d="M20 10v4"/>
+</svg>
+
+</button>
+
+<button
+id="mic"
+type="button"
+aria-label="Start AyAI">
+
+<svg viewBox="0 0 24 24">
+
+<rect
+x="9"
+y="3"
+width="6"
+height="11"
+rx="3"/>
+
+<path
+d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v4M9 21h6"/>
+
+</svg>
+
+</button>
+
+<div id="tip">
+TAP TO SPEAK • TALK TO AYAI
+</div>
+
+</div>
+
+
+<script>
+
+(function(){
+
+"use strict";
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const canvas=
+document.getElementById("orb");
+
+const ctx=
+canvas.getContext("2d");
+
+const status=
+document.getElementById("status");
+
+const memory=
+document.getElementById("memory");
+
+const heard=
+document.getElementById("heard");
+
+const answerBox=
+document.getElementById("answerBox");
+
+const mic=
+document.getElementById("mic");
+
+const voiceToggle=
+document.getElementById("voiceToggle");
+
+const name=
+document.getElementById("name");
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let W=0;
+let H=0;
+let DPR=1;
+
+let cx=0;
+let cy=0;
+let R=0;
+
+let pts=[];
+
+let level=0;
+let target=0;
+let mode="idle";
+
+let audioCtx=null;
+let analyser=null;
+let audioData=null;
+let stream=null;
+
+let recognition=null;
+let recognizing=false;
+let speaking=false;
+
+let voiceEnabled=true;
+
+
+/* =========================
+   MEMORY
+========================= */
+
+const MEMORY_KEY=
+"ayai_memory_v4";
+
+let conversation=[];
+
+
+function loadMemory(){
+
+try{
+
+conversation=
+JSON.parse(
+localStorage.getItem(
+MEMORY_KEY
+)||"[]"
+);
+
+if(!Array.isArray(conversation)){
+
+conversation=[];
+
+}
+
+}catch(e){
+
+conversation=[];
+
+}
+
+}
+
+
+function saveMemory(){
+
+try{
+
+conversation=
+conversation.slice(-20);
+
+localStorage.setItem(
+MEMORY_KEY,
+JSON.stringify(conversation)
+);
+
+}catch(e){}
+
+}
+
+
+function clearMemory(){
+
+conversation=[];
+
+try{
+
+localStorage.removeItem(
+MEMORY_KEY
+);
+
+}catch(e){}
+
+hideAnswer();
+
+heard.textContent=
+"تم مسح ذاكرة AyAI.";
+
+setMode(
+"idle",
+"MEMORY CLEARED"
+);
+
+setTimeout(()=>{
+
+heard.textContent="";
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+},1800);
+
+}
+
+
+/* =========================
+   LONG PRESS MEMORY CLEAR
+========================= */
+
+let pressTimer=null;
+
+
+name.addEventListener(
+"touchstart",
+()=>{
+
+pressTimer=
+setTimeout(
+clearMemory,
+1500
+);
+
+},
+{passive:true}
+);
+
 
 name.addEventListener(
 "touchend",
 ()=>{
 
 if(pressTimer){
-clearTimeout(pressTimer);
+
+clearTimeout(
+pressTimer
+);
+
 }
 
 pressTimer=null;
@@ -182,18 +798,160 @@ pressTimer=null;
 
 
 /* =========================
+   VOICE SETTING
+========================= */
+
+try{
+
+voiceEnabled=
+localStorage.getItem(
+"ayai_voice"
+)!=="off";
+
+}catch(e){
+
+voiceEnabled=true;
+
+}
+
+
+function updateVoiceButton(){
+
+if(voiceEnabled){
+
+voiceToggle.classList.add("on");
+
+voiceToggle.setAttribute(
+"aria-label",
+"Voice On"
+);
+
+}else{
+
+voiceToggle.classList.remove("on");
+
+voiceToggle.setAttribute(
+"aria-label",
+"Voice Off"
+);
+
+}
+
+}
+
+
+voiceToggle.addEventListener(
+"click",
+()=>{
+
+voiceEnabled=
+!voiceEnabled;
+
+try{
+
+localStorage.setItem(
+"ayai_voice",
+voiceEnabled
+?"on"
+:"off"
+);
+
+}catch(e){}
+
+
+updateVoiceButton();
+
+
+if(!voiceEnabled){
+
+if(
+"speechSynthesis"
+in window
+){
+
+speechSynthesis.cancel();
+
+}
+
+speaking=false;
+
+setMode(
+"idle",
+"VOICE OFF"
+);
+
+}else{
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+}
+
+}
+);
+
+
+updateVoiceButton();
+
+
+/* =========================
+   ANSWER BOX
+========================= */
+
+function showAnswer(text){
+
+if(!text)return;
+
+answerBox.textContent=
+text;
+
+document.body.classList.add(
+"answer-active"
+);
+
+requestAnimationFrame(()=>{
+
+answerBox.classList.add(
+"show"
+);
+
+});
+
+}
+
+
+function hideAnswer(){
+
+answerBox.classList.remove(
+"show"
+);
+
+document.body.classList.remove(
+"answer-active"
+);
+
+}
+
+
+/* =========================
    SCREEN
 ========================= */
 
 function resize(){
 
-DPR=Math.min(
+DPR=
+Math.min(
 window.devicePixelRatio||1,
 2
 );
 
-W=window.innerWidth;
-H=window.innerHeight;
+W=
+window.innerWidth;
+
+H=
+window.innerHeight;
 
 canvas.width=
 Math.max(
@@ -219,7 +977,8 @@ DPR,
 cx=W/2;
 cy=H/2;
 
-R=Math.min(W,H)*.235;
+R=
+Math.min(W,H)*.235;
 
 makePts();
 
@@ -230,26 +989,39 @@ function makePts(){
 
 pts=[];
 
-const n=Math.max(
+const n=
+Math.max(
 120,
-Math.floor(Math.min(W,H)*.38)
+Math.floor(
+Math.min(W,H)*.38
+)
 );
 
-for(let i=0;i<n;i++){
+for(
+let i=0;
+i<n;
+i++
+){
 
 pts.push({
 
-a:Math.random()*Math.PI*2,
+a:
+Math.random()*Math.PI*2,
 
-r:R*(.78+Math.random()*.29),
+r:
+R*(.78+Math.random()*.29),
 
-s:(Math.random()-.5)*.001,
+s:
+(Math.random()-.5)*.001,
 
-ph:Math.random()*Math.PI*2,
+ph:
+Math.random()*Math.PI*2,
 
-op:.2+Math.random()*.7,
+op:
+.2+Math.random()*.7,
 
-z:Math.random()
+z:
+Math.random()
 
 });
 
@@ -262,7 +1034,8 @@ function setMode(m,text){
 
 mode=m;
 
-status.textContent=text;
+status.textContent=
+text;
 
 }
 
@@ -280,9 +1053,11 @@ W,
 H
 );
 
-const time=t*.001;
+const time=
+t*.001;
 
 let measured=0;
+
 
 if(analyser&&audioData){
 
@@ -305,7 +1080,8 @@ sum+=v*v;
 
 }
 
-measured=Math.min(
+measured=
+Math.min(
 1,
 Math.sqrt(
 sum/audioData.length
@@ -315,7 +1091,8 @@ sum/audioData.length
 }
 
 
-target=Math.max(
+target=
+Math.max(
 
 measured,
 
@@ -337,6 +1114,7 @@ mode==="thinking"
 .012
 
 );
+
 
 level+=
 (target-level)*.1;
@@ -364,7 +1142,8 @@ glow.addColorStop(
 "rgba(0,0,0,0)"
 );
 
-ctx.fillStyle=glow;
+ctx.fillStyle=
+glow;
 
 ctx.beginPath();
 
@@ -423,7 +1202,8 @@ i<pts.length;
 i++
 ){
 
-const p=pts[i];
+const p=
+pts[i];
 
 p.a+=
 p.s*
@@ -449,11 +1229,15 @@ Math.sin(p.a)*rr;
 
 for(
 let j=i+1;
-j<Math.min(i+7,pts.length);
+j<Math.min(
+i+7,
+pts.length
+);
 j++
 ){
 
-const q=pts[j];
+const q=
+pts[j];
 
 const qrr=
 q.r+
@@ -513,7 +1297,8 @@ ctx.beginPath();
 ctx.arc(
 x,
 y,
-p.op*.8+level*1.8,
+p.op*.8+
+level*1.8,
 0,
 Math.PI*2
 );
@@ -572,6 +1357,7 @@ ctx.stroke();
 
 }
 
+
 requestAnimationFrame(
 animate
 );
@@ -587,7 +1373,9 @@ async function setupAudio(){
 
 if(audioCtx){
 
-if(audioCtx.state==="suspended"){
+if(
+audioCtx.state==="suspended"
+){
 
 await audioCtx.resume();
 
@@ -596,6 +1384,7 @@ await audioCtx.resume();
 return;
 
 }
+
 
 if(
 !navigator.mediaDevices||
@@ -608,68 +1397,97 @@ throw new Error(
 
 }
 
+
 stream=
-await navigator.mediaDevices.getUserMedia({
+await navigator.mediaDevices
+.getUserMedia({
 audio:true
 });
+
 
 const AC=
 window.AudioContext||
 window.webkitAudioContext;
 
+
 if(!AC)return;
 
-audioCtx=new AC();
+
+audioCtx=
+new AC();
+
 
 const src=
-audioCtx.createMediaStreamSource(
+audioCtx
+.createMediaStreamSource(
 stream
 );
 
-analyser=
-audioCtx.createAnalyser();
 
-analyser.fftSize=1024;
+analyser=
+audioCtx
+.createAnalyser();
+
+
+analyser.fftSize=
+1024;
+
 
 audioData=
 new Uint8Array(
 analyser.fftSize
 );
 
-src.connect(analyser);
+
+src.connect(
+analyser
+);
 
 }
 
 
 /* =========================
-   VOICE
+   ARABIC VOICE
 ========================= */
 
 function getArabicVoice(){
 
-if(!("speechSynthesis"in window))
+if(
+!("speechSynthesis"in window)
+){
+
 return null;
 
+}
+
+
 const voices=
-speechSynthesis.getVoices()||[];
+speechSynthesis
+.getVoices()||[];
+
 
 return
 
-voices.find(v=>
+voices.find(
+v=>
 (v.lang||"")
-.toLowerCase()==="ar-iq"
+.toLowerCase()
+==="ar-iq"
 )
 
 ||
 
-voices.find(v=>
+voices.find(
+v=>
 (v.lang||"")
-.toLowerCase()==="ar-sa"
+.toLowerCase()
+==="ar-sa"
 )
 
 ||
 
-voices.find(v=>
+voices.find(
+v=>
 (v.lang||"")
 .toLowerCase()
 .startsWith("ar")
@@ -682,11 +1500,41 @@ null;
 }
 
 
+/* =========================
+   SPEAK
+========================= */
+
 function speak(text){
+
+if(!text)return;
+
+
+/* إظهار الجواب دائماً */
+
+showAnswer(text);
+
+
+/* إذا الصوت OFF */
+
+if(!voiceEnabled){
+
+speaking=false;
+
+setMode(
+"idle",
+"VOICE OFF"
+);
+
+return;
+
+}
+
 
 if(
 !("speechSynthesis"in window)
 ){
+
+speaking=false;
 
 setMode(
 "idle",
@@ -697,39 +1545,51 @@ return;
 
 }
 
+
 try{
 
 speechSynthesis.cancel();
+
 
 const u=
 new SpeechSynthesisUtterance(
 text
 );
 
+
 const voice=
 getArabicVoice();
 
+
 if(voice){
 
-u.voice=voice;
-u.lang=voice.lang;
+u.voice=
+voice;
+
+u.lang=
+voice.lang;
 
 }else{
 
-u.lang="ar-SA";
+u.lang=
+"ar-SA";
 
 }
+
 
 u.rate=.9;
 u.pitch=.95;
 u.volume=1;
 
+
 speaking=true;
+
 
 setMode(
 "speaking",
 "AYAI IS SPEAKING"
 );
+
 
 u.onstart=()=>{
 
@@ -741,6 +1601,7 @@ setMode(
 );
 
 };
+
 
 u.onend=()=>{
 
@@ -757,6 +1618,7 @@ setMode(
 
 };
 
+
 u.onerror=()=>{
 
 speaking=false;
@@ -772,18 +1634,20 @@ setMode(
 
 };
 
+
 speechSynthesis.speak(u);
 
 
-/* بعض أجهزة الموبايل توقف SpeechSynthesis،
-   لذلك نبقيها مستمرة */
+/* mobile speech keep alive */
 
 const keepAlive=
 setInterval(()=>{
 
 if(!speaking){
 
-clearInterval(keepAlive);
+clearInterval(
+keepAlive
+);
 
 return;
 
@@ -802,6 +1666,8 @@ speechSynthesis.resume();
 
 }catch(e){
 
+console.error(e);
+
 speaking=false;
 
 setMode(
@@ -815,7 +1681,7 @@ setMode(
 
 
 /* =========================
-   QUICK COMMANDS
+   NORMALIZE ARABIC
 ========================= */
 
 function normalizeArabic(s){
@@ -830,6 +1696,10 @@ return s
 
 }
 
+
+/* =========================
+   QUICK COMMANDS
+========================= */
 
 function quickCommand(text){
 
@@ -883,10 +1753,10 @@ day:"numeric"
 }
 
 
-/* يوتيوب */
+/* YouTube */
 
 if(
-/^(افتح|شغل|روح ل)(\s+)?(يوتيوب|youtube)/.test(t)
+/(افتح|شغل|روح ل)(\s+)?(يوتيوب|youtube)/.test(t)
 ){
 
 window.open(
@@ -902,7 +1772,7 @@ return "فتحتلك يوتيوب.";
 /* Google */
 
 if(
-/^(افتح|روح ل)(\s+)?(جوجل|گوگل|google)/.test(t)
+/(افتح|روح ل)(\s+)?(جوجل|گوگل|google)/.test(t)
 ){
 
 window.open(
@@ -915,7 +1785,7 @@ return "فتحتلك Google.";
 }
 
 
-/* البحث */
+/* Search */
 
 let m=
 t.match(
@@ -955,7 +1825,7 @@ let expr=
 m[1]
 
 .replace(/ضرب|في/g,"*")
-.replace(/قسمة على|قسمه على|على/g,"/")
+.replace(/قسمة على|قسمه على/g,"/")
 .replace(/زائد/g,"+")
 .replace(/ناقص/g,"-")
 .replace(/×/g,"*")
@@ -974,7 +1844,9 @@ expr+
 ')'
 )();
 
-if(Number.isFinite(result)){
+if(
+Number.isFinite(result)
+){
 
 return `النتيجة هي ${result}.`;
 
@@ -1022,6 +1894,7 @@ if(!t)return;
 const quick=
 quickCommand(t);
 
+
 if(quick){
 
 if(
@@ -1029,9 +1902,15 @@ quick!=="__NO_SPEAK__"
 ){
 
 heard.textContent=
-quick;
+"";
 
-speak(quick);
+showAnswer(
+quick
+);
+
+speak(
+quick
+);
 
 }
 
@@ -1043,14 +1922,19 @@ return;
 /* save user */
 
 conversation.push({
+
 role:"user",
+
 content:t
+
 });
 
 saveMemory();
 
+
 heard.textContent=
 "جاري التفكير...";
+
 
 setMode(
 "thinking",
@@ -1063,7 +1947,8 @@ try{
 const memoryText=
 conversation
 .slice(-12)
-.map(m=>
+.map(
+m=>
 (m.role==="user"
 ?"المستخدم: "
 :"AyAI: ")
@@ -1103,7 +1988,9 @@ headers:{
 },
 
 body:JSON.stringify({
+
 message:prompt
+
 })
 
 });
@@ -1111,6 +1998,7 @@ message:prompt
 
 const data=
 await response.json();
+
 
 if(!response.ok){
 
@@ -1131,22 +2019,36 @@ data.answer||
 
 
 conversation.push({
+
 role:"assistant",
+
 content:answer
+
 });
+
 
 saveMemory();
 
 
-heard.textContent=
-answer;
+heard.textContent="";
 
-speak(answer);
+
+showAnswer(
+answer
+);
+
+
+speak(
+answer
+);
 
 
 }catch(error){
 
-console.error(error);
+console.error(
+error
+);
+
 
 if(
 conversation.length&&
@@ -1161,13 +2063,22 @@ saveMemory();
 
 }
 
+
 const msg=
 "صار خطأ بالاتصال بالذكاء الاصطناعي. حاول مرة ثانية.";
 
-heard.textContent=
-msg;
 
-speak(msg);
+heard.textContent="";
+
+
+showAnswer(
+msg
+);
+
+
+speak(
+msg
+);
 
 }
 
@@ -1232,7 +2143,9 @@ recognition.onstart=()=>{
 
 recognizing=true;
 
-mic.classList.add("on");
+mic.classList.add(
+"on"
+);
 
 setMode(
 "listening",
@@ -1240,6 +2153,8 @@ setMode(
 );
 
 heard.textContent="";
+
+hideAnswer();
 
 };
 
@@ -1260,6 +2175,7 @@ const tx=
 e.results[i][0]
 .transcript;
 
+
 if(
 e.results[i].isFinal
 ){
@@ -1276,12 +2192,15 @@ interim+=tx;
 
 
 heard.textContent=
-finalText||interim;
+finalText||
+interim;
 
 
 if(finalText){
 
-reply(finalText);
+reply(
+finalText
+);
 
 }
 
@@ -1292,7 +2211,9 @@ recognition.onerror=e=>{
 
 recognizing=false;
 
-mic.classList.remove("on");
+mic.classList.remove(
+"on"
+);
 
 
 if(
@@ -1324,7 +2245,9 @@ recognition.onend=()=>{
 
 recognizing=false;
 
-mic.classList.remove("on");
+mic.classList.remove(
+"on"
+);
 
 if(!speaking){
 
@@ -1346,7 +2269,9 @@ recognition.start();
 
 recognizing=false;
 
-mic.classList.remove("on");
+mic.classList.remove(
+"on"
+);
 
 setMode(
 "idle",
@@ -1368,28 +2293,40 @@ if(
 !("speechSynthesis"in window)
 )return;
 
+
 try{
 
 speechSynthesis.cancel();
 
+
 const u=
-new SpeechSynthesisUtterance(" ");
+new SpeechSynthesisUtterance(
+" "
+);
+
 
 u.volume=0;
 u.rate=10;
 
-speechSynthesis.speak(u);
+
+speechSynthesis.speak(
+u
+);
+
 
 setTimeout(
 ()=>{
 
 try{
+
 speechSynthesis.cancel();
+
 }catch(e){}
 
 },
 100
 );
+
 
 }catch(e){}
 
@@ -1408,8 +2345,11 @@ try{
 
 if(recognizing){
 
-if(recognition)
+if(recognition){
+
 recognition.stop();
+
+}
 
 return;
 
@@ -1430,6 +2370,7 @@ speechSynthesis.cancel();
 
 await setupAudio();
 
+
 startRecognition();
 
 
@@ -1437,10 +2378,12 @@ startRecognition();
 
 console.error(e);
 
+
 setMode(
 "idle",
 "MICROPHONE ACCESS REQUIRED"
 );
+
 
 heard.textContent=
 "فعّل صلاحية الميكروفون للمتابعة.";
@@ -1456,19 +2399,23 @@ heard.textContent=
 
 loadMemory();
 
+
 window.addEventListener(
 "resize",
 resize,
 {passive:true}
 );
 
+
 resize();
+
 
 requestAnimationFrame(
 animate
 );
 
 })();
+
 </script>
 
 </body>
