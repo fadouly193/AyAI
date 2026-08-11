@@ -1667,15 +1667,23 @@ speak(msg);
 
 
 /* =========================
+   CONTINUOUS CONVERSATION
+========================= */
+
+let handsFree = false;
+let waitingForReply = false;
+let restartTimer = null;
+
+
+/* =========================
    SPEECH RECOGNITION
 ========================= */
 
 function startRecognition(){
 
-const SR=
-window.SpeechRecognition||
+const SR =
+window.SpeechRecognition ||
 window.webkitSpeechRecognition;
-
 
 if(!SR){
 
@@ -1684,9 +1692,17 @@ setMode(
 "VOICE NOT SUPPORTED"
 );
 
-showAnswerBox(
-"المتصفح الحالي لا يدعم التعرف على الصوت."
-);
+heard.textContent =
+"المتصفح الحالي لا يدعم التعرف على الصوت.";
+
+return;
+
+}
+
+
+/* إذا وضع المحادثة مغلق لا تبدأ */
+
+if(!handsFree){
 
 return;
 
@@ -1696,34 +1712,30 @@ return;
 if(recognition){
 
 try{
-
 recognition.abort();
-
 }catch(e){}
 
 }
 
 
-recognition=
-new SR();
+recognition = new SR();
+
+recognition.lang = "ar-IQ";
+
+recognition.continuous = false;
+
+recognition.interimResults = true;
+
+recognition.maxAlternatives = 1;
 
 
-recognition.lang=
-"ar-IQ";
+/* =========================
+   START
+========================= */
 
-recognition.continuous=
-false;
+recognition.onstart = ()=>{
 
-recognition.interimResults=
-true;
-
-recognition.maxAlternatives=
-1;
-
-
-recognition.onstart=()=>{
-
-recognizing=true;
+recognizing = true;
 
 mic.classList.add("on");
 
@@ -1732,52 +1744,67 @@ setMode(
 "LISTENING..."
 );
 
-heard.textContent="";
-
-answerBox.classList.remove("show");
-
-app.classList.remove("answer-mode");
+heard.textContent = "";
 
 };
 
 
-recognition.onresult=e=>{
+/* =========================
+   RESULT
+========================= */
 
-let finalText="";
+recognition.onresult = e => {
 
-let interim="";
+let finalText = "";
+let interim = "";
 
 
 for(
-let i=e.resultIndex;
-i<e.results.length;
+let i = e.resultIndex;
+i < e.results.length;
 i++
 ){
 
-const tx=
-e.results[i][0]
-.transcript;
+const tx =
+e.results[i][0].transcript;
 
-if(
-e.results[i].isFinal
-){
+if(e.results[i].isFinal){
 
-finalText+=tx;
+finalText += tx;
 
 }else{
 
-interim+=tx;
+interim += tx;
 
 }
 
 }
 
 
-heard.textContent=
-finalText||interim;
+heard.textContent =
+finalText || interim;
 
+
+/*
+   بمجرد الحصول على الجملة النهائية
+   نوقف الاستماع مؤقتاً حتى لا يسمع
+   AyAI نفسه وهو يتكلم.
+*/
 
 if(finalText){
+
+waitingForReply = true;
+
+try{
+
+recognition.stop();
+
+}catch(e){}
+
+
+/*
+   نرسل السؤال للـ AI
+*/
 
 reply(finalText);
 
@@ -1786,62 +1813,83 @@ reply(finalText);
 };
 
 
-recognition.onerror=e=>{
+/* =========================
+   ERROR
+========================= */
 
-recognizing=false;
+recognition.onerror = e => {
+
+recognizing = false;
 
 mic.classList.remove("on");
 
 
-console.log(
-"Speech recognition:",
-e.error
-);
-
-
 if(
-e.error==="not-allowed"||
-e.error==="service-not-allowed"
+e.error === "not-allowed" ||
+e.error === "service-not-allowed"
 ){
+
+handsFree = false;
 
 setMode(
 "idle",
 "MICROPHONE DENIED"
 );
 
-showAnswerBox(
-"اسمح للمتصفح باستخدام الميكروفون."
-);
+heard.textContent =
+"اسمح للمتصفح باستخدام الميكروفون.";
 
-}else{
+return;
 
-setMode(
-"idle",
-"AYAI IS READY"
-);
+}
+
+
+/*
+   إذا صار خطأ عابر
+   يرجع يستمع تلقائياً
+*/
+
+if(handsFree && !speaking){
+
+scheduleRecognition();
 
 }
 
 };
 
 
-recognition.onend=()=>{
+/* =========================
+   END
+========================= */
 
-recognizing=false;
+recognition.onend = ()=>{
+
+recognizing = false;
 
 mic.classList.remove("on");
 
-if(!speaking){
 
-setMode(
-"idle",
-"AYAI IS READY"
-);
+/*
+   إذا المستخدم يريد محادثة مستمرة
+   وماكو جواب صوتي حالياً
+*/
+
+if(
+handsFree &&
+!speaking &&
+!waitingForReply
+){
+
+scheduleRecognition();
 
 }
 
 };
 
+
+/* =========================
+   START SAFELY
+========================= */
 
 try{
 
@@ -1849,9 +1897,242 @@ recognition.start();
 
 }catch(e){
 
-recognizing=false;
+recognizing = false;
 
 mic.classList.remove("on");
+
+if(handsFree){
+
+scheduleRecognition();
+
+}
+
+}
+
+}
+
+
+/* =========================
+   AUTO RESTART
+========================= */
+
+function scheduleRecognition(){
+
+if(!handsFree) return;
+
+if(recognizing) return;
+
+if(speaking) return;
+
+if(restartTimer){
+
+clearTimeout(restartTimer);
+
+}
+
+restartTimer = setTimeout(()=>{
+
+if(
+handsFree &&
+!recognizing &&
+!speaking
+){
+
+startRecognition();
+
+}
+
+},500);
+
+}
+
+
+/* =========================
+   START LISTENING AGAIN
+========================= */
+
+function resumeConversation(){
+
+waitingForReply = false;
+
+if(
+handsFree &&
+!speaking
+){
+
+scheduleRecognition();
+
+}
+
+}
+
+
+/* =========================
+   VOICE
+========================= */
+
+function speak(text){
+
+if(
+!("speechSynthesis" in window)
+){
+
+setMode(
+"idle",
+"VOICE NOT AVAILABLE"
+);
+
+resumeConversation();
+
+return;
+
+}
+
+
+try{
+
+speechSynthesis.cancel();
+
+const u =
+new SpeechSynthesisUtterance(text);
+
+const voice =
+getArabicVoice();
+
+if(voice){
+
+u.voice = voice;
+
+u.lang = voice.lang;
+
+}else{
+
+u.lang = "ar-SA";
+
+}
+
+u.rate = .9;
+
+u.pitch = .95;
+
+u.volume = 1;
+
+speaking = true;
+
+setMode(
+"speaking",
+"AYAI IS SPEAKING"
+);
+
+
+/* =========================
+   SPEECH START
+========================= */
+
+u.onstart = ()=>{
+
+speaking = true;
+
+setMode(
+"speaking",
+"AYAI IS SPEAKING"
+);
+
+};
+
+
+/* =========================
+   SPEECH END
+========================= */
+
+u.onend = ()=>{
+
+speaking = false;
+
+if(handsFree){
+
+setMode(
+"listening",
+"LISTENING..."
+);
+
+resumeConversation();
+
+}else{
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+}
+
+};
+
+
+/* =========================
+   SPEECH ERROR
+========================= */
+
+u.onerror = ()=>{
+
+speaking = false;
+
+if(handsFree){
+
+resumeConversation();
+
+}else{
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+}
+
+};
+
+
+speechSynthesis.speak(u);
+
+
+/*
+   حماية من توقف SpeechSynthesis
+   على بعض أجهزة iPhone
+*/
+
+const keepAlive =
+setInterval(()=>{
+
+if(!speaking){
+
+clearInterval(keepAlive);
+
+return;
+
+}
+
+try{
+
+speechSynthesis.pause();
+
+speechSynthesis.resume();
+
+}catch(e){}
+
+},10000);
+
+
+}catch(e){
+
+speaking = false;
+
+if(handsFree){
+
+resumeConversation();
+
+}else{
 
 setMode(
 "idle",
@@ -1862,53 +2143,7 @@ setMode(
 
 }
 
-
-/* =========================
-   VOICE TOGGLE
-========================= */
-
-function updateVoiceButton(){
-
-if(voiceEnabled){
-
-voiceToggle.classList.add("on");
-
-voiceText.textContent=
-"VOICE: ON";
-
-}else{
-
-voiceToggle.classList.remove("on");
-
-voiceText.textContent=
-"VOICE: OFF";
-
-if(
-"speechSynthesis"in window
-){
-
-speechSynthesis.cancel();
-
 }
-
-speaking=false;
-
-}
-
-}
-
-
-voiceToggle.addEventListener(
-"click",
-()=>{
-
-voiceEnabled=
-!voiceEnabled;
-
-updateVoiceButton();
-
-}
-);
 
 
 /* =========================
@@ -1921,13 +2156,54 @@ async()=>{
 
 try{
 
-if(recognizing){
+/*
+   إذا كان يستمع:
+   الدوسة الثانية = إيقاف المحادثة
+*/
+
+if(handsFree){
+
+handsFree = false;
+
+waitingForReply = false;
+
+if(restartTimer){
+
+clearTimeout(restartTimer);
+
+restartTimer = null;
+
+}
 
 if(recognition){
 
-recognition.stop();
+try{
+
+recognition.abort();
+
+}catch(e){}
 
 }
+
+if("speechSynthesis" in window){
+
+speechSynthesis.cancel();
+
+}
+
+speaking = false;
+
+recognizing = false;
+
+mic.classList.remove("on");
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+heard.textContent =
+"تم إيقاف الاستماع.";
 
 return;
 
@@ -1935,23 +2211,39 @@ return;
 
 
 /*
-  تشغيل الصوت من نفس ضغطة المستخدم
-  مهم جداً للـ iPhone
+   أول ضغطة:
+   تشغيل وضع المحادثة المستمرة
+*/
+
+handsFree = true;
+
+waitingForReply = false;
+
+
+/*
+   فتح صلاحية الصوت
 */
 
 unlockSpeech();
 
 
-if(
-"speechSynthesis"in window
-){
+if("speechSynthesis" in window){
 
 speechSynthesis.cancel();
 
 }
 
 
+/*
+   تشغيل المايك
+*/
+
 await setupAudio();
+
+
+/*
+   يبدأ الاستماع
+*/
 
 startRecognition();
 
@@ -1960,19 +2252,19 @@ startRecognition();
 
 console.error(e);
 
+handsFree = false;
+
 setMode(
 "idle",
 "MICROPHONE ACCESS REQUIRED"
 );
 
-showAnswerBox(
-"فعّل صلاحية الميكروفون للمتابعة."
-);
+heard.textContent =
+"فعّل صلاحية الميكروفون للمتابعة.";
 
 }
 
 });
-
 
 /* =========================
    START
