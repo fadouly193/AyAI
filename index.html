@@ -1,42 +1,22 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-
 <meta charset="utf-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1,viewport-fit=cover"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-
 <title>AyAI — Voice Assistant</title>
 
 <style>
+*{box-sizing:border-box}
 
-/* =====================================================
-   RESET
-===================================================== */
-
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
+html,body{
 margin:0;
 width:100%;
 height:100%;
 overflow:hidden;
 background:#000;
 color:#eef9ff;
-font-family:
-Inter,
-"Segoe UI",
-Arial,
-sans-serif;
+font-family:Inter,"Segoe UI",Arial,sans-serif;
 }
 
 body{
@@ -44,18 +24,13 @@ min-height:100dvh;
 }
 
 #app{
-position:relative;
 width:100%;
 height:100%;
 min-height:100dvh;
-overflow:hidden;
+position:relative;
 background:#000;
+overflow:hidden;
 }
-
-
-/* =====================================================
-   CANVAS
-===================================================== */
 
 canvas{
 position:absolute;
@@ -63,12 +38,8 @@ inset:0;
 width:100%;
 height:100%;
 display:block;
+transition:transform .7s cubic-bezier(.2,.8,.2,1);
 }
-
-
-/* =====================================================
-   STATUS
-===================================================== */
 
 #status{
 position:absolute;
@@ -76,730 +47,329 @@ top:8%;
 left:50%;
 transform:translateX(-50%);
 direction:ltr;
-
 font-size:17px;
 letter-spacing:3px;
 font-weight:300;
-
 white-space:nowrap;
-
-text-shadow:
-0 0 18px #78cfff;
-
-transition:
-all .35s ease;
-
-z-index:10;
+text-shadow:0 0 18px #78cfff;
+transition:.35s;
+z-index:5;
 }
 
 #status:before,
 #status:after{
-
 content:"";
-
 display:inline-block;
-
 width:65px;
 height:1px;
-
 vertical-align:middle;
-
 margin:0 17px;
-
-background:
-linear-gradient(
-90deg,
-transparent,
-#72caff
-);
+background:linear-gradient(90deg,transparent,#72caff);
 }
 
 #status:after{
-
-background:
-linear-gradient(
-90deg,
-#72caff,
-transparent
-);
+background:linear-gradient(90deg,#72caff,transparent);
 }
-
-
-/* =====================================================
-   MEMORY
-===================================================== */
-
-#memoryStatus{
-
-position:absolute;
-
-top:13.5%;
-right:5%;
-
-font-size:11px;
-
-letter-spacing:1.5px;
-
-color:#315363;
-
-direction:ltr;
-
-z-index:10;
-
-transition:.3s;
-}
-
-#memoryStatus.on{
-color:#72caff;
-text-shadow:
-0 0 12px rgba(80,190,255,.35);
-}
-
-
-/* =====================================================
-   NAME / ORB CENTER
-===================================================== */
 
 #name{
-
 position:absolute;
-
 left:50%;
 top:50%;
-
-transform:
-translate(-50%,-50%);
-
-font-size:
-clamp(45px,7vw,88px);
-
+transform:translate(-50%,-50%);
+font-size:clamp(45px,7vw,88px);
 font-weight:200;
-
 letter-spacing:9px;
-
 direction:ltr;
-
-text-shadow:
-0 0 25px rgba(130,210,255,.65);
-
-pointer-events:auto;
-
-z-index:8;
-
+text-shadow:0 0 25px rgba(130,210,255,.65);
+pointer-events:none;
+z-index:4;
 transition:
-top .65s cubic-bezier(.22,.8,.25,1),
-transform .65s cubic-bezier(.22,.8,.25,1),
-font-size .65s ease,
-letter-spacing .65s ease;
-
-user-select:none;
-
+top .7s cubic-bezier(.2,.8,.2,1),
+transform .7s cubic-bezier(.2,.8,.2,1),
+font-size .7s cubic-bezier(.2,.8,.2,1),
+text-shadow .5s;
 }
-
-
-/* عندما يظهر الجواب */
-
-#app.answer-active #name{
-
-top:37%;
-
-font-size:
-clamp(34px,5vw,60px);
-
-letter-spacing:7px;
-
-}
-
-
-/* =====================================================
-   ANSWER BOX
-===================================================== */
-
-#answerBox{
-
-position:absolute;
-
-left:50%;
-
-top:59%;
-
-transform:
-translate(-50%,20px);
-
-width:min(720px,86vw);
-
-max-height:24vh;
-
-overflow:auto;
-
-padding:
-15px 20px;
-
-border:
-
-1px solid
-rgba(120,210,255,.18);
-
-border-radius:18px;
-
-background:
-
-linear-gradient(
-180deg,
-rgba(5,15,22,.78),
-rgba(2,7,11,.68)
-);
-
-box-shadow:
-
-0 0 35px
-rgba(60,180,255,.08),
-
-inset 0 0 25px
-rgba(70,180,255,.025);
-
-color:
-rgba(225,245,255,.9);
-
-font-size:15px;
-
-line-height:1.8;
-
-text-align:center;
-
-direction:rtl;
-
-opacity:0;
-
-visibility:hidden;
-
-transition:
-
-opacity .45s ease,
-
-transform .55s
-cubic-bezier(.22,.8,.25,1);
-
-z-index:7;
-
--webkit-overflow-scrolling:touch;
-}
-
-
-/* answer visible */
-
-#app.answer-active #answerBox{
-
-opacity:1;
-
-visibility:visible;
-
-transform:
-translate(-50%,0);
-
-}
-
-
-/* =====================================================
-   HEARD / USER TEXT
-===================================================== */
 
 #heard{
-
 position:absolute;
-
 left:50%;
-
 top:65%;
-
-transform:
-translateX(-50%);
-
-width:min(700px,80vw);
-
+transform:translateX(-50%);
+width:min(700px,82vw);
 text-align:center;
-
-color:
-rgba(220,242,252,.72);
-
+color:rgba(220,242,252,.78);
 font-size:15px;
-
 line-height:1.7;
-
 min-height:28px;
-
 direction:rtl;
-
 z-index:6;
-
-transition:
-opacity .3s ease;
+transition:.5s;
 }
 
-
-/* =====================================================
-   VOICE TOGGLE
-===================================================== */
-
-#voiceToggle{
-
+#answerBox{
 position:absolute;
-
-top:13%;
-
-left:5%;
-
-width:42px;
-
-height:42px;
-
-border-radius:50%;
-
-border:
-1px solid
-rgba(145,220,255,.28);
-
+left:50%;
+top:63%;
+transform:translate(-50%,20px);
+width:min(760px,88vw);
+max-height:23vh;
+overflow:auto;
+padding:18px 20px;
+border:1px solid rgba(120,210,255,.18);
+border-radius:18px;
 background:
-rgba(3,10,15,.8);
-
-color:#a8dff5;
-
-display:grid;
-
-place-items:center;
-
-cursor:pointer;
-
-z-index:12;
-
+linear-gradient(
+180deg,
+rgba(5,15,21,.88),
+rgba(2,7,10,.76)
+);
 box-shadow:
-0 0 20px
-rgba(80,190,255,.08);
-
-transition:.25s;
+0 0 35px rgba(50,180,255,.08),
+inset 0 0 25px rgba(100,200,255,.025);
+backdrop-filter:blur(12px);
+-webkit-backdrop-filter:blur(12px);
+color:#dff6ff;
+font-size:15px;
+line-height:1.9;
+opacity:0;
+pointer-events:none;
+transition:
+opacity .45s ease,
+transform .55s cubic-bezier(.2,.8,.2,1);
+z-index:7;
 }
 
-#voiceToggle.on{
-
-border-color:#aeeaff;
-
-color:#dff8ff;
-
-box-shadow:
-
-0 0 25px
-rgba(80,200,255,.28),
-
-inset 0 0 15px
-rgba(80,180,255,.1);
+#answerBox.show{
+opacity:1;
+transform:translate(-50%,0);
+pointer-events:auto;
 }
 
-#voiceToggle.off{
-
-opacity:.55;
+#answerBox::-webkit-scrollbar{
+width:3px;
 }
 
-#voiceToggle svg{
-
-width:20px;
-height:20px;
-
-fill:none;
-
-stroke:currentColor;
-
-stroke-width:1.5;
-
-stroke-linecap:round;
-
-stroke-linejoin:round;
+#answerBox::-webkit-scrollbar-thumb{
+background:#28566a;
+border-radius:10px;
 }
 
+/* عند ظهور الجواب */
+#app.answer-mode #name{
+top:31%;
+font-size:clamp(34px,5vw,62px);
+text-shadow:0 0 18px rgba(130,210,255,.5);
+}
 
-/* =====================================================
-   MICROPHONE
-===================================================== */
+#app.answer-mode canvas{
+transform:translateY(-19%);
+}
+
+#app.answer-mode #heard{
+top:43%;
+}
 
 #mic{
-
 position:absolute;
-
 left:50%;
-
-bottom:6%;
-
-transform:
-translateX(-50%);
-
+bottom:7%;
+transform:translateX(-50%);
 width:58px;
-
 height:58px;
-
 border-radius:50%;
-
-border:
-1px solid
-rgba(145,220,255,.35);
-
+border:1px solid rgba(145,220,255,.35);
 background:#030a0f;
-
 color:#d9f5ff;
-
 display:grid;
-
 place-items:center;
-
 cursor:pointer;
-
-box-shadow:
-0 0 24px
-rgba(80,190,255,.12);
-
-transition:.3s;
-
-z-index:12;
+box-shadow:0 0 24px rgba(80,190,255,.12);
+transition:.25s;
+z-index:10;
+-webkit-tap-highlight-color:transparent;
 }
 
 #mic:hover,
 #mic.on{
-
 border-color:#bdeaff;
-
 box-shadow:
-
-0 0 34px
-rgba(80,200,255,.45),
-
-inset 0 0 18px
-rgba(80,180,255,.12);
-
-transform:
-translateX(-50%)
-scale(1.05);
+0 0 34px rgba(80,200,255,.45),
+inset 0 0 18px rgba(80,180,255,.12);
 }
 
 #mic svg{
-
 width:23px;
 height:23px;
-
 fill:none;
-
 stroke:currentColor;
-
 stroke-width:1.5;
-
-stroke-linecap:round;
-
-stroke-linejoin:round;
 }
 
+#voiceToggle{
+position:absolute;
+left:50%;
+bottom:16%;
+transform:translateX(-50%);
+display:flex;
+align-items:center;
+gap:9px;
+padding:8px 13px;
+border:1px solid rgba(120,210,255,.18);
+border-radius:30px;
+background:rgba(3,10,15,.7);
+color:#7293a2;
+font-size:11px;
+letter-spacing:1px;
+cursor:pointer;
+z-index:10;
+transition:.25s;
+-webkit-tap-highlight-color:transparent;
+}
 
-/* =====================================================
-   TIP
-===================================================== */
+#voiceToggle.on{
+color:#c9f1ff;
+border-color:rgba(120,210,255,.45);
+box-shadow:0 0 18px rgba(80,190,255,.12);
+}
+
+.voice-dot{
+width:7px;
+height:7px;
+border-radius:50%;
+background:#3a5968;
+box-shadow:none;
+transition:.25s;
+}
+
+#voiceToggle.on .voice-dot{
+background:#8fe0ff;
+box-shadow:0 0 10px #67cfff;
+}
 
 #tip{
-
 position:absolute;
-
 bottom:2%;
-
 left:50%;
-
-transform:
-translateX(-50%);
-
+transform:translateX(-50%);
 font-size:10px;
-
 letter-spacing:1.7px;
-
 color:#53707e;
-
 direction:ltr;
-
 white-space:nowrap;
-
-z-index:10;
-
+z-index:5;
 }
 
-
-/* =====================================================
-   THINKING
-===================================================== */
-
-#app.thinking #answerBox{
-
-opacity:.5;
+#memory{
+position:absolute;
+right:18px;
+top:24%;
+font-size:11px;
+letter-spacing:1px;
+color:#315565;
+direction:ltr;
+z-index:5;
+transition:.25s;
 }
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
 
 @media(max-width:600px){
 
 #status{
-
 font-size:12px;
-
 letter-spacing:2px;
-
 top:7%;
 }
 
 #status:before,
 #status:after{
-
 width:28px;
-
 margin:0 8px;
 }
 
-#memoryStatus{
-
-top:12.5%;
-
-right:4%;
-
-font-size:9px;
-}
-
-#voiceToggle{
-
-top:11.5%;
-
-left:4%;
-
-width:38px;
-
-height:38px;
-}
-
 #name{
-
 font-size:52px;
-
 letter-spacing:7px;
 }
 
-#app.answer-active #name{
-
-top:34%;
-
-font-size:38px;
-
-letter-spacing:5px;
-}
-
 #heard{
-
 top:64%;
-
 width:86vw;
-
 font-size:14px;
 }
 
 #answerBox{
-
 top:51%;
-
 width:88vw;
-
-max-height:29vh;
-
+max-height:24vh;
 font-size:14px;
+padding:14px 16px;
+}
 
-line-height:1.75;
+#app.answer-mode #name{
+top:29%;
+font-size:40px;
+}
 
-padding:13px 15px;
+#app.answer-mode canvas{
+transform:translateY(-20%);
+}
 
-border-radius:16px;
+#app.answer-mode #heard{
+top:39%;
+}
+
+#voiceToggle{
+bottom:15%;
+font-size:10px;
 }
 
 #tip{
-
 font-size:8px;
-
 letter-spacing:1.1px;
 }
 
-}
-
-
-/* =====================================================
-   SMALL HEIGHT DEVICES
-===================================================== */
-
-@media(max-height:700px){
-
-#status{
-top:6%;
-}
-
-#name{
-top:46%;
-}
-
-#answerBox{
-top:53%;
-max-height:25vh;
-}
-
-#mic{
-bottom:7%;
+#memory{
+right:16px;
+top:22%;
+font-size:9px;
 }
 
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 <div id="app">
 
-
-<!-- =================================================
-     CANVAS
-================================================= -->
-
 <canvas id="orb"></canvas>
 
+<div id="status">AYAI IS READY</div>
 
-<!-- =================================================
-     STATUS
-================================================= -->
+<div id="memory">MEMORY: ON</div>
 
-<div id="status">
-AYAI IS READY
-</div>
-
-
-<!-- =================================================
-     MEMORY
-================================================= -->
-
-<div id="memoryStatus">
-MEMORY: ON
-</div>
-
-
-<!-- =================================================
-     VOICE TOGGLE
-================================================= -->
-
-<button
-id="voiceToggle"
-type="button"
-aria-label="Voice On Off"
-title="Voice On / Off"
->
-
-<svg
-viewBox="0 0 24 24"
->
-
-<rect
-x="9"
-y="3"
-width="6"
-height="11"
-rx="3"
-></rect>
-
-<path
-d="M6.5 11.5a5.5 5.5 0 0 0 11 0"
-></path>
-
-<path
-d="M12 17v4"
-></path>
-
-<path
-d="M9 21h6"
-></path>
-
-</svg>
-
-</button>
-
-
-<!-- =================================================
-     NAME
-================================================= -->
-
-<div id="name">
-AyAI
-</div>
-
-
-<!-- =================================================
-     USER HEARD TEXT
-================================================= -->
+<div id="name">AyAI</div>
 
 <div id="heard"></div>
 
-
-<!-- =================================================
-     ANSWER BOX
-================================================= -->
-
 <div id="answerBox"></div>
 
+<button id="voiceToggle" type="button">
+<span class="voice-dot"></span>
+<span id="voiceText">VOICE: ON</span>
+</button>
 
-<!-- =================================================
-     MICROPHONE
-================================================= -->
+<button id="mic" type="button" aria-label="Start AyAI">
 
-<button
-id="mic"
-type="button"
-aria-label="Start AyAI"
->
-
-<svg
-viewBox="0 0 24 24"
->
-
-<rect
-x="9"
-y="3"
-width="6"
-height="11"
-rx="3"
-></rect>
-
-<path
-d="M6.5 11.5a5.5 5.5 0 0 0 11 0"
-></path>
-
-<path
-d="M12 17v4"
-></path>
-
-<path
-d="M9 21h6"
-></path>
-
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<rect x="9" y="3" width="6" height="11" rx="3"/>
+<path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v4M9 21h6"/>
 </svg>
 
 </button>
-
-
-<!-- =================================================
-     TIP
-================================================= -->
 
 <div id="tip">
 TAP TO SPEAK • TALK TO AYAI
 </div>
-
 
 </div>
 
@@ -811,105 +381,70 @@ TAP TO SPEAK • TALK TO AYAI
 "use strict";
 
 
-/* =====================================================
+/* =========================
    ELEMENTS
-===================================================== */
+========================= */
 
-const app =
-document.getElementById("app");
+const app=document.getElementById("app");
+const canvas=document.getElementById("orb");
+const ctx=canvas.getContext("2d");
 
-const canvas =
-document.getElementById("orb");
+const status=document.getElementById("status");
+const heard=document.getElementById("heard");
+const answerBox=document.getElementById("answerBox");
 
-const ctx =
-canvas.getContext("2d");
+const mic=document.getElementById("mic");
 
-const status =
-document.getElementById("status");
-
-const heard =
-document.getElementById("heard");
-
-const answerBox =
-document.getElementById("answerBox");
-
-const mic =
-document.getElementById("mic");
-
-const name =
-document.getElementById("name");
-
-const voiceToggle =
+const voiceToggle=
 document.getElementById("voiceToggle");
 
-const memoryStatus =
-document.getElementById("memoryStatus");
+const voiceText=
+document.getElementById("voiceText");
 
 
-/* =====================================================
+/* =========================
    VARIABLES
-===================================================== */
+========================= */
 
 let W=0;
-
 let H=0;
-
 let DPR=1;
 
 let cx=0;
-
 let cy=0;
-
 let R=0;
 
 let pts=[];
 
 let level=0;
-
 let target=0;
 
 let mode="idle";
 
-
-/* AUDIO */
-
 let audioCtx=null;
-
 let analyser=null;
-
 let audioData=null;
-
 let stream=null;
-
-
-/* SPEECH */
 
 let recognition=null;
 
 let recognizing=false;
-
 let speaking=false;
-
-
-/* VOICE SETTING */
 
 let voiceEnabled=true;
 
 
-/* MEMORY */
+/* =========================
+   MEMORY
+========================= */
 
 let conversation=[];
-
-
-/* =====================================================
-   MEMORY STORAGE
-===================================================== */
 
 function loadMemory(){
 
 try{
 
-const saved =
+const saved=
 localStorage.getItem("ayai_memory");
 
 if(saved){
@@ -918,9 +453,7 @@ conversation=
 JSON.parse(saved);
 
 if(!Array.isArray(conversation)){
-
 conversation=[];
-
 }
 
 }
@@ -954,39 +487,24 @@ function clearMemory(){
 
 conversation=[];
 
-try{
-
-localStorage.removeItem(
-"ayai_memory"
-);
-
-}catch(e){}
-
-answerBox.textContent=
-"تم مسح ذاكرة المحادثة.";
-
-app.classList.add("answer-active");
+saveMemory();
 
 }
 
 
-/* =====================================================
+/* =========================
    SCREEN
-===================================================== */
+========================= */
 
 function resize(){
 
-DPR=
-Math.min(
+DPR=Math.min(
 window.devicePixelRatio||1,
 2
 );
 
-W=
-window.innerWidth;
-
-H=
-window.innerHeight;
+W=window.innerWidth;
+H=window.innerHeight;
 
 canvas.width=
 Math.max(
@@ -1010,61 +528,39 @@ DPR,
 );
 
 cx=W/2;
-
 cy=H/2;
 
-R=
-Math.min(W,H)*.235;
+R=Math.min(W,H)*.235;
 
 makePts();
 
 }
 
 
-/* =====================================================
-   PARTICLES
-===================================================== */
-
 function makePts(){
 
 pts=[];
 
-const n=
-Math.max(
+const n=Math.max(
 120,
-Math.floor(
-Math.min(W,H)*.38
-)
+Math.floor(Math.min(W,H)*.38)
 );
 
-for(
-let i=0;
-i<n;
-i++
-){
+for(let i=0;i<n;i++){
 
 pts.push({
 
-a:
-Math.random()*Math.PI*2,
+a:Math.random()*Math.PI*2,
 
-r:
-R*
-(.78+
-Math.random()*.29),
+r:R*(.78+Math.random()*.29),
 
-s:
-(Math.random()-.5)*.001,
+s:(Math.random()-.5)*.001,
 
-ph:
-Math.random()*Math.PI*2,
+ph:Math.random()*Math.PI*2,
 
-op:
-.2+
-Math.random()*.7,
+op:.2+Math.random()*.7,
 
-z:
-Math.random()
+z:Math.random()
 
 });
 
@@ -1072,10 +568,6 @@ Math.random()
 
 }
 
-
-/* =====================================================
-   MODE
-===================================================== */
 
 function setMode(m,text){
 
@@ -1086,49 +578,42 @@ status.textContent=text;
 }
 
 
-/* =====================================================
-   SHOW ANSWER
-===================================================== */
+/* =========================
+   ANSWER UI
+========================= */
 
 function showAnswer(text){
 
-if(!text){
-
-answerBox.textContent="";
-
-app.classList.remove(
-"answer-active"
-);
-
-return;
-
-}
-
 answerBox.textContent=text;
 
-app.classList.add(
-"answer-active"
-);
+app.classList.add("answer-mode");
 
 }
-
-
-/* =====================================================
-   HIDE ANSWER
-===================================================== */
 
 function hideAnswer(){
 
-app.classList.remove(
-"answer-active"
-);
+answerBox.classList.remove("show");
+
+}
+
+function showAnswerBox(text){
+
+answerBox.textContent=text;
+
+app.classList.add("answer-mode");
+
+requestAnimationFrame(()=>{
+
+answerBox.classList.add("show");
+
+});
 
 }
 
 
-/* =====================================================
+/* =========================
    AYAI ORB
-===================================================== */
+========================= */
 
 function animate(t){
 
@@ -1139,16 +624,11 @@ W,
 H
 );
 
-const time=
-t*.001;
+const time=t*.001;
 
 let measured=0;
 
-
-if(
-analyser &&
-audioData
-){
+if(analyser&&audioData){
 
 analyser.getByteTimeDomainData(
 audioData
@@ -1169,8 +649,7 @@ sum+=v*v;
 
 }
 
-measured=
-Math.min(
+measured=Math.min(
 1,
 Math.sqrt(
 sum/audioData.length
@@ -1180,8 +659,7 @@ sum/audioData.length
 }
 
 
-target=
-Math.max(
+target=Math.max(
 
 measured,
 
@@ -1209,9 +687,7 @@ level+=
 (target-level)*.1;
 
 
-/* =================================================
-   GLOW
-================================================= */
+/* glow */
 
 const glow=
 ctx.createRadialGradient(
@@ -1225,12 +701,7 @@ R*1.55
 
 glow.addColorStop(
 0,
-`rgba(
-60,
-170,
-255,
-${.025+level*.09}
-)`
+`rgba(60,170,255,${.025+level*.09})`
 );
 
 glow.addColorStop(
@@ -1253,9 +724,7 @@ Math.PI*2
 ctx.fill();
 
 
-/* =================================================
-   RINGS
-================================================= */
+/* rings */
 
 for(
 let k=0;
@@ -1272,9 +741,7 @@ cy,
 
 R*(1+k*.035)
 +
-Math.sin(
-time*1.5+k
-)*2
+Math.sin(time*1.5+k)*2
 +
 level*12,
 
@@ -1284,12 +751,7 @@ Math.PI*2
 );
 
 ctx.strokeStyle=
-`rgba(
-120,
-210,
-255,
-${.045+level*.025}
-)`;
+`rgba(120,210,255,${.045+level*.025})`;
 
 ctx.lineWidth=.6;
 
@@ -1298,9 +760,7 @@ ctx.stroke();
 }
 
 
-/* =================================================
-   PARTICLES
-================================================= */
+/* particles */
 
 for(
 let i=0;
@@ -1317,10 +777,7 @@ p.s*
 const rr=
 p.r+
 Math.sin(
-time*
-(.8+p.z*.9)
-+
-p.ph
+time*(.8+p.z*.9)+p.ph
 )*
 (3+level*28);
 
@@ -1337,10 +794,7 @@ Math.sin(p.a)*rr;
 
 for(
 let j=i+1;
-j<Math.min(
-i+7,
-pts.length
-);
+j<Math.min(i+7,pts.length);
 j++
 ){
 
@@ -1349,10 +803,7 @@ const q=pts[j];
 const qrr=
 q.r+
 Math.sin(
-time*
-(.8+q.z*.9)
-+
-q.ph
+time*(.8+q.z*.9)+q.ph
 )*
 (3+level*28);
 
@@ -1385,16 +836,11 @@ qy
 );
 
 ctx.strokeStyle=
-`rgba(
-150,
-225,
-255,
-${Math.max(
+`rgba(150,225,255,${Math.max(
 0,
 (.17-d/520)*
 (.7+level*2.3)
-)}
-)`;
+)})`;
 
 ctx.lineWidth=.45;
 
@@ -1412,27 +858,19 @@ ctx.beginPath();
 ctx.arc(
 x,
 y,
-p.op*.8+
-level*1.8,
+p.op*.8+level*1.8,
 0,
 Math.PI*2
 );
 
 ctx.fillStyle=
-`rgba(
-210,
-242,
-255,
-${Math.min(
+`rgba(210,242,255,${Math.min(
 1,
-p.op*
-(.45+level*1.5)
-)}
-)`;
+p.op*(.45+level*1.5)
+)})`;
 
 ctx.shadowBlur=
-7+
-level*15;
+7+level*15;
 
 ctx.shadowColor=
 "#79cfff";
@@ -1444,9 +882,7 @@ ctx.shadowBlur=0;
 }
 
 
-/* =================================================
-   ROTATING ARCS
-================================================= */
+/* rotating arcs */
 
 for(
 let k=0;
@@ -1472,16 +908,10 @@ a+.65+level*1.1
 );
 
 ctx.strokeStyle=
-`rgba(
-190,
-238,
-255,
-${.22+level*.55}
-)`;
+`rgba(190,238,255,${.22+level*.55})`;
 
 ctx.lineWidth=
-1.1+
-level*2;
+1.1+level*2;
 
 ctx.stroke();
 
@@ -1495,17 +925,15 @@ animate
 }
 
 
-/* =====================================================
+/* =========================
    MICROPHONE
-===================================================== */
+========================= */
 
 async function setupAudio(){
 
 if(audioCtx){
 
-if(
-audioCtx.state==="suspended"
-){
+if(audioCtx.state==="suspended"){
 
 await audioCtx.resume();
 
@@ -1515,9 +943,8 @@ return;
 
 }
 
-
 if(
-!navigator.mediaDevices ||
+!navigator.mediaDevices||
 !navigator.mediaDevices.getUserMedia
 ){
 
@@ -1527,34 +954,23 @@ throw new Error(
 
 }
 
-
 stream=
 await navigator.mediaDevices.getUserMedia({
 audio:true
 });
 
-
 const AC=
-window.AudioContext ||
+window.AudioContext||
 window.webkitAudioContext;
 
+if(!AC)return;
 
-if(!AC){
-
-return;
-
-}
-
-
-audioCtx=
-new AC();
-
+audioCtx=new AC();
 
 const src=
 audioCtx.createMediaStreamSource(
 stream
 );
-
 
 analyser=
 audioCtx.createAnalyser();
@@ -1571,53 +987,47 @@ src.connect(analyser);
 }
 
 
-/* =====================================================
+/* =========================
    ARABIC VOICE
-===================================================== */
+========================= */
 
 function getArabicVoice(){
 
 if(
-!("speechSynthesis" in window)
+!("speechSynthesis"in window)
 ){
 
 return null;
 
 }
 
-
 const voices=
 speechSynthesis.getVoices()||[];
 
-
 return
 
-voices.find(
-v=>
+voices.find(v=>
 (v.lang||"")
 .toLowerCase()==="ar-iq"
 )
 
 ||
 
-voices.find(
-v=>
+voices.find(v=>
 (v.lang||"")
 .toLowerCase()==="ar-sa"
 )
 
 ||
 
-voices.find(
-v=>
+voices.find(v=>
 (v.lang||"")
 .toLowerCase()==="ar-ae"
 )
 
 ||
 
-voices.find(
-v=>
+voices.find(v=>
 (v.lang||"")
 .toLowerCase()
 .startsWith("ar")
@@ -1630,21 +1040,27 @@ null;
 }
 
 
-/* =====================================================
+/* =========================
    SPEAK
-===================================================== */
+========================= */
 
 function speak(text){
 
 if(!voiceEnabled){
 
+speaking=false;
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
 return;
 
 }
 
-
 if(
-!("speechSynthesis" in window)
+!("speechSynthesis"in window)
 ){
 
 setMode(
@@ -1656,28 +1072,23 @@ return;
 
 }
 
-
 try{
 
 speechSynthesis.cancel();
-
 
 const u=
 new SpeechSynthesisUtterance(
 text
 );
 
-
 const voice=
 getArabicVoice();
-
 
 if(voice){
 
 u.voice=voice;
 
-u.lang=
-voice.lang;
+u.lang=voice.lang;
 
 }else{
 
@@ -1685,13 +1096,11 @@ u.lang="ar-SA";
 
 }
 
-
 u.rate=.9;
 
 u.pitch=.95;
 
 u.volume=1;
-
 
 speaking=true;
 
@@ -1732,7 +1141,7 @@ setMode(
 u.onerror=(e)=>{
 
 console.log(
-"Speech error",
+"TTS error",
 e
 );
 
@@ -1753,10 +1162,7 @@ setMode(
 speechSynthesis.speak(u);
 
 
-/*
-iPhone / Safari sometimes pauses
-speech synthesis.
-*/
+/* iPhone Safari keep alive */
 
 const keepAlive=
 setInterval(()=>{
@@ -1773,17 +1179,13 @@ return;
 
 try{
 
-if(
-speechSynthesis.paused
-){
+speechSynthesis.pause();
 
 speechSynthesis.resume();
 
-}
-
 }catch(e){}
 
-},5000);
+},9000);
 
 
 }catch(e){
@@ -1802,44 +1204,64 @@ setMode(
 }
 
 
-/* =====================================================
-   NORMALIZE ARABIC
-===================================================== */
+/* =========================
+   MOBILE AUDIO UNLOCK
+========================= */
+
+function unlockSpeech(){
+
+if(
+!("speechSynthesis"in window)
+)return;
+
+try{
+
+speechSynthesis.cancel();
+
+const u=
+new SpeechSynthesisUtterance(" ");
+
+u.volume=0;
+
+u.rate=10;
+
+speechSynthesis.speak(u);
+
+setTimeout(()=>{
+
+try{
+
+speechSynthesis.cancel();
+
+}catch(e){}
+
+},100);
+
+}catch(e){}
+
+}
+
+
+/* =========================
+   NORMALIZE
+========================= */
 
 function normalizeArabic(s){
 
 return s
-
 .toLowerCase()
-
-.replace(
-/[أإآ]/g,
-"ا"
-)
-
-.replace(
-/ة/g,
-"ه"
-)
-
-.replace(
-/[؟?!.،,]/g,
-" "
-)
-
-.replace(
-/\s+/g,
-" "
-)
-
+.replace(/[أإآ]/g,"ا")
+.replace(/ة/g,"ه")
+.replace(/[؟?!.،,]/g," ")
+.replace(/\s+/g," ")
 .trim();
 
 }
 
 
-/* =====================================================
+/* =========================
    QUICK COMMANDS
-===================================================== */
+========================= */
 
 function quickCommand(text){
 
@@ -1847,13 +1269,10 @@ const t=
 normalizeArabic(text);
 
 
-/* ---------------------------------------------
-   TIME
---------------------------------------------- */
+/* الوقت */
 
 if(
-/(شكد|كم|شنو الوقت|الوقت|الساعه|الساعة)/
-.test(t)
+/(شكد الوقت|كم الوقت|شنو الوقت|الوقت|الساعه|الساعة)/.test(t)
 ){
 
 const now=
@@ -1872,18 +1291,10 @@ minute:"2-digit"
 }
 
 
-/* ---------------------------------------------
-   DATE
---------------------------------------------- */
+/* التاريخ */
 
 if(
-/(
-تاريخ اليوم|
-شنو التاريخ|
-التاريخ|
-اليوم شنو
-)/
-.test(t)
+/(تاريخ اليوم|شنو التاريخ|التاريخ|اليوم شنو)/.test(t)
 ){
 
 const now=
@@ -1904,14 +1315,10 @@ day:"numeric"
 }
 
 
-/* ---------------------------------------------
-   YOUTUBE
---------------------------------------------- */
+/* يوتيوب */
 
 if(
-/^(افتح|شغل|روح ل|روح)(\s+)?
-(يوتيوب|youtube)/
-.test(t)
+/^(افتح|شغل|روح ل|ادخل)(\s+)?(يوتيوب|youtube)/.test(t)
 ){
 
 window.open(
@@ -1921,18 +1328,13 @@ window.open(
 
 return "فتحتلك يوتيوب.";
 
-
 }
 
 
-/* ---------------------------------------------
-   GOOGLE
---------------------------------------------- */
+/* Google */
 
 if(
-/^(افتح|روح ل)(\s+)?
-(جوجل|گوگل|google)/
-.test(t)
+/^(افتح|روح ل|ادخل)(\s+)?(جوجل|گوگل|google)/.test(t)
 ){
 
 window.open(
@@ -1945,22 +1347,17 @@ return "فتحتلك Google.";
 }
 
 
-/* ---------------------------------------------
-   SEARCH
---------------------------------------------- */
+/* البحث */
 
 let m=
 t.match(
-/(?:ابحث|دور|ابحثلي|دورلي)
-(?: عن)?\s+(.+)/
+/(?:ابحث|دور|ابحثلي|دورلي)(?: عن)?\s+(.+)/
 );
-
 
 if(m){
 
 const q=
 m[1].trim();
-
 
 if(q){
 
@@ -1977,55 +1374,28 @@ return `بحثتلك عن ${q}.`;
 }
 
 
-/* ---------------------------------------------
-   CALCULATOR
---------------------------------------------- */
+/* الحساب */
 
 m=
 t.match(
 /(?:احسب|حساب)\s+(.+)/
 );
 
-
 if(m){
 
 let expr=
 m[1]
 
-.replace(
-/ضرب|في/g,
-"*"
-)
-
-.replace(
-/قسمة على|قسمه على|على/g,
-"/"
-)
-
-.replace(
-/زائد/g,
-"+"
-)
-
-.replace(
-/ناقص/g,
-"-"
-)
-
-.replace(
-/×/g,
-"*"
-)
-
-.replace(
-/÷/g,
-"/"
-);
-
+.replace(/ضرب|في/g,"*")
+.replace(/قسمة على|قسمه على/g,"/")
+.replace(/\sعلى\s/g,"/")
+.replace(/زائد/g,"+")
+.replace(/ناقص/g,"-")
+.replace(/×/g,"*")
+.replace(/÷/g,"/");
 
 if(
-/^[0-9+\-*/().\s]+$/
-.test(expr)
+/^[0-9+\-*/().\s]+$/.test(expr)
 ){
 
 try{
@@ -2037,10 +1407,7 @@ expr+
 ')'
 )();
 
-
-if(
-Number.isFinite(result)
-){
+if(Number.isFinite(result)){
 
 return `النتيجة هي ${result}.`;
 
@@ -2053,25 +1420,15 @@ return `النتيجة هي ${result}.`;
 }
 
 
-/* ---------------------------------------------
-   CLEAR MEMORY
---------------------------------------------- */
+/* مسح الذاكرة */
 
 if(
-/(
-مسح الذاكره|
-امسح الذاكره|
-انس كلشي|
-انسى كلشي|
-امسح الذاكرة|
-انس الذاكرة
-)/
-.test(t)
+/(مسح الذاكره|امسح الذاكره|انس كلشي|انسى كلشي)/.test(t)
 ){
 
 clearMemory();
 
-return "__NO_SPEAK__";
+return "__MEMORY_CLEARED__";
 
 }
 
@@ -2081,54 +1438,66 @@ return null;
 }
 
 
-/* =====================================================
+/* =========================
    AI CHAT
-===================================================== */
+========================= */
 
 async function reply(text){
 
 const t=
 text.trim();
 
-
-if(!t){
-
-return;
-
-}
+if(!t)return;
 
 
-/* QUICK COMMAND */
+/* quick command */
 
 const quick=
 quickCommand(t);
 
-
 if(quick){
 
 if(
-quick!=="__NO_SPEAK__"
+quick==="__MEMORY_CLEARED__"
 ){
 
-showAnswer(quick);
+showAnswerBox(
+"تم مسح ذاكرة المحادثة."
+);
 
-speak(quick);
+heard.textContent=
+"تم مسح الذاكرة.";
 
-}
+speak(
+"تم مسح ذاكرة المحادثة."
+);
 
 return;
 
 }
 
 
-/* SAVE USER */
+showAnswerBox(
+quick
+);
+
+heard.textContent=
+"";
+
+speak(
+quick
+);
+
+return;
+
+}
+
+
+/* save user */
 
 conversation.push({
-
 role:"user",
-
 content:t
-
 });
 
 saveMemory();
@@ -2137,10 +1506,9 @@ saveMemory();
 heard.textContent=
 "جاري التفكير...";
 
+answerBox.classList.remove("show");
 
-app.classList.add(
-"thinking"
-);
+app.classList.add("answer-mode");
 
 setMode(
 "thinking",
@@ -2148,28 +1516,18 @@ setMode(
 );
 
 
-/* =================================================
-   MEMORY PROMPT
-================================================= */
+/* memory */
 
 const memoryText=
 conversation
-
 .slice(-12)
-
-.map(
-m=>
-(
-m.role==="user"
-?
-"المستخدم: "
-:
-"AyAI: "
-)
+.map(m=>
+(m.role==="user"
+?"المستخدم: "
+:"AyAI: ")
 +
 m.content
 )
-
 .join("\n");
 
 
@@ -2180,10 +1538,6 @@ const prompt=
 تحدث بالعربية، ويمكنك استخدام اللهجة العراقية بشكل طبيعي.
 
 كن مختصراً في الأسئلة البسيطة وواضحاً في الأسئلة المعقدة.
-
-إذا طلب المستخدم حساباً قم بالحساب بدقة.
-
-إذا طلب المستخدم فتح موقع أو البحث، تعامل مع الأمر بشكل مباشر.
 
 هذه ذاكرة المحادثة:
 
@@ -2210,18 +1564,15 @@ headers:{
 "application/json"
 },
 
-body:
-JSON.stringify({
+body:JSON.stringify({
 message:prompt
 })
 
-}
-);
+});
 
 
 const data=
 await response.json();
-
 
 if(!response.ok){
 
@@ -2242,36 +1593,51 @@ data.answer||
 
 
 conversation.push({
-
 role:"assistant",
-
 content:answer
-
 });
 
 saveMemory();
 
 
-heard.textContent="";
-
-showAnswer(answer);
-
-
-app.classList.remove(
-"thinking"
+showAnswerBox(
+answer
 );
 
+heard.textContent="";
+
+
+/*
+  التأخير البسيط مهم على iPhone
+  حتى يشتغل الصوت بشكل أفضل
+*/
+
+if(voiceEnabled){
+
+setTimeout(()=>{
 
 speak(answer);
 
+},120);
+
+}else{
+
+setMode(
+"idle",
+"AYAI IS READY"
+);
+
+}
 
 }catch(error){
 
 console.error(error);
 
 
+/* حذف آخر رسالة مستخدم */
+
 if(
-conversation.length &&
+conversation.length&&
 conversation[
 conversation.length-1
 ].role==="user"
@@ -2287,14 +1653,11 @@ saveMemory();
 const msg=
 "صار خطأ بالاتصال بالذكاء الاصطناعي. حاول مرة ثانية.";
 
-
-showAnswer(msg);
-
-
-app.classList.remove(
-"thinking"
+showAnswerBox(
+msg
 );
 
+heard.textContent="";
 
 speak(msg);
 
@@ -2303,14 +1666,14 @@ speak(msg);
 }
 
 
-/* =====================================================
+/* =========================
    SPEECH RECOGNITION
-===================================================== */
+========================= */
 
 function startRecognition(){
 
 const SR=
-window.SpeechRecognition ||
+window.SpeechRecognition||
 window.webkitSpeechRecognition;
 
 
@@ -2321,7 +1684,7 @@ setMode(
 "VOICE NOT SUPPORTED"
 );
 
-showAnswer(
+showAnswerBox(
 "المتصفح الحالي لا يدعم التعرف على الصوت."
 );
 
@@ -2362,11 +1725,7 @@ recognition.onstart=()=>{
 
 recognizing=true;
 
-mic.classList.add(
-"on"
-);
-
-hideAnswer();
+mic.classList.add("on");
 
 setMode(
 "listening",
@@ -2374,6 +1733,10 @@ setMode(
 );
 
 heard.textContent="";
+
+answerBox.classList.remove("show");
+
+app.classList.remove("answer-mode");
 
 };
 
@@ -2395,7 +1758,6 @@ const tx=
 e.results[i][0]
 .transcript;
 
-
 if(
 e.results[i].isFinal
 ){
@@ -2412,8 +1774,7 @@ interim+=tx;
 
 
 heard.textContent=
-finalText||
-interim;
+finalText||interim;
 
 
 if(finalText){
@@ -2429,13 +1790,17 @@ recognition.onerror=e=>{
 
 recognizing=false;
 
-mic.classList.remove(
-"on"
+mic.classList.remove("on");
+
+
+console.log(
+"Speech recognition:",
+e.error
 );
 
 
 if(
-e.error==="not-allowed" ||
+e.error==="not-allowed"||
 e.error==="service-not-allowed"
 ){
 
@@ -2444,7 +1809,7 @@ setMode(
 "MICROPHONE DENIED"
 );
 
-showAnswer(
+showAnswerBox(
 "اسمح للمتصفح باستخدام الميكروفون."
 );
 
@@ -2464,9 +1829,7 @@ recognition.onend=()=>{
 
 recognizing=false;
 
-mic.classList.remove(
-"on"
-);
+mic.classList.remove("on");
 
 if(!speaking){
 
@@ -2488,9 +1851,7 @@ recognition.start();
 
 recognizing=false;
 
-mic.classList.remove(
-"on"
-);
+mic.classList.remove("on");
 
 setMode(
 "idle",
@@ -2502,60 +1863,40 @@ setMode(
 }
 
 
-/* =====================================================
-   MOBILE AUDIO UNLOCK
-===================================================== */
+/* =========================
+   VOICE TOGGLE
+========================= */
 
-function unlockSpeech(){
+function updateVoiceButton(){
+
+if(voiceEnabled){
+
+voiceToggle.classList.add("on");
+
+voiceText.textContent=
+"VOICE: ON";
+
+}else{
+
+voiceToggle.classList.remove("on");
+
+voiceText.textContent=
+"VOICE: OFF";
 
 if(
-!("speechSynthesis" in window)
+"speechSynthesis"in window
 ){
 
-return;
+speechSynthesis.cancel();
 
 }
 
-
-try{
-
-speechSynthesis.cancel();
-
-
-const u=
-new SpeechSynthesisUtterance(
-" "
-);
-
-u.volume=0;
-
-u.rate=10;
-
-
-speechSynthesis.speak(u);
-
-
-setTimeout(
-()=>{
-
-try{
-
-speechSynthesis.cancel();
-
-}catch(e){}
-
-},
-100
-);
-
-}catch(e){}
+speaking=false;
 
 }
 
+}
 
-/* =====================================================
-   VOICE TOGGLE
-===================================================== */
 
 voiceToggle.addEventListener(
 "click",
@@ -2564,52 +1905,15 @@ voiceToggle.addEventListener(
 voiceEnabled=
 !voiceEnabled;
 
-
-if(voiceEnabled){
-
-voiceToggle.classList.add(
-"on"
-);
-
-voiceToggle.classList.remove(
-"off"
-);
-
-voiceToggle.title=
-"Voice On";
-
-}else{
-
-voiceToggle.classList.remove(
-"on"
-);
-
-voiceToggle.classList.add(
-"off"
-);
-
-voiceToggle.title=
-"Voice Off";
-
-
-if(
-"speechSynthesis"
-in window
-){
-
-speechSynthesis.cancel();
-
-}
-
-}
+updateVoiceButton();
 
 }
 );
 
 
-/* =====================================================
-   MICROPHONE BUTTON
-===================================================== */
+/* =========================
+   MIC BUTTON
+========================= */
 
 mic.addEventListener(
 "click",
@@ -2631,16 +1935,15 @@ return;
 
 
 /*
-فتح الصوت من ضغطة المستخدم
-مهم جداً للـ iPhone
+  تشغيل الصوت من نفس ضغطة المستخدم
+  مهم جداً للـ iPhone
 */
 
 unlockSpeech();
 
 
 if(
-"speechSynthesis"
-in window
+"speechSynthesis"in window
 ){
 
 speechSynthesis.cancel();
@@ -2650,7 +1953,6 @@ speechSynthesis.cancel();
 
 await setupAudio();
 
-
 startRecognition();
 
 
@@ -2658,14 +1960,12 @@ startRecognition();
 
 console.error(e);
 
-
 setMode(
 "idle",
 "MICROPHONE ACCESS REQUIRED"
 );
 
-
-showAnswer(
+showAnswerBox(
 "فعّل صلاحية الميكروفون للمتابعة."
 );
 
@@ -2674,70 +1974,13 @@ showAnswer(
 });
 
 
-/* =====================================================
-   NAME DOUBLE TAP / RESET ANSWER
-===================================================== */
-
-let lastTap=0;
-
-
-name.addEventListener(
-"click",
-()=>{
-
-const now=
-Date.now();
-
-
-if(
-now-lastTap<350
-){
-
-hideAnswer();
-
-heard.textContent="";
-
-setMode(
-"idle",
-"AYAI IS READY"
-);
-
-}
-
-
-lastTap=now;
-
-});
-
-
-/* =====================================================
-   SPEECH VOICES LOADING
-===================================================== */
-
-if(
-"speechSynthesis" in window
-){
-
-speechSynthesis.onvoiceschanged=()=>{
-
-speechSynthesis.getVoices();
-
-};
-
-}
-
-
-/* =====================================================
+/* =========================
    START
-===================================================== */
+========================= */
 
 loadMemory();
 
-
-memoryStatus.classList.add(
-"on"
-);
-
+updateVoiceButton();
 
 window.addEventListener(
 "resize",
@@ -2745,14 +1988,11 @@ resize,
 {passive:true}
 );
 
-
 resize();
-
 
 requestAnimationFrame(
 animate
 );
-
 
 })();
 
