@@ -6,9 +6,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body || {};
+    const { message } = req.body;
 
-    if (!message || !message.trim()) {
+    if (!message) {
       return res.status(400).json({
         error: "Message is required"
       });
@@ -27,15 +27,8 @@ export default async function handler(req, res) {
           messages: [
             {
               role: "system",
-              content: `
-أنت AyAI، مساعد شخصي ذكي للمستخدم.
-
-تحدث باللغة العربية العراقية بشكل طبيعي وبسيط.
-كن مختصراً وواضحاً.
-إذا طلب المستخدم شرحاً مفصلاً، قدم التفاصيل المطلوبة.
-لا تقل إنك نموذج ذكاء اصطناعي إلا إذا سُئلت مباشرة.
-اسمك AyAI.
-              `
+              content:
+                "أنت AyAI، مساعد شخصي ذكي يتحدث العربية باللهجة العراقية بشكل طبيعي. أجب بشكل واضح ومختصر ومفيد. لا تقل إنك لا تستطيع إلا إذا كان الأمر فعلاً خارج قدراتك."
             },
             {
               role: "user",
@@ -43,7 +36,7 @@ export default async function handler(req, res) {
             }
           ],
           temperature: 0.7,
-          max_tokens: 500
+          max_tokens: 1024
         })
       }
     );
@@ -52,13 +45,13 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       return res.status(response.status).json({
-        error: data?.error?.message || "Groq API error"
+        error: data.error?.message || "Groq API error"
       });
     }
 
     const answer =
-      data?.choices?.[0]?.message?.content ||
-      "ما گدرت أطلع جواب حالياً.";
+      data.choices?.[0]?.message?.content ||
+      "ما قدرت أطلع جواب حالياً.";
 
     return res.status(200).json({
       answer
@@ -68,7 +61,7 @@ export default async function handler(req, res) {
     console.error(error);
 
     return res.status(500).json({
-      error: "Internal server error"
+      error: "Server error"
     });
   }
 }
