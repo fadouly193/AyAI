@@ -1,9 +1,35 @@
 /*
 ====================================================
-              AyAI DEVELOPMENT CORE
+              AyAI DEVELOPMENT API
 ====================================================
 
-Vercel Environment Variables:
+Flow:
+
+USER
+  ↓
+AyAI
+  ↓
+Development Core
+  ↓
+PLAN
+  ↓
+APPROVAL
+  ↓
+THIS API
+  ↓
+GitHub
+  ↓
+COMMIT
+
+IMPORTANT:
+
+هذا API لا يسمح بتعديل الكود إلا إذا:
+
+approved === true
+
+والملف موجود ضمن ALLOWED PATHS.
+
+Environment Variables:
 
 GITHUB_TOKEN
 GITHUB_OWNER
@@ -17,608 +43,1390 @@ AYAI_ALLOWED_PATHS
 Example:
 
 index.html,brain/,api/
-
 ====================================================
 */
 
+import {
+    createDevelopmentPlan,
+    addChange,
+    addRisk,
+    validatePlan,
+    approvePlan,
+    rejectPlan,
+    prepareExecution,
+    getApprovalSummary,
+    isAllowedPath
+} from "../brain/development-core.js";
 
-export default async function handler(req, res) {
 
+/*
+====================================================
+ RESPONSE HELPERS
+====================================================
+*/
 
-  if (req.method !== "POST") {
+function success(res, data) {
 
-    return res.status(405).json({
+    return res.status(200).json({
 
-      error:
-        "Only POST requests are allowed"
+        success: true,
+
+        ...data
 
     });
 
-  }
+}
 
 
-  try {
+function failure(
+    res,
+    status,
+    message
+) {
 
+    return res.status(status).json({
 
-    const {
-
-      action,
-
-      path,
-
-      content,
-
-      message,
-
-      approved
-
-    } = req.body || {};
-
-
-    /*
-    =================================================
-    EXPLICIT APPROVAL
-    =================================================
-    */
-
-    if (approved !== true) {
-
-      return res.status(403).json({
+        success: false,
 
         error:
-          "Development requires explicit approval."
+            message ||
+            "Development API error."
 
-      });
+    });
+
+}
+
+
+/*
+====================================================
+ ENVIRONMENT
+====================================================
+*/
+
+function getConfig() {
+
+    const TOKEN =
+        process.env.GITHUB_TOKEN;
+
+    const OWNER =
+        process.env.GITHUB_OWNER;
+
+    const REPO =
+        process.env.GITHUB_REPO;
+
+    const BRANCH =
+        process.env.GITHUB_BRANCH ||
+        "main";
+
+
+    const allowedRaw =
+        process.env.AYAI_ALLOWED_PATHS ||
+        "index.html,brain/,api/";
+
+
+    const allowedPaths =
+        allowedRaw
+            .split(",")
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(Boolean);
+
+
+    return {
+
+        TOKEN,
+        OWNER,
+        REPO,
+        BRANCH,
+        allowedPaths
+
+    };
+
+}
+
+
+/*
+====================================================
+ CHECK CONFIG
+====================================================
+*/
+
+function validateConfig(config) {
+
+    if (!config.TOKEN) {
+
+        return "GITHUB_TOKEN is missing.";
 
     }
 
 
-    /*
-    =================================================
-    ENVIRONMENT
-    =================================================
-    */
+    if (!config.OWNER) {
 
-    const TOKEN =
-      process.env.GITHUB_TOKEN;
+        return "GITHUB_OWNER is missing.";
 
-    const OWNER =
-      process.env.GITHUB_OWNER;
+    }
 
-    const REPO =
-      process.env.GITHUB_REPO;
 
-    const BRANCH =
-      process.env.GITHUB_BRANCH ||
-      "main";
+    if (!config.REPO) {
+
+        return "GITHUB_REPO is missing.";
+
+    }
+
+
+    return null;
+
+}
+
+
+/*
+====================================================
+ GITHUB URL
+====================================================
+*/
+
+function githubFileURL(
+    owner,
+    repo,
+    path
+) {
+
+    const encodedPath =
+        path
+            .split("/")
+            .map(
+                encodeURIComponent
+            )
+            .join("/");
+
+
+    return (
+        `https://api.github.com/repos/` +
+        `${encodeURIComponent(owner)}/` +
+        `${encodeURIComponent(repo)}/` +
+        `contents/${encodedPath}`
+    );
+
+}
+
+
+/*
+====================================================
+ GITHUB HEADERS
+====================================================
+*/
+
+function githubHeaders(
+    token
+) {
+
+    return {
+
+        "Accept":
+            "application/vnd.github+json",
+
+        "Authorization":
+            `Bearer ${token}`,
+
+        "X-GitHub-Api-Version":
+            "2022-11-28",
+
+        "Content-Type":
+            "application/json"
+
+    };
+
+}
+
+
+/*
+====================================================
+ READ GITHUB FILE
+====================================================
+*/
+
+async function readGithubFile({
+
+    token,
+    owner,
+    repo,
+    branch,
+    path
+
+}) {
+
+    const url =
+        githubFileURL(
+            owner,
+            repo,
+            path
+        );
+
+
+    const response =
+        await fetch(
+
+            `${url}?ref=${encodeURIComponent(
+                branch
+            )}`,
+
+            {
+
+                method:
+                    "GET",
+
+                headers:
+                    githubHeaders(
+                        token
+                    )
+
+            }
+
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        if (
+            response.status ===
+            404
+        ) {
+
+            return {
+
+                exists:
+                    false,
+
+                sha:
+                    null,
+
+                content:
+                    null
+
+            };
+
+        }
+
+
+        throw new Error(
+
+            data.message ||
+            "GitHub read failed."
+
+        );
+
+    }
+
+
+    let content = "";
 
 
     if (
-      !TOKEN ||
-      !OWNER ||
-      !REPO
+        data.encoding ===
+        "base64"
     ) {
 
-      return res.status(500).json({
+        content =
+            Buffer
+                .from(
 
-        error:
-          "GitHub environment variables are not configured."
+                    data.content
+                        .replace(
+                            /\n/g,
+                            ""
+                        ),
 
-      });
+                    "base64"
+
+                )
+                .toString(
+                    "utf8"
+                );
 
     }
 
 
-    /*
-    =================================================
-    ALLOWED FILES
-    =================================================
-    */
+    return {
 
-    const allowedRaw =
-      process.env.AYAI_ALLOWED_PATHS ||
-      "index.html,brain/,api/";
+        exists:
+            true,
 
+        sha:
+            data.sha,
 
-    const allowed =
-      allowedRaw
-        .split(",")
-        .map(
-          x => x.trim()
-        )
-        .filter(Boolean);
+        content
+
+    };
+
+}
 
 
-    function isAllowed(filePath) {
+/*
+====================================================
+ WRITE GITHUB FILE
+====================================================
+*/
+
+async function writeGithubFile({
+
+    token,
+    owner,
+    repo,
+    branch,
+    path,
+    content,
+    message,
+    sha
+
+}) {
+
+    const url =
+        githubFileURL(
+            owner,
+            repo,
+            path
+        );
 
 
-      if (
-        !filePath ||
-        filePath.includes("..") ||
-        filePath.startsWith("/")
-      ) {
-
-        return false;
-
-      }
-
-
-      return allowed.some(
-        rule => {
-
-          if (
-            rule.endsWith("/")
-          ) {
-
-            return filePath.startsWith(
-              rule
+    const encoded =
+        Buffer
+            .from(
+                content,
+                "utf8"
+            )
+            .toString(
+                "base64"
             );
 
-          }
 
+    const payload = {
 
-          return filePath === rule;
+        message:
+            message ||
+            `AyAI Development: update ${path}`,
 
-        }
-      );
+        content:
+            encoded,
 
-    }
-
-
-    /*
-    =================================================
-    GITHUB API
-    =================================================
-    */
-
-    const base =
-      `https://api.github.com/repos/` +
-      `${encodeURIComponent(OWNER)}/` +
-      `${encodeURIComponent(REPO)}/contents/`;
-
-
-    const headers = {
-
-      "Accept":
-        "application/vnd.github+json",
-
-      "Authorization":
-        `Bearer ${TOKEN}`,
-
-      "X-GitHub-Api-Version":
-        "2022-11-28",
-
-      "Content-Type":
-        "application/json"
+        branch
 
     };
 
 
     /*
-    =================================================
-    READ FILE
-    =================================================
+    ----------------------------------------------
+    إذا الملف موجود نرسل SHA
+    ----------------------------------------------
     */
 
-    if (
-      action === "read"
-    ) {
+    if (sha) {
 
-
-      if (!path) {
-
-        return res.status(400).json({
-
-          error:
-            "Missing file path."
-
-        });
-
-      }
-
-
-      if (!isAllowed(path)) {
-
-        return res.status(403).json({
-
-          error:
-            "This file is not allowed."
-
-        });
-
-      }
-
-
-      const url =
-        base +
-        path
-          .split("/")
-          .map(
-            encodeURIComponent
-          )
-          .join("/");
-
-
-      const response =
-        await fetch(
-
-          `${url}?ref=${encodeURIComponent(
-            BRANCH
-          )}`,
-
-          {
-
-            method: "GET",
-
-            headers
-
-          }
-
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        return res.status(
-          response.status
-        ).json({
-
-          error:
-            data.message ||
-            "GitHub read failed."
-
-        });
-
-      }
-
-
-      let decoded = "";
-
-
-      if (
-        data.encoding ===
-        "base64"
-      ) {
-
-        decoded =
-          Buffer
-            .from(
-              data.content
-                .replace(/\n/g, ""),
-              "base64"
-            )
-            .toString("utf8");
-
-      }
-
-
-      return res.status(200).json({
-
-        success: true,
-
-        path:
-          data.path,
-
-        sha:
-          data.sha,
-
-        content:
-          decoded
-
-      });
+        payload.sha =
+            sha;
 
     }
 
 
-    /*
-    =================================================
-    WRITE FILE
-    =================================================
-    */
-
-    if (
-      action === "write"
-    ) {
-
-
-      if (!path) {
-
-        return res.status(400).json({
-
-          error:
-            "Missing file path."
-
-        });
-
-      }
-
-
-      if (!isAllowed(path)) {
-
-        return res.status(403).json({
-
-          error:
-            "This file is not allowed to be modified."
-
-        });
-
-      }
-
-
-      if (
-        typeof content !==
-        "string"
-      ) {
-
-        return res.status(400).json({
-
-          error:
-            "Missing file content."
-
-        });
-
-      }
-
-
-      /*
-      ---------------------------------------------
-      GitHub URL
-      ---------------------------------------------
-      */
-
-      const url =
-        base +
-        path
-          .split("/")
-          .map(
-            encodeURIComponent
-          )
-          .join("/");
-
-
-      /*
-      ---------------------------------------------
-      READ CURRENT FILE
-      ---------------------------------------------
-      */
-
-      const currentResponse =
+    const response =
         await fetch(
 
-          `${url}?ref=${encodeURIComponent(
-            BRANCH
-          )}`,
+            url,
 
-          {
+            {
 
-            method: "GET",
+                method:
+                    "PUT",
 
-            headers
+                headers:
+                    githubHeaders(
+                        token
+                    ),
 
-          }
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+
+            }
 
         );
 
 
-      let current =
-        null;
-
-
-      if (
-        currentResponse.ok
-      ) {
-
-        current =
-          await currentResponse.json();
-
-      }
-
-
-      /*
-      ---------------------------------------------
-      ENCODE
-      ---------------------------------------------
-      */
-
-      const encoded =
-        Buffer
-          .from(
-            content,
-            "utf8"
-          )
-          .toString("base64");
-
-
-      const payload = {
-
-        message:
-          message ||
-          `AyAI development: update ${path}`,
-
-        content:
-          encoded,
-
-        branch:
-          BRANCH
-
-      };
-
-
-      /*
-      ---------------------------------------------
-      SHA
-      ---------------------------------------------
-      */
-
-      if (
-        current &&
-        current.sha
-      ) {
-
-        payload.sha =
-          current.sha;
-
-      }
-
-
-      /*
-      ---------------------------------------------
-      WRITE
-      ---------------------------------------------
-      */
-
-      const response =
-        await fetch(
-
-          url,
-
-          {
-
-            method:
-              "PUT",
-
-            headers,
-
-            body:
-              JSON.stringify(
-                payload
-              )
-
-          }
-
-        );
-
-
-      const data =
+    const data =
         await response.json();
 
 
-      if (!response.ok) {
+    if (!response.ok) {
 
-        return res.status(
-          response.status
-        ).json({
+        throw new Error(
 
-          error:
             data.message ||
             "GitHub write failed."
 
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/*
+====================================================
+ CREATE PLAN
+====================================================
+
+يستخدم عندما AyAI يريد اقتراح تطوير.
+
+لا يوجد أي تعديل هنا.
+====================================================
+*/
+
+function handleCreatePlan(
+    body
+) {
+
+    const {
+
+        request,
+        analysis,
+        files
+
+    } = body;
+
+
+    if (!request) {
+
+        throw new Error(
+            "Missing development request."
+        );
+
+    }
+
+
+    const plan =
+        createDevelopmentPlan({
+
+            request,
+
+            analysis:
+
+                analysis ||
+                "AyAI is analyzing the requested development.",
+
+            files:
+
+                Array.isArray(files)
+                    ? files
+                    : []
+
         });
 
-      }
+
+    return plan;
+
+}
 
 
-      return res.status(200).json({
+/*
+====================================================
+ ADD CHANGE
+====================================================
+*/
 
-        success:
-          true,
+function handleAddChange(
+    body
+) {
 
-        path:
-          path,
+    const {
 
-        commit:
-          data.commit?.sha ||
-          null,
+        plan,
+        path,
+        action,
+        description,
+        reason,
+        newContent
 
-        message:
-          "Development applied successfully."
+    } = body;
 
-      });
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
 
     }
 
 
     /*
-    =================================================
-    PROPOSE
-    =================================================
-
-    هذا الجزء لا يكتب كود.
-    فقط يستقبل طلب التطوير ويعيده
-    حتى يبقى القرار النهائي للمستخدم.
+    ----------------------------------------------
+    لا نسمح بتعديل غير مصرح به
+    ----------------------------------------------
     */
 
     if (
-      action === "propose"
+        !isAllowedPath(
+            path
+        )
     ) {
 
+        throw new Error(
+            `Unauthorized file path: ${path}`
+        );
 
-      if (!message) {
-
-        return res.status(400).json({
-
-          error:
-            "Missing development request."
-
-        });
-
-      }
+    }
 
 
-      return res.status(200).json({
+    return addChange(
 
-        success:
-          true,
+        plan,
 
-        plan:
-          `Development request received:
+        {
 
-${message}
+            path,
 
-The request has been approved for the development pipeline.
+            action:
+                action ||
+                "modify",
 
-No file was modified by this action.
+            description:
+                description || "",
 
-To modify a file, the frontend must explicitly send:
+            reason:
+                reason || "",
 
-action = "write"
+            newContent
 
-with:
+        }
 
-approved = true
+    );
 
-and a specific allowed file path.`
+}
 
-      });
+
+/*
+====================================================
+ ADD RISK
+====================================================
+*/
+
+function handleAddRisk(
+    body
+) {
+
+    const {
+
+        plan,
+        risk
+
+    } = body;
+
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
+
+    }
+
+
+    return addRisk(
+        plan,
+        risk
+    );
+
+}
+
+
+/*
+====================================================
+ APPROVE
+====================================================
+
+مهم:
+
+الموافقة لا تعني أن أي ملف عشوائي
+يمكن تعديله.
+
+الخطة يتم فحصها أولاً.
+====================================================
+*/
+
+function handleApprove(
+    body
+) {
+
+    const {
+
+        plan,
+        approvalToken
+
+    } = body;
+
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
 
     }
 
 
     /*
-    =================================================
-    UNKNOWN
-    =================================================
+    ----------------------------------------------
+    approvalToken يجب أن يكون موجوداً
+    ----------------------------------------------
     */
 
-    return res.status(400).json({
+    if (!approvalToken) {
 
-      error:
-        "Unknown development action."
+        throw new Error(
+            "Explicit approval is required."
+        );
 
-    });
-
-
-  } catch (error) {
+    }
 
 
-    console.error(
-      "AyAI Development Error:",
-      error
+    return approvePlan(
+
+        plan,
+
+        approvalToken
+
     );
 
+}
 
-    return res.status(500).json({
 
-      error:
-        error.message ||
-        "Development server error."
+/*
+====================================================
+ REJECT
+====================================================
+*/
 
-    });
+function handleReject(
+    body
+) {
 
-  }
+    const {
+        plan
+    } = body;
+
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
+
+    }
+
+
+    return rejectPlan(
+        plan
+    );
+
+}
+
+
+/*
+====================================================
+ EXECUTE DEVELOPMENT
+====================================================
+
+هذه هي المرحلة الوحيدة التي تعدل GitHub.
+
+شروط التنفيذ:
+
+1. plan موجود
+2. plan.approved === true
+3. status === APPROVED
+4. الخطة Valid
+5. كل الملفات مسموحة
+====================================================
+*/
+
+async function handleExecute(
+    body,
+    config
+) {
+
+    const {
+        plan,
+        commitMessage
+    } = body;
+
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------------------
+    VALIDATE
+    ----------------------------------------------
+    */
+
+    const validation =
+        validatePlan(
+            plan
+        );
+
+
+    if (
+        !validation.valid
+    ) {
+
+        throw new Error(
+
+            validation.errors.join(
+                "\n"
+            )
+
+        );
+
+    }
+
+
+    /*
+    ----------------------------------------------
+    APPROVAL CHECK
+    ----------------------------------------------
+    */
+
+    if (
+        plan.approved !== true
+    ) {
+
+        throw new Error(
+            "Development has not been approved."
+        );
+
+    }
+
+
+    if (
+        plan.status !==
+        "APPROVED"
+    ) {
+
+        throw new Error(
+            "Development plan is not approved."
+        );
+
+    }
+
+
+    /*
+    ----------------------------------------------
+    PREPARE
+    ----------------------------------------------
+    */
+
+    const execution =
+        prepareExecution(
+            plan
+        );
+
+
+    /*
+    ----------------------------------------------
+    NO CHANGES
+    ----------------------------------------------
+    */
+
+    if (
+        !execution.changes.length
+    ) {
+
+        throw new Error(
+            "No development changes found."
+        );
+
+    }
+
+
+    const results = [];
+
+
+    /*
+    ----------------------------------------------
+    EXECUTE EACH FILE
+    ----------------------------------------------
+    */
+
+    for (
+        const change
+        of execution.changes
+    ) {
+
+        /*
+        ------------------------------------------
+        SECURITY CHECK
+        ------------------------------------------
+        */
+
+        if (
+            !isAllowedPath(
+                change.path,
+                config.allowedPaths
+            )
+        ) {
+
+            throw new Error(
+
+                `Unauthorized path: ${change.path}`
+
+            );
+
+        }
+
+
+        /*
+        ------------------------------------------
+        Only modification supported
+        ------------------------------------------
+        */
+
+        if (
+            change.action !==
+            "modify"
+        ) {
+
+            throw new Error(
+
+                `Unsupported action "${change.action}" for ${change.path}`
+
+            );
+
+        }
+
+
+        if (
+            typeof change.content !==
+            "string"
+        ) {
+
+            throw new Error(
+
+                `Missing content for ${change.path}`
+
+            );
+
+        }
+
+
+        /*
+        ------------------------------------------
+        READ CURRENT FILE
+        ------------------------------------------
+        */
+
+        const current =
+            await readGithubFile({
+
+                token:
+                    config.TOKEN,
+
+                owner:
+                    config.OWNER,
+
+                repo:
+                    config.REPO,
+
+                branch:
+                    config.BRANCH,
+
+                path:
+                    change.path
+
+            });
+
+
+        /*
+        ------------------------------------------
+        WRITE
+        ------------------------------------------
+        */
+
+        const commit =
+            await writeGithubFile({
+
+                token:
+                    config.TOKEN,
+
+                owner:
+                    config.OWNER,
+
+                repo:
+                    config.REPO,
+
+                branch:
+                    config.BRANCH,
+
+                path:
+                    change.path,
+
+                content:
+                    change.content,
+
+                sha:
+                    current.sha,
+
+                message:
+
+                    commitMessage ||
+
+                    `AyAI Development: update ${change.path}`
+
+            });
+
+
+        results.push({
+
+            path:
+                change.path,
+
+            success:
+                true,
+
+            commit:
+                commit
+                    ?.commit
+                    ?.sha ||
+                null
+
+        });
+
+    }
+
+
+    /*
+    ----------------------------------------------
+    RETURN
+    ----------------------------------------------
+    */
+
+    return {
+
+        planId:
+            plan.id,
+
+        status:
+            "EXECUTED",
+
+        branch:
+            config.BRANCH,
+
+        results
+
+    };
+
+}
+
+
+/*
+====================================================
+ GET PLAN SUMMARY
+====================================================
+*/
+
+function handleSummary(
+    body
+) {
+
+    const {
+        plan
+    } = body;
+
+
+    if (!plan) {
+
+        throw new Error(
+            "Development plan is required."
+        );
+
+    }
+
+
+    return getApprovalSummary(
+        plan
+    );
+
+}
+
+
+/*
+====================================================
+ MAIN HANDLER
+====================================================
+*/
+
+export default async function handler(
+    req,
+    res
+) {
+
+    /*
+    ----------------------------------------------
+    METHOD
+    ----------------------------------------------
+    */
+
+    if (
+        req.method !==
+        "POST"
+    ) {
+
+        return failure(
+
+            res,
+
+            405,
+
+            "Only POST requests are allowed."
+
+        );
+
+    }
+
+
+    try {
+
+        const body =
+            req.body || {};
+
+
+        const action =
+            body.action;
+
+
+        /*
+        ------------------------------------------
+        CONFIG
+        ------------------------------------------
+        */
+
+        const config =
+            getConfig();
+
+
+        const configError =
+            validateConfig(
+                config
+            );
+
+
+        if (configError) {
+
+            return failure(
+
+                res,
+
+                500,
+
+                configError
+
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        CREATE PLAN
+        ==========================================
+        */
+
+        if (
+            action ===
+            "create_plan"
+        ) {
+
+            const plan =
+                handleCreatePlan(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "create_plan",
+
+                    plan,
+
+                    summary:
+                        getApprovalSummary(
+                            plan
+                        )
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        ADD CHANGE
+        ==========================================
+        */
+
+        if (
+            action ===
+            "add_change"
+        ) {
+
+            const plan =
+                handleAddChange(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "add_change",
+
+                    plan,
+
+                    summary:
+                        getApprovalSummary(
+                            plan
+                        )
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        ADD RISK
+        ==========================================
+        */
+
+        if (
+            action ===
+            "add_risk"
+        ) {
+
+            const plan =
+                handleAddRisk(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "add_risk",
+
+                    plan
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        SUMMARY
+        ==========================================
+        */
+
+        if (
+            action ===
+            "summary"
+        ) {
+
+            const summary =
+                handleSummary(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "summary",
+
+                    summary
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        APPROVE
+        ==========================================
+        */
+
+        if (
+            action ===
+            "approve"
+        ) {
+
+            const plan =
+                handleApprove(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "approve",
+
+                    plan,
+
+                    message:
+                        "Development approved. Ready for execution."
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        REJECT
+        ==========================================
+        */
+
+        if (
+            action ===
+            "reject"
+        ) {
+
+            const plan =
+                handleReject(
+                    body
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "reject",
+
+                    plan,
+
+                    message:
+                        "Development rejected."
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        EXECUTE
+        ==========================================
+        */
+
+        if (
+            action ===
+            "execute"
+        ) {
+
+            const result =
+                await handleExecute(
+                    body,
+                    config
+                );
+
+
+            return success(
+                res,
+                {
+
+                    action:
+                        "execute",
+
+                    result,
+
+                    message:
+                        "AyAI development executed successfully."
+
+                }
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        UNKNOWN ACTION
+        ==========================================
+        */
+
+        return failure(
+
+            res,
+
+            400,
+
+            "Unknown development action."
+
+        );
+
+    } catch (error) {
+
+        console.error(
+            "AyAI Development API Error:",
+            error
+        );
+
+
+        return failure(
+
+            res,
+
+            500,
+
+            error.message ||
+            "Development server error."
+
+        );
+
+    }
 
 }
