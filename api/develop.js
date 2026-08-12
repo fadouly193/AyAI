@@ -1,137 +1,130 @@
 /*
-====================================================
-              AyAI DEVELOPMENT CORE
-====================================================
+========================================================
+                 AyAI DEVELOPMENT CORE
+========================================================
 
-Supported actions:
+Required Vercel Environment Variables:
 
-analyze
-approve
-apply
-read
-write
-
-Environment Variables:
-
+GROQ_API_KEY
 GITHUB_TOKEN
 GITHUB_OWNER
 GITHUB_REPO
 GITHUB_BRANCH
 
-Optional:
+Required:
+DEV_APPROVAL_SECRET
 
+Optional:
 AYAI_ALLOWED_PATHS
 
 Example:
+index.html,api/,brain/
 
-index.html,brain/,api/
-====================================================
+Flow:
+
+ANALYZE
+   ↓
+Read allowed files from GitHub
+   ↓
+Groq creates development proposal
+   ↓
+User reviews proposal
+   ↓
+APPROVE & APPLY
+   ↓
+Signed approval verified
+   ↓
+GitHub commit
+========================================================
 */
 
-export default async function handler(req, res) {
+import crypto from "crypto";
 
-    /*
-    ==================================================
-    METHOD
-    ==================================================
-    */
+
+// ======================================================
+// MAIN HANDLER
+// ======================================================
+
+export default async function handler(req, res) {
 
     if (req.method !== "POST") {
 
         return res.status(405).json({
-            success: false,
             error: "Only POST requests are allowed."
         });
 
     }
 
-
     try {
 
         const body = req.body || {};
 
-        const action =
-            body.action || "";
+        const action = body.action;
 
-        const path =
-            body.path || "";
+        // ==================================================
+        // ENVIRONMENT
+        // ==================================================
 
-        const content =
-            body.content;
+        const GROQ_API_KEY =
+            process.env.GROQ_API_KEY;
 
-        const message =
-            body.message || "";
-
-        const approved =
-            body.approved === true;
-
-        const files =
-            Array.isArray(body.files)
-                ? body.files
-                : [];
-
-
-        /*
-        ==================================================
-        ENVIRONMENT
-        ==================================================
-        */
-
-        const TOKEN =
+        const GITHUB_TOKEN =
             process.env.GITHUB_TOKEN;
 
-        const OWNER =
+        const GITHUB_OWNER =
             process.env.GITHUB_OWNER;
 
-        const REPO =
+        const GITHUB_REPO =
             process.env.GITHUB_REPO;
 
-        const BRANCH =
+        const GITHUB_BRANCH =
             process.env.GITHUB_BRANCH || "main";
 
+        const DEV_APPROVAL_SECRET =
+            process.env.DEV_APPROVAL_SECRET;
 
-        if (!TOKEN) {
+
+        if (!GROQ_API_KEY) {
 
             return res.status(500).json({
-                success: false,
-                error: "GITHUB_TOKEN is missing."
+                error: "GROQ_API_KEY is missing."
+            });
+
+        }
+
+        if (
+            !GITHUB_TOKEN ||
+            !GITHUB_OWNER ||
+            !GITHUB_REPO
+        ) {
+
+            return res.status(500).json({
+                error:
+                    "GitHub environment variables are missing."
+            });
+
+        }
+
+        if (!DEV_APPROVAL_SECRET) {
+
+            return res.status(500).json({
+                error:
+                    "DEV_APPROVAL_SECRET is missing."
             });
 
         }
 
 
-        if (!OWNER) {
-
-            return res.status(500).json({
-                success: false,
-                error: "GITHUB_OWNER is missing."
-            });
-
-        }
-
-
-        if (!REPO) {
-
-            return res.status(500).json({
-                success: false,
-                error: "GITHUB_REPO is missing."
-            });
-
-        }
-
-
-        /*
-        ==================================================
-        ALLOWED PATHS
-        ==================================================
-        */
+        // ==================================================
+        // ALLOWED FILES
+        // ==================================================
 
         const allowedRaw =
             process.env.AYAI_ALLOWED_PATHS ||
-            "index.html,brain/,api/";
+            "index.html,api/,brain/";
 
 
-        const allowed =
+        const allowedPaths =
             allowedRaw
                 .split(",")
                 .map(x => x.trim())
@@ -144,10 +137,7 @@ export default async function handler(req, res) {
                 return false;
             }
 
-            /*
-            Prevent dangerous paths
-            */
-
+            // Prevent path traversal
             if (
                 filePath.includes("..") ||
                 filePath.startsWith("/") ||
@@ -158,8 +148,7 @@ export default async function handler(req, res) {
 
             }
 
-
-            return allowed.some(rule => {
+            return allowedPaths.some(rule => {
 
                 if (rule.endsWith("/")) {
 
@@ -174,25 +163,23 @@ export default async function handler(req, res) {
         }
 
 
-        /*
-        ==================================================
-        GITHUB BASE
-        ==================================================
-        */
+        // ==================================================
+        // GITHUB HELPERS
+        // ==================================================
 
-        const base =
+        const githubBase =
             `https://api.github.com/repos/` +
-            `${encodeURIComponent(OWNER)}/` +
-            `${encodeURIComponent(REPO)}/contents/`;
+            `${encodeURIComponent(GITHUB_OWNER)}/` +
+            `${encodeURIComponent(GITHUB_REPO)}/contents/`;
 
 
-        const headers = {
+        const githubHeaders = {
 
             "Accept":
                 "application/vnd.github+json",
 
             "Authorization":
-                `Bearer ${TOKEN}`,
+                `Bearer ${GITHUB_TOKEN}`,
 
             "X-GitHub-Api-Version":
                 "2022-11-28",
@@ -203,10 +190,10 @@ export default async function handler(req, res) {
         };
 
 
-        function githubUrl(filePath) {
+        function githubFileUrl(filePath) {
 
             return (
-                base +
+                githubBase +
                 filePath
                     .split("/")
                     .map(encodeURIComponent)
@@ -216,681 +203,23 @@ export default async function handler(req, res) {
         }
 
 
-        /*
-        ==================================================
-        ACTION: ANALYZE
-        ==================================================
+        async function readGithubFile(filePath) {
 
-        This DOES NOT modify GitHub.
+            if (!isAllowed(filePath)) {
 
-        It only prepares a development plan.
-        ==================================================
-        */
-
-        if (action === "analyze") {
-
-            const requestedPath =
-                path || "index.html";
-
-
-            /*
-            Validate path if supplied
-            */
-
-            if (
-                path &&
-                !isAllowed(path)
-            ) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "This file is not allowed to be modified.",
-
-                    path
-
-                });
-
-            }
-
-
-            /*
-            If frontend sends multiple files
-            */
-
-            const analyzedFiles =
-                files.length > 0
-                    ? files.map(file => ({
-                        path: file.path,
-                        status:
-                            isAllowed(file.path)
-                                ? "ALLOWED"
-                                : "BLOCKED"
-                    }))
-                    : [
-                        {
-                            path: requestedPath,
-                            status:
-                                isAllowed(requestedPath)
-                                    ? "ALLOWED"
-                                    : "BLOCKED"
-                        }
-                    ];
-
-
-            const blocked =
-                analyzedFiles.filter(
-                    file =>
-                        file.status === "BLOCKED"
+                throw new Error(
+                    `File not allowed: ${filePath}`
                 );
-
-
-            if (blocked.length > 0) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "One or more requested files are not allowed.",
-
-                    files:
-                        analyzedFiles
-
-                });
-
-            }
-
-
-            /*
-            Development plan
-            */
-
-            const plan = {
-
-                title:
-                    "AyAI Development Plan",
-
-                request:
-                    message ||
-                    "Development request received.",
-
-                files:
-                    analyzedFiles,
-
-                changes: [
-
-                    "Analyze the requested development.",
-
-                    "Prepare the required code changes.",
-
-                    "Validate the requested files.",
-
-                    "Wait for explicit user approval.",
-
-                    "Apply the approved changes to GitHub."
-
-                ],
-
-                risks: [
-
-                    "Existing functionality may be affected.",
-
-                    "Frontend behavior may change.",
-
-                    "The application should be tested after deployment."
-
-                ],
-
-                approvalRequired:
-                    true
-
-            };
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                action:
-                    "analyze",
-
-                status:
-                    "WAITING_FOR_APPROVAL",
-
-                plan
-
-            });
-
-        }
-
-
-        /*
-        ==================================================
-        ACTION: APPROVE
-        ==================================================
-
-        Approval endpoint.
-
-        IMPORTANT:
-        Approval alone does not magically know the code.
-        The frontend must send the proposed files/content.
-        ==================================================
-        */
-
-        if (
-            action === "approve" ||
-            action === "apply"
-        ) {
-
-            if (!approved) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "Development requires explicit approval."
-
-                });
-
-            }
-
-
-            /*
-            ==================================================
-            MULTI FILE DEVELOPMENT
-            ==================================================
-            */
-
-            if (files.length > 0) {
-
-                const results = [];
-
-
-                for (const file of files) {
-
-                    if (
-                        !file ||
-                        typeof file.path !== "string" ||
-                        typeof file.content !== "string"
-                    ) {
-
-                        return res.status(400).json({
-
-                            success: false,
-
-                            error:
-                                "Each file must contain path and content."
-
-                        });
-
-                    }
-
-
-                    if (!isAllowed(file.path)) {
-
-                        return res.status(403).json({
-
-                            success: false,
-
-                            error:
-                                `File not allowed: ${file.path}`
-
-                        });
-
-                    }
-
-
-                    const result =
-                        await writeFile(
-                            file.path,
-                            file.content,
-                            file.message ||
-                            message ||
-                            `AyAI approved development: ${file.path}`
-                        );
-
-
-                    results.push(result);
-
-                }
-
-
-                return res.status(200).json({
-
-                    success: true,
-
-                    action:
-                        "approve",
-
-                    status:
-                        "DEVELOPMENT_APPLIED",
-
-                    results
-
-                });
-
-            }
-
-
-            /*
-            ==================================================
-            SINGLE FILE DEVELOPMENT
-            ==================================================
-            */
-
-            if (!path) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Missing file path."
-
-                });
-
-            }
-
-
-            if (!isAllowed(path)) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "This file is not allowed to be modified."
-
-                });
-
-            }
-
-
-            if (typeof content !== "string") {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Missing file content."
-
-                });
-
-            }
-
-
-            const result =
-                await writeFile(
-                    path,
-                    content,
-                    message ||
-                    `AyAI approved development: ${path}`
-                );
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                action:
-                    "approve",
-
-                status:
-                    "DEVELOPMENT_APPLIED",
-
-                result
-
-            });
-
-        }
-
-
-        /*
-        ==================================================
-        ACTION: READ
-        ==================================================
-        */
-
-        if (action === "read") {
-
-            if (!path) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Missing file path."
-
-                });
-
-            }
-
-
-            if (!isAllowed(path)) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "This file is not allowed to be read."
-
-                });
 
             }
 
 
             const response =
                 await fetch(
-                    `${githubUrl(path)}?ref=${encodeURIComponent(BRANCH)}`,
+                    `${githubFileUrl(filePath)}?ref=${encodeURIComponent(GITHUB_BRANCH)}`,
                     {
                         method: "GET",
-                        headers
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (!response.ok) {
-
-                return res.status(
-                    response.status
-                ).json({
-
-                    success: false,
-
-                    error:
-                        data.message ||
-                        "GitHub read failed."
-
-                });
-
-            }
-
-
-            let decoded = "";
-
-
-            if (
-                data.encoding === "base64"
-            ) {
-
-                decoded =
-                    Buffer
-                        .from(
-                            data.content.replace(/\n/g, ""),
-                            "base64"
-                        )
-                        .toString("utf8");
-
-            }
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                action:
-                    "read",
-
-                path:
-                    data.path,
-
-                sha:
-                    data.sha,
-
-                content:
-                    decoded
-
-            });
-
-        }
-
-
-        /*
-        ==================================================
-        ACTION: WRITE
-        ==================================================
-
-        Legacy direct write.
-
-        Still requires approval.
-        ==================================================
-        */
-
-        if (action === "write") {
-
-            if (!approved) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "Writing files requires explicit approval."
-
-                });
-
-            }
-
-
-            if (!path) {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Missing file path."
-
-                });
-
-            }
-
-
-            if (!isAllowed(path)) {
-
-                return res.status(403).json({
-
-                    success: false,
-
-                    error:
-                        "This file is not allowed to be modified."
-
-                });
-
-            }
-
-
-            if (typeof content !== "string") {
-
-                return res.status(400).json({
-
-                    success: false,
-
-                    error:
-                        "Missing file content."
-
-                });
-
-            }
-
-
-            const result =
-                await writeFile(
-                    path,
-                    content,
-                    message ||
-                    `AyAI development: update ${path}`
-                );
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                action:
-                    "write",
-
-                status:
-                    "DEVELOPMENT_APPLIED",
-
-                result
-
-            });
-
-        }
-
-
-        /*
-        ==================================================
-        UNKNOWN ACTION
-        ==================================================
-        */
-
-        return res.status(400).json({
-
-            success: false,
-
-            error:
-                "Unknown development action.",
-
-            receivedAction:
-                action,
-
-            supportedActions: [
-
-                "analyze",
-                "approve",
-                "apply",
-                "read",
-                "write"
-
-            ]
-
-        });
-
-
-        /*
-        ==================================================
-        GITHUB WRITE FUNCTION
-        ==================================================
-        */
-
-        async function writeFile(
-            filePath,
-            fileContent,
-            commitMessage
-        ) {
-
-            const url =
-                githubUrl(filePath);
-
-
-            /*
-            ----------------------------------------------
-            Get current file
-            ----------------------------------------------
-            */
-
-            const currentResponse =
-                await fetch(
-                    `${url}?ref=${encodeURIComponent(BRANCH)}`,
-                    {
-                        method: "GET",
-                        headers
-                    }
-                );
-
-
-            let current =
-                null;
-
-
-            if (currentResponse.ok) {
-
-                current =
-                    await currentResponse.json();
-
-            }
-
-
-            /*
-            ----------------------------------------------
-            Encode content
-            ----------------------------------------------
-            */
-
-            const encoded =
-                Buffer
-                    .from(
-                        fileContent,
-                        "utf8"
-                    )
-                    .toString("base64");
-
-
-            const payload = {
-
-                message:
-                    commitMessage,
-
-                content:
-                    encoded,
-
-                branch:
-                    BRANCH
-
-            };
-
-
-            /*
-            ----------------------------------------------
-            Existing file SHA
-            ----------------------------------------------
-            */
-
-            if (
-                current &&
-                current.sha
-            ) {
-
-                payload.sha =
-                    current.sha;
-
-            }
-
-
-            /*
-            ----------------------------------------------
-            Write to GitHub
-            ----------------------------------------------
-            */
-
-            const response =
-                await fetch(
-                    url,
-                    {
-
-                        method:
-                            "PUT",
-
-                        headers,
-
-                        body:
-                            JSON.stringify(
-                                payload
-                            )
-
+                        headers: githubHeaders
                     }
                 );
 
@@ -903,27 +232,833 @@ export default async function handler(req, res) {
 
                 throw new Error(
                     data.message ||
-                    "GitHub write failed."
+                    `Unable to read ${filePath}`
                 );
+
+            }
+
+
+            let content = "";
+
+
+            if (data.encoding === "base64") {
+
+                content =
+                    Buffer
+                        .from(
+                            data.content.replace(/\n/g, ""),
+                            "base64"
+                        )
+                        .toString("utf8");
+
+            } else {
+
+                content =
+                    data.content || "";
 
             }
 
 
             return {
 
-                path:
-                    filePath,
+                path: data.path,
 
-                commit:
-                    data.commit?.sha ||
-                    null,
+                sha: data.sha,
 
-                message:
-                    "File updated successfully."
+                content
 
             };
 
         }
+
+
+        // ==================================================
+        // HMAC SIGNING
+        // ==================================================
+
+        function createApprovalSignature(proposal) {
+
+            const payload =
+                JSON.stringify(proposal);
+
+
+            return crypto
+                .createHmac(
+                    "sha256",
+                    DEV_APPROVAL_SECRET
+                )
+                .update(payload)
+                .digest("hex");
+
+        }
+
+
+        function safeEqual(a, b) {
+
+            if (
+                typeof a !== "string" ||
+                typeof b !== "string"
+            ) {
+
+                return false;
+
+            }
+
+
+            const aa =
+                Buffer.from(a, "utf8");
+
+            const bb =
+                Buffer.from(b, "utf8");
+
+
+            if (aa.length !== bb.length) {
+
+                return false;
+
+            }
+
+
+            return crypto.timingSafeEqual(
+                aa,
+                bb
+            );
+
+        }
+
+
+        // ==================================================
+        // ACTION: ANALYZE
+        // ==================================================
+
+        if (action === "analyze") {
+
+            const userRequest =
+                String(body.request || "").trim();
+
+
+            if (!userRequest) {
+
+                return res.status(400).json({
+
+                    error:
+                        "Development request is missing."
+
+                });
+
+            }
+
+
+            // ----------------------------------------------
+            // Determine files to inspect
+            // ----------------------------------------------
+
+            let filesToRead = [
+                "index.html"
+            ];
+
+
+            if (
+                Array.isArray(body.files) &&
+                body.files.length > 0
+            ) {
+
+                filesToRead =
+                    body.files
+                        .filter(
+                            file =>
+                                typeof file === "string"
+                        )
+                        .filter(isAllowed)
+                        .slice(0, 10);
+
+            }
+
+
+            // ----------------------------------------------
+            // Read files
+            // ----------------------------------------------
+
+            const sourceFiles = [];
+
+
+            for (
+                const filePath
+                of filesToRead
+            ) {
+
+                try {
+
+                    const file =
+                        await readGithubFile(
+                            filePath
+                        );
+
+
+                    sourceFiles.push({
+
+                        path:
+                            file.path,
+
+                        content:
+                            file.content
+
+                    });
+
+                } catch (error) {
+
+                    console.error(
+                        `Read failed: ${filePath}`,
+                        error
+                    );
+
+                }
+
+            }
+
+
+            if (sourceFiles.length === 0) {
+
+                return res.status(500).json({
+
+                    error:
+                        "Could not read project files from GitHub."
+
+                });
+
+            }
+
+
+            // ----------------------------------------------
+            // Build AI prompt
+            // ----------------------------------------------
+
+            const sourceText =
+                sourceFiles
+                    .map(file => {
+
+                        return `
+===== FILE: ${file.path} =====
+
+${file.content}
+
+===== END FILE =====
+`;
+
+                    })
+                    .join("\n");
+
+
+            const systemPrompt = `
+You are AyAI Development Core.
+
+Your job is to analyze a user's requested software improvement
+and prepare a SAFE development proposal.
+
+IMPORTANT RULES:
+
+1. Never make changes yourself.
+2. Return ONLY valid JSON.
+3. Only propose changes to files explicitly provided.
+4. Do not create arbitrary files.
+5. Do not modify secrets, environment variables, GitHub tokens,
+   authentication systems, or deployment configuration.
+6. Preserve existing functionality unless the request requires
+   changing it.
+7. Return complete replacement file contents for every file that
+   needs modification.
+8. If no safe modification can be determined, return an empty
+   changes array.
+9. Keep the proposal understandable to the user.
+
+JSON FORMAT:
+
+{
+  "title": "short title",
+  "summary": "what will be improved",
+  "reason": "why the change is useful",
+  "risks": [
+    "possible risk"
+  ],
+  "expectedResult": "expected result",
+  "changes": [
+    {
+      "path": "index.html",
+      "reason": "why this file changes",
+      "content": "COMPLETE FILE CONTENT"
+    }
+  ]
+}
+`;
+
+
+            const userPrompt = `
+USER DEVELOPMENT REQUEST:
+
+${userRequest}
+
+PROJECT FILES:
+
+${sourceText}
+`;
+
+
+            // ----------------------------------------------
+            // Ask Groq
+            // ----------------------------------------------
+
+            const groqResponse =
+                await fetch(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${GROQ_API_KEY}`
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                model:
+                                    "llama-3.3-70b-versatile",
+
+                                messages: [
+
+                                    {
+                                        role: "system",
+                                        content:
+                                            systemPrompt
+                                    },
+
+                                    {
+                                        role: "user",
+                                        content:
+                                            userPrompt
+                                    }
+
+                                ],
+
+                                temperature:
+                                    0.2,
+
+                                max_completion_tokens:
+                                    16000,
+
+                                response_format: {
+                                    type: "json_object"
+                                }
+
+                            })
+
+                    }
+                );
+
+
+            const groqData =
+                await groqResponse.json();
+
+
+            if (!groqResponse.ok) {
+
+                return res.status(
+                    groqResponse.status
+                ).json({
+
+                    error:
+                        groqData?.error?.message ||
+                        "Groq analysis failed."
+
+                });
+
+            }
+
+
+            const raw =
+                groqData
+                    ?.choices?.[0]
+                    ?.message?.content;
+
+
+            if (!raw) {
+
+                return res.status(500).json({
+
+                    error:
+                        "Groq returned no development proposal."
+
+                });
+
+            }
+
+
+            let proposal;
+
+
+            try {
+
+                proposal =
+                    JSON.parse(raw);
+
+            } catch {
+
+                return res.status(500).json({
+
+                    error:
+                        "AI returned invalid development JSON."
+
+                });
+
+            }
+
+
+            // ----------------------------------------------
+            // Validate proposal
+            // ----------------------------------------------
+
+            if (
+                !Array.isArray(
+                    proposal.changes
+                )
+            ) {
+
+                proposal.changes = [];
+
+            }
+
+
+            proposal.changes =
+                proposal.changes
+                    .filter(change => {
+
+                        return (
+                            change &&
+                            typeof change.path === "string" &&
+                            typeof change.content === "string" &&
+                            isAllowed(change.path)
+                        );
+
+                    })
+                    .slice(0, 5);
+
+
+            // ----------------------------------------------
+            // Create signed approval
+            // ----------------------------------------------
+
+            const approvalPayload = {
+
+                title:
+                    proposal.title ||
+                    "AyAI Development",
+
+                summary:
+                    proposal.summary ||
+                    "",
+
+                reason:
+                    proposal.reason ||
+                    "",
+
+                risks:
+                    Array.isArray(proposal.risks)
+                        ? proposal.risks
+                        : [],
+
+                expectedResult:
+                    proposal.expectedResult ||
+                    "",
+
+                changes:
+                    proposal.changes.map(change => ({
+
+                        path:
+                            change.path,
+
+                        reason:
+                            change.reason ||
+                            "",
+
+                        content:
+                            change.content
+
+                    }))
+
+            };
+
+
+            const approvalToken =
+                createApprovalSignature(
+                    approvalPayload
+                );
+
+
+            return res.status(200).json({
+
+                success: true,
+
+                proposal:
+                    approvalPayload,
+
+                approvalToken
+
+            });
+
+        }
+
+
+        // ==================================================
+        // ACTION: APPLY
+        // ==================================================
+
+        if (action === "apply") {
+
+            const proposal =
+                body.proposal;
+
+
+            const approvalToken =
+                body.approvalToken;
+
+
+            if (
+                !proposal ||
+                typeof proposal !== "object"
+            ) {
+
+                return res.status(400).json({
+
+                    error:
+                        "Development proposal is missing."
+
+                });
+
+            }
+
+
+            if (
+                !approvalToken ||
+                typeof approvalToken !== "string"
+            ) {
+
+                return res.status(403).json({
+
+                    error:
+                        "Approval token is missing."
+
+                });
+
+            }
+
+
+            // ----------------------------------------------
+            // Verify approval
+            // ----------------------------------------------
+
+            const expectedSignature =
+                createApprovalSignature(
+                    proposal
+                );
+
+
+            if (
+                !safeEqual(
+                    approvalToken,
+                    expectedSignature
+                )
+            ) {
+
+                return res.status(403).json({
+
+                    error:
+                        "Invalid approval. The proposal was modified or is not approved."
+
+                });
+
+            }
+
+
+            // ----------------------------------------------
+            // Validate changes
+            // ----------------------------------------------
+
+            if (
+                !Array.isArray(
+                    proposal.changes
+                ) ||
+                proposal.changes.length === 0
+            ) {
+
+                return res.status(400).json({
+
+                    error:
+                        "There are no approved changes to apply."
+
+                });
+
+            }
+
+
+            for (
+                const change
+                of proposal.changes
+            ) {
+
+                if (
+                    !change ||
+                    typeof change.path !== "string" ||
+                    typeof change.content !== "string"
+                ) {
+
+                    return res.status(400).json({
+
+                        error:
+                            "Invalid development change."
+
+                    });
+
+                }
+
+
+                if (
+                    !isAllowed(
+                        change.path
+                    )
+                ) {
+
+                    return res.status(403).json({
+
+                        error:
+                            `File is not allowed: ${change.path}`
+
+                    });
+
+                }
+
+            }
+
+
+            // ----------------------------------------------
+            // Apply files
+            // ----------------------------------------------
+
+            const applied = [];
+
+
+            for (
+                const change
+                of proposal.changes
+            ) {
+
+                const fileUrl =
+                    githubFileUrl(
+                        change.path
+                    );
+
+
+                // Get latest SHA
+                const currentResponse =
+                    await fetch(
+                        `${fileUrl}?ref=${encodeURIComponent(GITHUB_BRANCH)}`,
+                        {
+                            method: "GET",
+                            headers: githubHeaders
+                        }
+                    );
+
+
+                let current = null;
+
+
+                if (
+                    currentResponse.ok
+                ) {
+
+                    current =
+                        await currentResponse.json();
+
+                }
+
+
+                const encoded =
+                    Buffer
+                        .from(
+                            change.content,
+                            "utf8"
+                        )
+                        .toString("base64");
+
+
+                const payload = {
+
+                    message:
+                        `AyAI Development: ${change.path}`,
+
+                    content:
+                        encoded,
+
+                    branch:
+                        GITHUB_BRANCH
+
+                };
+
+
+                if (
+                    current &&
+                    current.sha
+                ) {
+
+                    payload.sha =
+                        current.sha;
+
+                }
+
+
+                const writeResponse =
+                    await fetch(
+                        fileUrl,
+                        {
+
+                            method: "PUT",
+
+                            headers:
+                                githubHeaders,
+
+                            body:
+                                JSON.stringify(
+                                    payload
+                                )
+
+                        }
+                    );
+
+
+                const writeData =
+                    await writeResponse.json();
+
+
+                if (
+                    !writeResponse.ok
+                ) {
+
+                    return res.status(
+                        writeResponse.status
+                    ).json({
+
+                        error:
+                            writeData?.message ||
+                            `Failed to update ${change.path}`,
+
+                        applied
+
+                    });
+
+                }
+
+
+                applied.push({
+
+                    path:
+                        change.path,
+
+                    commit:
+                        writeData
+                            ?.commit
+                            ?.sha ||
+                        null
+
+                });
+
+            }
+
+
+            return res.status(200).json({
+
+                success: true,
+
+                message:
+                    "Development applied successfully.",
+
+                applied
+
+            });
+
+        }
+
+
+        // ==================================================
+        // ACTION: READ
+        // ==================================================
+
+        if (action === "read") {
+
+            const filePath =
+                String(
+                    body.path || ""
+                ).trim();
+
+
+            if (
+                !isAllowed(filePath)
+            ) {
+
+                return res.status(403).json({
+
+                    error:
+                        "This file is not allowed."
+
+                });
+
+            }
+
+
+            const file =
+                await readGithubFile(
+                    filePath
+                );
+
+
+            return res.status(200).json({
+
+                success: true,
+
+                path:
+                    file.path,
+
+                sha:
+                    file.sha,
+
+                content:
+                    file.content
+
+            });
+
+        }
+
+
+        // ==================================================
+        // UNKNOWN ACTION
+        // ==================================================
+
+        return res.status(400).json({
+
+            error:
+                "Unknown development action.",
+
+            supportedActions: [
+                "analyze",
+                "apply",
+                "read"
+            ]
+
+        });
 
 
     } catch (error) {
@@ -935,8 +1070,6 @@ export default async function handler(req, res) {
 
 
         return res.status(500).json({
-
-            success: false,
 
             error:
                 error.message ||
