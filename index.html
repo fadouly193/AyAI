@@ -10,15 +10,18 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover"
 >
 
-<meta name="theme-color" content="#000000">
+<meta
+  name="theme-color"
+  content="#000000"
+>
 
 <title>AyAI — Voice Assistant</title>
 
 <style>
 
-/* =========================================================
-   RESET
-========================================================= */
+/* =====================================================
+   GLOBAL
+===================================================== */
 
 *{
   box-sizing:border-box;
@@ -49,10 +52,9 @@ input{
   font-family:inherit;
 }
 
-
-/* =========================================================
-   APP
-========================================================= */
+button{
+  -webkit-tap-highlight-color:transparent;
+}
 
 #app{
   width:100%;
@@ -72,9 +74,9 @@ canvas{
 }
 
 
-/* =========================================================
-   MAIN STATUS
-========================================================= */
+/* =====================================================
+   MAIN UI
+===================================================== */
 
 #status{
   position:absolute;
@@ -101,6 +103,7 @@ canvas{
 #status:before,
 #status:after{
   content:"";
+
   display:inline-block;
 
   width:65px;
@@ -127,11 +130,6 @@ canvas{
     );
 }
 
-
-/* =========================================================
-   MEMORY
-========================================================= */
-
 #memory{
   position:absolute;
 
@@ -139,6 +137,7 @@ canvas{
   right:18px;
 
   font-size:9px;
+
   letter-spacing:1px;
 
   color:
@@ -148,11 +147,6 @@ canvas{
 
   direction:ltr;
 }
-
-
-/* =========================================================
-   AYAI NAME
-========================================================= */
 
 #name{
   position:absolute;
@@ -181,11 +175,6 @@ canvas{
   z-index:2;
 }
 
-
-/* =========================================================
-   HEARD
-========================================================= */
-
 #heard{
   position:absolute;
 
@@ -195,8 +184,7 @@ canvas{
   transform:
     translateX(-50%);
 
-  width:
-    min(700px,80vw);
+  width:min(700px,80vw);
 
   text-align:center;
 
@@ -213,11 +201,6 @@ canvas{
 
   z-index:2;
 }
-
-
-/* =========================================================
-   MICROPHONE
-========================================================= */
 
 #mic{
   position:absolute;
@@ -242,6 +225,7 @@ canvas{
   color:#d9f5ff;
 
   display:grid;
+
   place-items:center;
 
   cursor:pointer;
@@ -253,9 +237,6 @@ canvas{
   transition:.25s;
 
   z-index:3;
-
-  -webkit-tap-highlight-color:
-    transparent;
 }
 
 #mic:hover,
@@ -281,15 +262,11 @@ canvas{
   stroke-width:1.5;
 }
 
-
-/* =========================================================
-   TIP
-========================================================= */
-
 #tip{
   position:absolute;
 
   bottom:2%;
+
   left:50%;
 
   transform:
@@ -309,9 +286,9 @@ canvas{
 }
 
 
-/* =========================================================
-   DEVELOPMENT BUTTON
-========================================================= */
+/* =====================================================
+   DEVELOPMENT OPEN BUTTON
+===================================================== */
 
 #devOpen{
   position:absolute;
@@ -336,6 +313,7 @@ canvas{
   font-size:20px;
 
   display:grid;
+
   place-items:center;
 
   cursor:pointer;
@@ -351,9 +329,9 @@ canvas{
 }
 
 
-/* =========================================================
+/* =====================================================
    DEVELOPMENT OVERLAY
-========================================================= */
+===================================================== */
 
 #development{
   position:fixed;
@@ -380,11 +358,6 @@ canvas{
   display:block;
 }
 
-
-/* =========================================================
-   DEVELOPMENT SHELL
-========================================================= */
-
 .devShell{
   width:
     min(900px,100%);
@@ -408,11 +381,6 @@ canvas{
 
   position:relative;
 }
-
-
-/* =========================================================
-   CLOSE
-========================================================= */
 
 .devClose{
   position:absolute;
@@ -439,11 +407,6 @@ canvas{
   cursor:pointer;
 }
 
-
-/* =========================================================
-   TITLE
-========================================================= */
-
 .devTitle{
   font-size:
     clamp(28px,5vw,48px);
@@ -455,6 +418,8 @@ canvas{
   color:#dff7ff;
 
   margin-bottom:4px;
+
+  padding-left:60px;
 }
 
 .devSubtitle{
@@ -465,12 +430,9 @@ canvas{
   letter-spacing:1px;
 
   margin-bottom:30px;
+
+  padding-left:60px;
 }
-
-
-/* =========================================================
-   BOX
-========================================================= */
 
 .devBox{
   border:
@@ -497,15 +459,10 @@ canvas{
   margin-bottom:10px;
 }
 
-
-/* =========================================================
-   REQUEST
-========================================================= */
-
 #devRequest{
   width:100%;
 
-  min-height:150px;
+  min-height:140px;
 
   resize:vertical;
 
@@ -538,11 +495,6 @@ canvas{
     0 0 25px
     rgba(80,190,255,.08);
 }
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
 
 .devButtons{
   display:flex;
@@ -619,11 +571,6 @@ canvas{
   cursor:not-allowed;
 }
 
-
-/* =========================================================
-   RESULT
-========================================================= */
-
 #devResult{
   white-space:pre-wrap;
 
@@ -638,11 +585,6 @@ canvas{
   min-height:80px;
 }
 
-
-/* =========================================================
-   STATUS
-========================================================= */
-
 #devStatus{
   font-size:12px;
 
@@ -654,11 +596,6 @@ canvas{
 
   direction:ltr;
 }
-
-
-/* =========================================================
-   PLAN
-========================================================= */
 
 .devPlan{
   margin-top:15px;
@@ -675,44 +612,24 @@ canvas{
     rgba(100,200,255,.1);
 
   line-height:1.8;
-
-  direction:rtl;
 }
 
+.devChanges{
+  margin-top:14px;
 
-/* =========================================================
-   CHANGES
-========================================================= */
+  padding:12px;
 
-#devChanges{
-  margin-top:15px;
-
-  padding:0;
-
-  list-style:none;
-}
-
-#devChanges li{
-  margin-bottom:8px;
-
-  padding:10px 12px;
-
-  border-radius:10px;
+  border-radius:12px;
 
   background:
-    rgba(80,190,255,.04);
-
-  border:
-    1px solid
-    rgba(100,200,255,.08);
-
-  color:#b9d9e4;
+    rgba(255,255,255,.02);
 }
 
+.devChanges div{
+  margin:7px 0;
 
-/* =========================================================
-   FILES
-========================================================= */
+  color:#b7d4de;
+}
 
 .devFiles{
   display:flex;
@@ -741,40 +658,6 @@ canvas{
 
   direction:ltr;
 }
-
-
-/* =========================================================
-   RISK
-========================================================= */
-
-#devRisk{
-  display:inline-block;
-
-  margin-top:12px;
-
-  padding:
-    5px 10px;
-
-  border-radius:10px;
-
-  font-size:11px;
-
-  direction:ltr;
-
-  background:
-    rgba(255,190,80,.07);
-
-  border:
-    1px solid
-    rgba(255,190,80,.15);
-
-  color:#e7c889;
-}
-
-
-/* =========================================================
-   APPROVAL
-========================================================= */
 
 #devApproval{
   display:none;
@@ -813,10 +696,15 @@ canvas{
   line-height:1.8;
 }
 
+#devTokenInfo{
+  margin-top:12px;
 
-/* =========================================================
-   ERROR / SUCCESS
-========================================================= */
+  font-size:11px;
+
+  color:#678f83;
+
+  direction:ltr;
+}
 
 #devError{
   color:#ffaaaa;
@@ -837,15 +725,13 @@ canvas{
 
   margin-top:10px;
 
-  direction:rtl;
-
   line-height:1.7;
 }
 
 
-/* =========================================================
+/* =====================================================
    LOADING
-========================================================= */
+===================================================== */
 
 .devLoading{
   display:inline-flex;
@@ -854,7 +740,7 @@ canvas{
 
   gap:8px;
 
-  direction:ltr;
+  color:#9bdcff;
 }
 
 .devDot{
@@ -863,7 +749,7 @@ canvas{
 
   border-radius:50%;
 
-  background:#7ddcff;
+  background:#8edcff;
 
   animation:
     devPulse 1s infinite;
@@ -879,8 +765,9 @@ canvas{
 
 @keyframes devPulse{
 
-  0%,100%{
-    opacity:.2;
+  0%,
+  100%{
+    opacity:.25;
     transform:scale(.7);
   }
 
@@ -892,9 +779,9 @@ canvas{
 }
 
 
-/* =========================================================
+/* =====================================================
    MOBILE
-========================================================= */
+===================================================== */
 
 @media(max-width:600px){
 
@@ -938,7 +825,17 @@ canvas{
 
   .devShell{
     padding:20px;
+
     border-radius:22px;
+  }
+
+  .devTitle{
+    font-size:30px;
+    padding-left:45px;
+  }
+
+  .devSubtitle{
+    padding-left:45px;
   }
 
   .devButtons{
@@ -952,17 +849,23 @@ canvas{
 }
 
 
-/* =========================================================
+/* =====================================================
    SAFE AREA
-========================================================= */
+===================================================== */
 
-@supports(padding:env(safe-area-inset-bottom)){
+@supports(
+  padding:
+  max(0px)
+){
 
   #mic{
     bottom:
-      calc(
-        6% +
-        env(safe-area-inset-bottom)
+      max(
+        6%,
+        calc(
+          env(safe-area-inset-bottom)
+          + 28px
+        )
       );
   }
 
@@ -976,28 +879,27 @@ canvas{
 <body>
 
 
+<!-- =====================================================
+     MAIN APPLICATION
+===================================================== -->
+
 <div id="app">
 
   <canvas id="orb"></canvas>
-
 
   <div id="status">
     AYAI IS READY
   </div>
 
-
   <div id="memory">
     MEMORY: ON
   </div>
-
 
   <div id="name">
     AyAI
   </div>
 
-
   <div id="heard"></div>
-
 
   <button
     id="mic"
@@ -1026,7 +928,6 @@ canvas{
 
   </button>
 
-
   <div id="tip">
     TAP TO SPEAK • TALK TO AYAI
   </div>
@@ -1044,20 +945,18 @@ canvas{
 
 
 
-<!-- =======================================================
+<!-- =====================================================
      DEVELOPMENT CORE
-======================================================= -->
+===================================================== -->
 
 <div id="development">
 
   <div class="devShell">
 
-
     <button
       class="devClose"
       id="devClose"
       type="button"
-      aria-label="Close"
     >
       ×
     </button>
@@ -1067,13 +966,14 @@ canvas{
       AyAI Development Core
     </div>
 
-
     <div class="devSubtitle">
       SELF DEVELOPMENT • APPROVAL REQUIRED
     </div>
 
 
-    <!-- REQUEST -->
+    <!-- =================================================
+         REQUEST
+    ================================================= -->
 
     <div class="devBox">
 
@@ -1086,19 +986,19 @@ canvas{
         id="devRequest"
         placeholder="مثال:
 
-حسن نظام الصوت وخلي الاستجابة أسرع
-
-أو:
-
-أضف ميزة جديدة للمساعد
-
-أو:
-
 حسن واجهة AyAI بدون تغيير التصميم الأساسي
 
 أو:
 
-أضف نظام حفظ إعدادات المستخدم"
+أضف زر لمسح الذاكرة
+
+أو:
+
+حسن نظام الصوت وخلي الاستجابة أسرع
+
+أو:
+
+أضف ميزة جديدة للمساعد"
       ></textarea>
 
 
@@ -1126,7 +1026,10 @@ canvas{
     </div>
 
 
-    <!-- PLAN -->
+
+    <!-- =================================================
+         DEVELOPMENT PLAN
+    ================================================= -->
 
     <div class="devBox">
 
@@ -1141,9 +1044,7 @@ canvas{
       </div>
 
 
-      <div
-        id="devStatus"
-      >
+      <div id="devStatus">
         DEVELOPMENT CORE READY
       </div>
 
@@ -1166,14 +1067,9 @@ canvas{
 
 
         <div
-          id="devRisk"
-          style="display:none"
-        ></div>
-
-
-        <ul
+          class="devChanges"
           id="devChanges"
-        ></ul>
+        ></div>
 
       </div>
 
@@ -1183,7 +1079,9 @@ canvas{
       <div id="devSuccess"></div>
 
 
-      <!-- APPROVAL -->
+      <!-- =================================================
+           APPROVAL
+      ================================================= -->
 
       <div id="devApproval">
 
@@ -1194,12 +1092,12 @@ canvas{
 
         <div class="approvalText">
 
-          تم تحليل طلب التطوير.
+          تم تجهيز نسخة التطوير.
 
           <br><br>
 
           <strong>
-            لم يتم تعديل أي ملف حتى الآن.
+            لم يتم تعديل GitHub حتى الآن.
           </strong>
 
           <br><br>
@@ -1208,15 +1106,36 @@ canvas{
           <strong>
             APPROVE & APPLY
           </strong>
-          سيتم إرسال خطة التطوير المعتمدة إلى
-          Development API
-          ليتم تطبيقها على GitHub.
+          سيتم:
+
+          <br>
+
+          1. التحقق من Approval Token.
+
+          <br>
+
+          2. التأكد أن
+          <strong>index.html</strong>
+          لم يتغير منذ التحليل.
+
+          <br>
+
+          3. التحقق من أن الكود الذي سيتم تطبيقه
+          هو نفسه الذي تمت الموافقة عليه.
+
+          <br>
+
+          4. إنشاء Commit فعلي على GitHub.
 
         </div>
 
 
-        <div class="devButtons">
+        <div id="devTokenInfo">
+          APPROVAL TOKEN READY
+        </div>
 
+
+        <div class="devButtons">
 
           <button
             class="devBtn danger"
@@ -1235,13 +1154,11 @@ canvas{
             APPROVE & APPLY
           </button>
 
-
         </div>
 
       </div>
 
     </div>
-
 
   </div>
 
@@ -1256,9 +1173,9 @@ canvas{
 "use strict";
 
 
-/* =========================================================
+/* =====================================================
    MAIN AYAI
-========================================================= */
+===================================================== */
 
 const canvas =
   document.getElementById("orb");
@@ -1305,12 +1222,12 @@ let recognizing = false;
 let speaking = false;
 
 
-/* =========================================================
+/* =====================================================
    MEMORY
-========================================================= */
+===================================================== */
 
 const MEMORY_KEY =
-  "ayai_memory_v4";
+  "ayai_memory_v5";
 
 let conversation = [];
 
@@ -1329,10 +1246,12 @@ function loadMemory(){
     if(
       !Array.isArray(conversation)
     ){
+
       conversation = [];
+
     }
 
-  }catch(e){
+  }catch(error){
 
     conversation = [];
 
@@ -1355,20 +1274,21 @@ function saveMemory(){
       )
     );
 
-  }catch(e){}
+  }catch(error){}
 
 }
 
 
-function addMemory(role,text){
+function addMemory(
+  role,
+  text
+){
 
   conversation.push({
 
-    role: role,
-
-    text: text,
-
-    time: Date.now()
+    role,
+    text,
+    time:Date.now()
 
   });
 
@@ -1387,7 +1307,8 @@ function clearMemory(){
       MEMORY_KEY
     );
 
-  }catch(e){}
+  }catch(error){}
+
 
   heard.textContent =
     "تم مسح ذاكرة AyAI.";
@@ -1397,16 +1318,20 @@ function clearMemory(){
     "MEMORY CLEARED"
   );
 
-  setTimeout(()=>{
 
-    heard.textContent = "";
+  setTimeout(
+    ()=>{
 
-    setMode(
-      "idle",
-      "AYAI IS READY"
-    );
+      heard.textContent = "";
 
-  },1800);
+      setMode(
+        "idle",
+        "AYAI IS READY"
+      );
+
+    },
+    1800
+  );
 
 }
 
@@ -1452,9 +1377,9 @@ document
   );
 
 
-/* =========================================================
+/* =====================================================
    ORB
-========================================================= */
+===================================================== */
 
 function resize(){
 
@@ -1464,11 +1389,13 @@ function resize(){
       2
     );
 
+
   W =
     window.innerWidth;
 
   H =
     window.innerHeight;
+
 
   canvas.width =
     Math.max(
@@ -1478,6 +1405,7 @@ function resize(){
       )
     );
 
+
   canvas.height =
     Math.max(
       1,
@@ -1485,6 +1413,7 @@ function resize(){
         H * DPR
       )
     );
+
 
   ctx.setTransform(
     DPR,
@@ -1495,14 +1424,17 @@ function resize(){
     0
   );
 
+
   cx = W / 2;
   cy = H / 2;
+
 
   R =
     Math.min(
       W,
       H
     ) * .235;
+
 
   makePts();
 
@@ -1524,6 +1456,7 @@ function makePts(){
       )
     );
 
+
   for(
     let i = 0;
     i < n;
@@ -1534,30 +1467,26 @@ function makePts(){
 
       a:
         Math.random() *
-        Math.PI *
-        2,
+        Math.PI * 2,
 
       r:
         R *
         (
           .78 +
-          Math.random() *
-          .29
+          Math.random() * .29
         ),
 
       s:
-        (Math.random()-.5) *
+        (Math.random() - .5) *
         .001,
 
       ph:
         Math.random() *
-        Math.PI *
-        2,
+        Math.PI * 2,
 
       op:
         .2 +
-        Math.random() *
-        .7,
+        Math.random() * .7,
 
       z:
         Math.random()
@@ -1591,8 +1520,10 @@ function animate(t){
     H
   );
 
+
   const time =
     t * .001;
+
 
   let measured = 0;
 
@@ -1607,7 +1538,9 @@ function animate(t){
         data
       );
 
+
     let sum = 0;
+
 
     for(
       let i = 0;
@@ -1616,18 +1549,20 @@ function animate(t){
     ){
 
       const v =
-        (data[i]-128)/128;
+        (
+          data[i] - 128
+        ) / 128;
 
-      sum += v*v;
+      sum += v * v;
 
     }
+
 
     measured =
       Math.min(
         1,
         Math.sqrt(
-          sum /
-          data.length
+          sum / data.length
         ) * 4.5
       );
 
@@ -1642,17 +1577,17 @@ function animate(t){
       mode === "listening"
         ? .035
 
-      :
+        :
 
       mode === "speaking"
         ? .06
 
-      :
+        :
 
       mode === "thinking"
         ? .025
 
-      :
+        :
 
       .012
 
@@ -1670,10 +1605,10 @@ function animate(t){
     ctx.createRadialGradient(
       cx,
       cy,
-      R*.1,
+      R * .1,
       cx,
       cy,
-      R*1.55
+      R * 1.55
     );
 
 
@@ -1683,7 +1618,7 @@ function animate(t){
       60,
       170,
       255,
-      ${.025 + level*.09}
+      ${.025 + level * .09}
     )`
   );
 
@@ -1703,9 +1638,9 @@ function animate(t){
   ctx.arc(
     cx,
     cy,
-    R*1.55,
+    R * 1.55,
     0,
-    Math.PI*2
+    Math.PI * 2
   );
 
   ctx.fill();
@@ -1725,16 +1660,16 @@ function animate(t){
       cy,
 
       R *
-      (1 + k*.035)
+      (1 + k * .035)
       +
       Math.sin(
-        time*1.5+k
-      )*2
+        time * 1.5 + k
+      ) * 2
       +
-      level*12,
+      level * 12,
 
       0,
-      Math.PI*2
+      Math.PI * 2
 
     );
 
@@ -1744,7 +1679,7 @@ function animate(t){
         120,
         210,
         255,
-        ${.045 + level*.025}
+        ${.045 + level * .025}
       )`;
 
 
@@ -1763,11 +1698,12 @@ function animate(t){
 
     const p = pts[i];
 
+
     p.a +=
       p.s *
       (
         1 +
-        level*10
+        level * 10
       );
 
 
@@ -1775,71 +1711,81 @@ function animate(t){
       p.r +
       Math.sin(
         time *
-        (.8 + p.z*.9)
+        (
+          .8 +
+          p.z * .9
+        )
         +
         p.ph
       ) *
       (
         3 +
-        level*28
+        level * 28
       );
 
 
     const x =
       cx +
-      Math.cos(p.a) *
-      rr;
+      Math.cos(
+        p.a
+      ) * rr;
 
 
     const y =
       cy +
-      Math.sin(p.a) *
-      rr;
+      Math.sin(
+        p.a
+      ) * rr;
 
 
     for(
-      let j = i+1;
-      j < Math.min(
-        i+7,
+      let j = i + 1;
+      j <
+      Math.min(
+        i + 7,
         pts.length
       );
       j++
     ){
 
-      const q =
-        pts[j];
+      const q = pts[j];
 
 
       const qrr =
         q.r +
         Math.sin(
           time *
-          (.8 + q.z*.9)
+          (
+            .8 +
+            q.z * .9
+          )
           +
           q.ph
         ) *
         (
           3 +
-          level*28
+          level * 28
         );
 
 
       const qx =
         cx +
-        Math.cos(q.a) *
-        qrr;
+        Math.cos(
+          q.a
+        ) * qrr;
 
 
       const qy =
         cy +
-        Math.sin(q.a) *
-        qrr;
+        Math.sin(
+          q.a
+        ) * qrr;
 
 
       const d =
         Math.hypot(
-          x-qx,
-          y-qy
+          x - qx,
+          y - qy
         );
 
 
@@ -1866,14 +1812,21 @@ function animate(t){
             ${
               Math.max(
                 0,
-                (.17-d/520) *
-                (.7+level*2.3)
+                (
+                  .17 -
+                  d / 520
+                ) *
+                (
+                  .7 +
+                  level * 2.3
+                )
               )
             }
           )`;
 
 
-        ctx.lineWidth = .45;
+        ctx.lineWidth =
+          .45;
 
         ctx.stroke();
 
@@ -1887,10 +1840,10 @@ function animate(t){
     ctx.arc(
       x,
       y,
-      p.op*.8 +
-      level*1.8,
+      p.op * .8 +
+      level * 1.8,
       0,
-      Math.PI*2
+      Math.PI * 2
     );
 
 
@@ -1903,7 +1856,10 @@ function animate(t){
           Math.min(
             1,
             p.op *
-            (.45+level*1.5)
+            (
+              .45 +
+              level * 1.5
+            )
           )
         }
       )`;
@@ -1911,10 +1867,12 @@ function animate(t){
 
     ctx.shadowBlur =
       7 +
-      level*15;
+      level * 15;
+
 
     ctx.shadowColor =
       "#79cfff";
+
 
     ctx.fill();
 
@@ -1931,10 +1889,17 @@ function animate(t){
 
     const a =
       time *
-      (.18+k*.035) *
-      (k%2 ? 1 : -1)
+      (
+        .18 +
+        k * .035
+      ) *
+      (
+        k % 2
+          ? 1
+          : -1
+      )
       +
-      k*1.6;
+      k * 1.6;
 
 
     ctx.beginPath();
@@ -1947,13 +1912,13 @@ function animate(t){
       R *
       (
         1.01 +
-        level*.03
+        level * .03
       ),
 
       a,
       a +
       .65 +
-      level*1.1
+      level * 1.1
 
     );
 
@@ -1965,14 +1930,15 @@ function animate(t){
         255,
         ${
           .22 +
-          level*.55
+          level * .55
         }
       )`;
 
 
     ctx.lineWidth =
       1.1 +
-      level*2;
+      level * 2;
+
 
     ctx.stroke();
 
@@ -1986,9 +1952,9 @@ function animate(t){
 }
 
 
-/* =========================================================
+/* =====================================================
    AUDIO
-========================================================= */
+===================================================== */
 
 async function setupAudio(){
 
@@ -2021,7 +1987,8 @@ async function setupAudio(){
 
 
   stream =
-    await navigator.mediaDevices
+    await navigator
+      .mediaDevices
       .getUserMedia({
         audio:true
       });
@@ -2069,11 +2036,13 @@ async function setupAudio(){
 }
 
 
-/* =========================================================
-   CHAT API
-========================================================= */
+/* =====================================================
+   CHAT
+===================================================== */
 
-async function askAyAI(text){
+async function askAyAI(
+  text
+){
 
   const history =
     conversation
@@ -2085,9 +2054,8 @@ async function askAyAI(text){
       .join("\n");
 
 
-  const prompt =
+  const prompt = `
 
-`
 أنت AyAI، مساعد شخصي ذكي.
 
 تحدث بالعربية العراقية بشكل طبيعي.
@@ -2101,6 +2069,7 @@ ${history}
 ${text}
 
 أجب مباشرة وباختصار مفيد.
+
 `;
 
 
@@ -2125,8 +2094,20 @@ ${text}
     );
 
 
-  const result =
-    await response.json();
+  let result = {};
+
+  try{
+
+    result =
+      await response.json();
+
+  }catch(error){
+
+    throw new Error(
+      "Invalid response from Chat API."
+    );
+
+  }
 
 
   if(!response.ok){
@@ -2147,11 +2128,13 @@ ${text}
 }
 
 
-/* =========================================================
+/* =====================================================
    SPEECH
-========================================================= */
+===================================================== */
 
-function speak(text){
+function speak(
+  text
+){
 
   if(
     !("speechSynthesis" in window)
@@ -2184,45 +2167,51 @@ function speak(text){
     );
 
 
-  u.lang = "ar-IQ";
+  u.lang =
+    "ar-IQ";
 
-  u.rate = .95;
+  u.rate =
+    .95;
 
-  u.pitch = .92;
+  u.pitch =
+    .92;
 
-  u.volume = 1;
-
-
-  u.onend = ()=>{
-
-    speaking = false;
-
-    if(!recognizing){
-
-      setMode(
-        "idle",
-        "AYAI IS READY"
-      );
-
-    }
-
-  };
+  u.volume =
+    1;
 
 
-  u.onerror = ()=>{
+  u.onend =
+    ()=>{
 
-    speaking = false;
+      speaking = false;
 
-    if(!recognizing){
+      if(!recognizing){
 
-      setMode(
-        "idle",
-        "AYAI IS READY"
-      );
+        setMode(
+          "idle",
+          "AYAI IS READY"
+        );
 
-    }
+      }
 
-  };
+    };
+
+
+  u.onerror =
+    ()=>{
+
+      speaking = false;
+
+      if(!recognizing){
+
+        setMode(
+          "idle",
+          "AYAI IS READY"
+        );
+
+      }
+
+    };
 
 
   speechSynthesis.speak(u);
@@ -2230,11 +2219,13 @@ function speak(text){
 }
 
 
-/* =========================================================
+/* =====================================================
    REPLY
-========================================================= */
+===================================================== */
 
-async function reply(text){
+async function reply(
+  text
+){
 
   const t =
     text.trim();
@@ -2281,15 +2272,13 @@ async function reply(text){
 
   }catch(error){
 
-    console.error(error);
-
-
-    const fallback =
-      "صار خطأ بالاتصال بعقل AyAI.";
+    console.error(
+      error
+    );
 
 
     heard.textContent =
-      fallback;
+      "صار خطأ بالاتصال بعقل AyAI.";
 
 
     setMode(
@@ -2302,9 +2291,9 @@ async function reply(text){
 }
 
 
-/* =========================================================
+/* =====================================================
    SPEECH RECOGNITION
-========================================================= */
+===================================================== */
 
 function startRecognition(){
 
@@ -2335,7 +2324,7 @@ function startRecognition(){
 
       recognition.abort();
 
-    }catch(e){}
+    }catch(error){}
 
   }
 
@@ -2347,14 +2336,11 @@ function startRecognition(){
   recognition.lang =
     "ar-IQ";
 
-
   recognition.continuous =
     false;
 
-
   recognition.interimResults =
     true;
-
 
   recognition.maxAlternatives =
     1;
@@ -2369,12 +2355,15 @@ function startRecognition(){
         "on"
       );
 
+
       setMode(
         "listening",
         "LISTENING..."
       );
 
-      heard.textContent = "";
+
+      heard.textContent =
+        "";
 
     };
 
@@ -2493,7 +2482,7 @@ function startRecognition(){
 
     recognition.start();
 
-  }catch(e){
+  }catch(error){
 
     recognizing = false;
 
@@ -2506,9 +2495,9 @@ function startRecognition(){
 }
 
 
-/* =========================================================
-   MIC
-========================================================= */
+/* =====================================================
+   MIC BUTTON
+===================================================== */
 
 mic.addEventListener(
   "click",
@@ -2544,9 +2533,11 @@ mic.addEventListener(
       startRecognition();
 
 
-    }catch(e){
+    }catch(error){
 
-      console.error(e);
+      console.error(
+        error
+      );
 
 
       setMode(
@@ -2564,89 +2555,99 @@ mic.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    DEVELOPMENT CORE
-========================================================= */
+===================================================== */
 
 const development =
   document.getElementById(
     "development"
   );
 
+
 const devOpen =
   document.getElementById(
     "devOpen"
   );
+
 
 const devClose =
   document.getElementById(
     "devClose"
   );
 
+
 const devCancel =
   document.getElementById(
     "devCancel"
   );
+
 
 const devAnalyze =
   document.getElementById(
     "devAnalyze"
   );
 
+
 const devApprove =
   document.getElementById(
     "devApprove"
   );
+
 
 const devReject =
   document.getElementById(
     "devReject"
   );
 
+
 const devRequest =
   document.getElementById(
     "devRequest"
   );
+
 
 const devResult =
   document.getElementById(
     "devResult"
   );
 
+
 const devStatus =
   document.getElementById(
     "devStatus"
   );
+
 
 const devApproval =
   document.getElementById(
     "devApproval"
   );
 
+
 const devPlan =
   document.getElementById(
     "devPlan"
   );
+
 
 const devFiles =
   document.getElementById(
     "devFiles"
   );
 
+
 const devChanges =
   document.getElementById(
     "devChanges"
   );
 
-const devRisk =
-  document.getElementById(
-    "devRisk"
-  );
 
 const devError =
   document.getElementById(
     "devError"
   );
+
 
 const devSuccess =
   document.getElementById(
@@ -2654,16 +2655,33 @@ const devSuccess =
   );
 
 
-/* =========================================================
-   PENDING DEVELOPMENT
-========================================================= */
+const devTokenInfo =
+  document.getElementById(
+    "devTokenInfo"
+  );
 
-let pendingDevelopment = null;
+
+/* =====================================================
+   DEVELOPMENT STATE
+===================================================== */
+
+let pendingDevelopment =
+  null;
 
 
-/* =========================================================
-   OPEN
-========================================================= */
+/*
+الملفات المسموح لـ Development Core
+تعديلها.
+*/
+
+const DEVELOPMENT_FILES = [
+  "index.html"
+];
+
+
+/* =====================================================
+   OPEN / CLOSE
+===================================================== */
 
 devOpen.addEventListener(
   "click",
@@ -2683,10 +2701,6 @@ devOpen.addEventListener(
   }
 );
 
-
-/* =========================================================
-   CLOSE
-========================================================= */
 
 function closeDevelopment(){
 
@@ -2709,9 +2723,9 @@ devCancel.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    RESET DEVELOPMENT UI
-========================================================= */
+===================================================== */
 
 function resetDevelopmentUI(){
 
@@ -2724,17 +2738,9 @@ function resetDevelopmentUI(){
   devPlan.style.display =
     "none";
 
-  devFiles.innerHTML =
-    "";
-
-  devChanges.innerHTML =
-    "";
-
-  devRisk.style.display =
-    "none";
-
-  devRisk.textContent =
-    "";
+  devApproval.classList.remove(
+    "visible"
+  );
 
   devError.textContent =
     "";
@@ -2742,75 +2748,44 @@ function resetDevelopmentUI(){
   devSuccess.textContent =
     "";
 
-  devApproval.classList.remove(
-    "visible"
-  );
+  devTokenInfo.textContent =
+    "";
 
-  pendingDevelopment =
-    null;
+  devFiles.innerHTML =
+    "";
+
+  devChanges.innerHTML =
+    "";
 
 }
 
 
-/* =========================================================
-   REJECT
-========================================================= */
-
-devReject.addEventListener(
-  "click",
-  ()=>{
-
-    pendingDevelopment =
-      null;
-
-    devApproval.classList.remove(
-      "visible"
-    );
-
-    devStatus.textContent =
-      "DEVELOPMENT REJECTED";
-
-    devResult.textContent =
-      "تم رفض التطوير. لم يتم تعديل أي ملف.";
-
-    devSuccess.textContent =
-      "";
-
-    devError.textContent =
-      "";
-
-  }
-);
-
-
-/* =========================================================
+/* =====================================================
    LOADING UI
-========================================================= */
+===================================================== */
 
-function setDevelopmentLoading(
+function showLoading(
   text
 ){
 
-  devStatus.innerHTML =
-
-    `<span class="devLoading">
-      ${escapeHtml(text)}
+  devResult.innerHTML = `
+    <span class="devLoading">
+      <span>${escapeHTML(text)}</span>
       <span class="devDot"></span>
       <span class="devDot"></span>
       <span class="devDot"></span>
-    </span>`;
+    </span>
+  `;
 
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(value){
+function escapeHTML(
+  value
+){
 
   return String(
-    value ?? ""
+    value
   )
   .replace(
     /&/g,
@@ -2836,252 +2811,282 @@ function escapeHtml(value){
 }
 
 
-/* =========================================================
-   NORMALIZE PROPOSAL
-========================================================= */
+/* =====================================================
+   CLEAN AI CODE
+===================================================== */
 
-function normalizeProposal(
-  proposal
+function cleanGeneratedHTML(
+  raw
 ){
 
+  let html =
+    String(
+      raw || ""
+    ).trim();
+
+
+  /*
+  إزالة Markdown
+  */
+
+  html =
+    html.replace(
+      /^```html\s*/i,
+      ""
+    );
+
+
+  html =
+    html.replace(
+      /^```HTML\s*/i,
+      ""
+    );
+
+
+  html =
+    html.replace(
+      /^```\s*/i,
+      ""
+    );
+
+
+  html =
+    html.replace(
+      /\s*```$/i,
+      ""
+    );
+
+
+  html =
+    html.trim();
+
+
+  /*
+  إذا النموذج أضاف نص قبل <!doctype>
+  */
+
+  const doctypeIndex =
+    html
+      .toLowerCase()
+      .indexOf(
+        "<!doctype"
+      );
+
+
   if(
-    !proposal
+    doctypeIndex > 0
   ){
 
-    return {
-      summary:
-        "تم إعداد خطة تطوير.",
-      changes:[],
-      files:[
-        "index.html"
-      ],
-      risk:
-        "متوسط"
-    };
+    html =
+      html.substring(
+        doctypeIndex
+      );
 
   }
 
 
+  /*
+  إذا لم توجد doctype
+  ولكن توجد html
+  */
+
   if(
-    typeof proposal ===
-    "string"
+    !html
+      .toLowerCase()
+      .includes(
+        "<!doctype html"
+      )
   ){
 
-    return {
-      summary:
-        proposal,
-      changes:[],
-      files:[
-        "index.html"
-      ],
-      risk:
-        "متوسط"
-    };
+    const htmlIndex =
+      html
+        .toLowerCase()
+        .indexOf(
+          "<html"
+        );
+
+
+    if(
+      htmlIndex >= 0
+    ){
+
+      html =
+        "<!doctype html>\n" +
+        html.substring(
+          htmlIndex
+        );
+
+    }
 
   }
 
 
-  const summary =
-    proposal.summary ||
-    proposal.description ||
-    proposal.title ||
-    "تم إعداد خطة التطوير.";
-
-
-  let changes =
-    proposal.changes ||
-    proposal.steps ||
-    proposal.modifications ||
-    [];
-
-
-  if(
-    !Array.isArray(changes)
-  ){
-
-    changes = [
-      String(changes)
-    ];
-
-  }
-
-
-  let files =
-    proposal.files ||
-    proposal.targetFiles ||
-    proposal.paths ||
-    [
-      "index.html"
-    ];
-
-
-  if(
-    !Array.isArray(files)
-  ){
-
-    files = [
-      String(files)
-    ];
-
-  }
-
-
-  const risk =
-    proposal.risk ||
-    proposal.riskLevel ||
-    "متوسط";
-
-
-  return {
-
-    summary:
-      String(summary),
-
-    changes:
-      changes.map(
-        x => {
-
-          if(
-            typeof x ===
-            "string"
-          ){
-
-            return x;
-
-          }
-
-          return (
-            x.description ||
-            x.summary ||
-            JSON.stringify(x)
-          );
-
-        }
-      ),
-
-    files:
-      files.map(
-        x => {
-
-          if(
-            typeof x ===
-            "string"
-          ){
-
-            return x;
-
-          }
-
-          return (
-            x.path ||
-            x.file ||
-            JSON.stringify(x)
-          );
-
-        }
-      ),
-
-    risk:
-      String(risk)
-
-  };
+  return html.trim();
 
 }
 
 
-/* =========================================================
-   RENDER PROPOSAL
-========================================================= */
+/* =====================================================
+   GENERATE NEW INDEX
+===================================================== */
 
-function renderProposal(
-  proposal
+async function generateDevelopmentHTML(
+  request
 ){
 
-  const p =
-    normalizeProposal(
-      proposal
-    );
+  /*
+  نستخدم Chat API لتوليد
+  النسخة الجديدة.
+
+  لا يتم إرسال أي GitHub
+  write من هنا.
+  */
 
 
-  devResult.textContent =
-    p.summary;
+  const currentHTML =
+    document.documentElement
+      .outerHTML;
 
 
-  devFiles.innerHTML =
-    "";
+  const prompt = `
+
+أنت المبرمج الرئيسي لنظام AyAI.
+
+المستخدم يريد تطوير AyAI.
+
+طلب المستخدم:
+
+${request}
+
+أنت تعمل على الملف:
+
+index.html
+
+هذه هي النسخة الحالية من index.html:
+
+----- BEGIN CURRENT INDEX.HTML -----
+
+${currentHTML}
+
+----- END CURRENT INDEX.HTML -----
 
 
-  p.files.forEach(
-    file => {
+مهم جداً:
 
-      const el =
-        document.createElement(
-          "span"
-        );
+1. أعد كتابة index.html كاملاً.
+2. لا ترجع أجزاء فقط.
+3. لا تستخدم Markdown.
+4. لا تستخدم ```html.
+5. يجب أن يبدأ الرد بـ <!doctype html>.
+6. حافظ على واجهة AyAI الحالية.
+7. حافظ على Orb.
+8. حافظ على الميكروفون.
+9. حافظ على /api/chat.
+10. حافظ على Memory.
+11. حافظ على Development Core.
+12. لا تحذف APPROVE & APPLY.
+13. لا تضع أي GitHub token داخل HTML.
+14. لا تغير وظائف غير مطلوبة.
+15. طبق طلب المستخدم فقط.
+16. إذا كان التغيير غير ممكن بدون تعديل backend، لا تخترع API جديداً.
+17. يجب أن يكون الناتج HTML صالحاً وقابلاً للتشغيل مباشرة.
 
-      el.className =
-        "devFile";
+أعد الملف كاملاً فقط.
 
-      el.textContent =
-        file;
-
-      devFiles.appendChild(
-        el
-      );
-
-    }
-  );
+`;
 
 
-  devChanges.innerHTML =
-    "";
+  const response =
+    await fetch(
+      "/api/chat",
+      {
 
+        method:"POST",
 
-  if(
-    p.changes.length
-  ){
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
 
-    p.changes.forEach(
-      change => {
-
-        const li =
-          document.createElement(
-            "li"
-          );
-
-        li.textContent =
-          change;
-
-        devChanges.appendChild(
-          li
-        );
+        body:
+          JSON.stringify({
+            message:prompt
+          })
 
       }
     );
 
+
+  let result = {};
+
+  try{
+
+    result =
+      await response.json();
+
+  }catch(error){
+
+    throw new Error(
+      "Chat API returned invalid JSON."
+    );
+
   }
 
 
-  devRisk.textContent =
-    "RISK: " +
-    p.risk;
+  if(!response.ok){
 
-  devRisk.style.display =
-    "inline-block";
+    throw new Error(
+      result?.error ||
+      "AI generation failed."
+    );
 
-
-  devPlan.style.display =
-    "block";
+  }
 
 
-  return p;
+  const generated =
+    cleanGeneratedHTML(
+      result.answer
+    );
+
+
+  if(
+    !generated
+      .toLowerCase()
+      .includes(
+        "<html"
+      )
+  ){
+
+    throw new Error(
+      "AI did not return a valid HTML document."
+    );
+
+  }
+
+
+  if(
+    !generated
+      .toLowerCase()
+      .includes(
+        "api/develop"
+      )
+  ){
+
+    console.warn(
+      "Generated HTML does not contain /api/develop."
+    );
+
+  }
+
+
+  return generated;
 
 }
 
 
-/* =========================================================
-   ANALYZE DEVELOPMENT
-========================================================= */
+/* =====================================================
+   DEVELOPMENT ANALYSIS
+===================================================== */
 
 async function analyzeDevelopment(){
 
@@ -3094,30 +3099,36 @@ async function analyzeDevelopment(){
     devResult.textContent =
       "اكتب أولاً شنو تريد AyAI يطوره.";
 
-    devRequest.focus();
-
     return;
 
   }
 
 
-  devAnalyze.disabled =
-    true;
-
-  devApprove.disabled =
-    true;
-
-  devReject.disabled =
-    true;
-
+  /*
+  تنظيف الحالة السابقة
+  */
 
   pendingDevelopment =
     null;
 
 
+  devApprove.disabled =
+    true;
+
+  devReject.disabled =
+    false;
+
+  devAnalyze.disabled =
+    true;
+
+
   devApproval.classList.remove(
     "visible"
   );
+
+
+  devPlan.style.display =
+    "none";
 
 
   devError.textContent =
@@ -3127,27 +3138,45 @@ async function analyzeDevelopment(){
     "";
 
 
-  devPlan.style.display =
-    "none";
-
-
-  setDevelopmentLoading(
-    "ANALYZING DEVELOPMENT"
-  );
-
-
   try{
+
+    /*
+    ===============================================
+    STEP 1
+    ===============================================
+    توليد نسخة جديدة من index.html
+    */
+
+    devStatus.textContent =
+      "GENERATING DEVELOPMENT...";
+
+
+    showLoading(
+      "Generating new AyAI code"
+    );
+
+
+    const newHTML =
+      await generateDevelopmentHTML(
+        request
+      );
 
 
     /*
-      IMPORTANT:
-
-      لا نقرأ index.html هنا.
-      لا نرسل الكود إلى /api/chat.
-
-      السيرفر /api/develop هو المسؤول
-      عن قراءة GitHub وتحليل التطوير.
+    ===============================================
+    STEP 2
+    ===============================================
+    إرسال الكود إلى Development API
     */
+
+    devStatus.textContent =
+      "CREATING APPROVAL PLAN...";
+
+
+    showLoading(
+      "Creating secure approval token"
+    );
+
 
     const response =
       await fetch(
@@ -3170,9 +3199,11 @@ async function analyzeDevelopment(){
               request:
                 request,
 
-              files:[
-                "index.html"
-              ]
+              path:
+                "index.html",
+
+              proposedContent:
+                newHTML
 
             })
 
@@ -3180,18 +3211,17 @@ async function analyzeDevelopment(){
       );
 
 
-    let result = null;
-
+    let result = {};
 
     try{
 
       result =
         await response.json();
 
-    }catch(e){
+    }catch(error){
 
       throw new Error(
-        "Development API returned an invalid response."
+        "Development API returned invalid JSON."
       );
 
     }
@@ -3201,20 +3231,6 @@ async function analyzeDevelopment(){
 
       throw new Error(
         result?.error ||
-        result?.message ||
-        "Development analysis failed."
-      );
-
-    }
-
-
-    if(
-      result &&
-      result.success === false
-    ){
-
-      throw new Error(
-        result.error ||
         "Development analysis failed."
       );
 
@@ -3222,23 +3238,16 @@ async function analyzeDevelopment(){
 
 
     /*
-      حفظ proposal + approvalToken
+    ===============================================
+    STEP 3
+    ===============================================
+    يجب أن يرجع API approvalToken
+    ===============================================
     */
 
-    const proposal =
-      result.proposal ||
-      result.plan ||
-      result.development ||
-      result;
-
-
-    const approvalToken =
-      result.approvalToken ||
-      result.token ||
-      null;
-
-
-    if(!approvalToken){
+    if(
+      !result.approvalToken
+    ){
 
       throw new Error(
         "The Development API did not return an approvalToken."
@@ -3247,31 +3256,138 @@ async function analyzeDevelopment(){
     }
 
 
-    const normalized =
-      renderProposal(
-        proposal
-      );
+    /*
+    ===============================================
+    PLAN
+    ===============================================
+    */
 
+    const plan =
+      result.plan ||
+      {};
+
+
+    devResult.textContent =
+      plan.summary ||
+      "تم تجهيز خطة التطوير.";
+
+
+    devFiles.innerHTML =
+      "";
+
+
+    (
+      plan.files ||
+      DEVELOPMENT_FILES
+    )
+    .forEach(
+      file=>{
+
+        const el =
+          document.createElement(
+            "span"
+          );
+
+
+        el.className =
+          "devFile";
+
+
+        el.textContent =
+          file;
+
+
+        devFiles.appendChild(
+          el
+        );
+
+      }
+    );
+
+
+    devChanges.innerHTML =
+      "";
+
+
+    (
+      plan.changes ||
+      []
+    )
+    .forEach(
+      change=>{
+
+        const el =
+          document.createElement(
+            "div"
+          );
+
+
+        el.textContent =
+          "• " +
+          change;
+
+
+        devChanges.appendChild(
+          el
+        );
+
+      }
+    );
+
+
+    devPlan.style.display =
+      "block";
+
+
+    /*
+    ===============================================
+    STORE PENDING DEVELOPMENT
+    ===============================================
+    */
 
     pendingDevelopment = {
+
+      path:
+        "index.html",
 
       request:
         request,
 
-      proposal:
-        proposal,
-
-      normalized:
-        normalized,
+      proposedContent:
+        newHTML,
 
       approvalToken:
-        approvalToken
+        result.approvalToken,
+
+      currentSha:
+        result.currentSha,
+
+      contentHash:
+        result.contentHash,
+
+      expiresAt:
+        result.expiresAt,
+
+      plan:
+        plan
 
     };
 
 
+    /*
+    ===============================================
+    READY
+    ===============================================
+    */
+
     devStatus.textContent =
       "READY FOR APPROVAL";
+
+
+    devTokenInfo.textContent =
+      result.expiresAt
+        ? "APPROVAL TOKEN READY • EXPIRES IN 15 MINUTES"
+        : "APPROVAL TOKEN READY";
 
 
     devApproval.classList.add(
@@ -3279,10 +3395,14 @@ async function analyzeDevelopment(){
     );
 
 
+    devApprove.disabled =
+      false;
+
+
   }catch(error){
 
     console.error(
-      "Development analyze error:",
+      "Development error:",
       error
     );
 
@@ -3298,13 +3418,9 @@ async function analyzeDevelopment(){
         "Unknown development error"
       );
 
-
   }finally{
 
     devAnalyze.disabled =
-      false;
-
-    devReject.disabled =
       false;
 
   }
@@ -3312,19 +3428,43 @@ async function analyzeDevelopment(){
 }
 
 
-/* =========================================================
-   ANALYZE BUTTON
-========================================================= */
+/* =====================================================
+   REJECT
+===================================================== */
 
-devAnalyze.addEventListener(
+devReject.addEventListener(
   "click",
-  analyzeDevelopment
+  ()=>{
+
+    pendingDevelopment =
+      null;
+
+
+    devApproval.classList.remove(
+      "visible"
+    );
+
+
+    devStatus.textContent =
+      "DEVELOPMENT REJECTED";
+
+
+    devResult.textContent =
+      "لم يتم تعديل أي ملف.";
+
+    devError.textContent =
+      "";
+
+    devSuccess.textContent =
+      "";
+
+  }
 );
 
 
-/* =========================================================
+/* =====================================================
    APPROVE & APPLY
-========================================================= */
+===================================================== */
 
 devApprove.addEventListener(
   "click",
@@ -3342,13 +3482,17 @@ devApprove.addEventListener(
     }
 
 
-    const confirmed =
+    /*
+    حماية إضافية
+    */
+
+    const approved =
       window.confirm(
-        "هل أنت متأكد من تطبيق هذا التطوير على GitHub؟\n\nلن يتم التطبيق إلا بعد موافقتك."
+        "هل أنت متأكد من تطبيق هذا التطوير على GitHub؟\n\nلن يتم التطبيق إلا بعد التحقق من Approval Token."
       );
 
 
-    if(!confirmed)
+    if(!approved)
       return;
 
 
@@ -3369,24 +3513,93 @@ devApprove.addEventListener(
       "";
 
 
-    setDevelopmentLoading(
-      "APPLYING DEVELOPMENT"
-    );
-
-
     try{
+
+      /*
+      =============================================
+      STEP 1
+      =============================================
+      VERIFY APPROVAL
+      */
+
+      devStatus.textContent =
+        "VERIFYING APPROVAL...";
+
+
+      const approveResponse =
+        await fetch(
+          "/api/develop",
+          {
+
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify({
+
+                action:
+                  "approve",
+
+                approvalToken:
+                  pendingDevelopment
+                    .approvalToken
+
+              })
+
+          }
+        );
+
+
+      let approveResult = {};
+
+
+      try{
+
+        approveResult =
+          await approveResponse.json();
+
+      }catch(error){
+
+        throw new Error(
+          "Invalid approval response."
+        );
+
+      }
+
+
+      if(
+        !approveResponse.ok
+      ){
+
+        throw new Error(
+          approveResult?.error ||
+          "Approval verification failed."
+        );
+
+      }
 
 
       /*
-        هنا فقط يتم تطبيق التطوير.
-
-        لا نرسل index.html.
-
-        نرسل proposal + approvalToken
-        الذي أصدره analyze.
+      =============================================
+      STEP 2
+      =============================================
+      APPLY TO GITHUB
       */
 
-      const response =
+      devStatus.textContent =
+        "APPLYING TO GITHUB...";
+
+
+      showLoading(
+        "Creating GitHub commit"
+      );
+
+
+      const applyResponse =
         await fetch(
           "/api/develop",
           {
@@ -3404,111 +3617,104 @@ devApprove.addEventListener(
                 action:
                   "apply",
 
-                proposal:
-                  pendingDevelopment.proposal,
-
                 approvalToken:
-                  pendingDevelopment.approvalToken
+                  pendingDevelopment
+                    .approvalToken,
+
+                proposedContent:
+                  pendingDevelopment
+                    .proposedContent,
+
+                message:
+                  "AyAI Development: " +
+                  (
+                    pendingDevelopment
+                      .request
+                  )
 
               })
 
-            }
-          );
+          }
+        );
 
 
-      let result = null;
+      let applyResult = {};
 
 
       try{
 
-        result =
-          await response.json();
+        applyResult =
+          await applyResponse.json();
 
-      }catch(e){
-
-        throw new Error(
-          "Development API returned an invalid apply response."
-        );
-
-      }
-
-
-      if(!response.ok){
+      }catch(error){
 
         throw new Error(
-          result?.error ||
-          result?.message ||
-          "GitHub apply failed."
+          "Invalid GitHub apply response."
         );
 
       }
 
 
       if(
-        result &&
-        result.success === false
+        !applyResponse.ok
       ){
 
         throw new Error(
-          result.error ||
-          "Development apply failed."
+          applyResult?.error ||
+          "GitHub apply failed."
         );
 
       }
 
+
+      /*
+      =============================================
+      SUCCESS
+      =============================================
+      */
 
       devStatus.textContent =
         "DEVELOPMENT APPLIED";
 
 
-      let successText =
-        "تم تطبيق التطوير بنجاح على GitHub.";
+      devResult.textContent =
+        "تم تطبيق التطوير بنجاح.";
 
 
-      if(result.commit){
-
-        successText +=
-          "\n\nCommit: " +
-          result.commit;
-
-      }
+      let successMessage =
+        "تم تطبيق التطوير على GitHub بنجاح.\n\n";
 
 
-      if(result.commitUrl){
+      if(
+        applyResult.commit
+      ){
 
-        successText +=
-          "\n\nCommit URL:\n" +
-          result.commitUrl;
+        successMessage +=
+          "Commit SHA:\n" +
+          applyResult.commit +
+          "\n\n";
 
       }
 
 
-      if(result.message){
+      if(
+        applyResult.commitUrl
+      ){
 
-        successText +=
-          "\n\n" +
-          result.message;
+        successMessage +=
+          "GitHub Commit:\n" +
+          applyResult.commitUrl;
 
       }
 
 
       devSuccess.textContent =
-        successText;
+        successMessage;
 
 
       devApproval.classList.remove(
         "visible"
       );
-
-
-      devResult.textContent =
-        "تم تطبيق التطوير بنجاح.\n\n" +
-        (
-          pendingDevelopment
-            .normalized
-            .summary ||
-          "Development completed."
-        );
 
 
       pendingDevelopment =
@@ -3518,7 +3724,7 @@ devApprove.addEventListener(
     }catch(error){
 
       console.error(
-        "Development apply error:",
+        "Apply error:",
         error
       );
 
@@ -3533,7 +3739,6 @@ devApprove.addEventListener(
           error.message ||
           "Unknown development error"
         );
-
 
     }finally{
 
@@ -3552,18 +3757,30 @@ devApprove.addEventListener(
 );
 
 
-/* =========================================================
-   ENTER KEY
-========================================================= */
+/* =====================================================
+   ANALYZE BUTTON
+===================================================== */
+
+devAnalyze.addEventListener(
+  "click",
+  analyzeDevelopment
+);
+
+
+/* =====================================================
+   ENTER SHORTCUT
+===================================================== */
 
 devRequest.addEventListener(
   "keydown",
   e=>{
 
     if(
-      (e.ctrlKey ||
-       e.metaKey) &&
-      e.key === "Enter"
+      e.key === "Enter" &&
+      (
+        e.ctrlKey ||
+        e.metaKey
+      )
     ){
 
       e.preventDefault();
@@ -3576,9 +3793,9 @@ devRequest.addEventListener(
 );
 
 
-/* =========================================================
-   ESC
-========================================================= */
+/* =====================================================
+   ESC CLOSE
+===================================================== */
 
 document.addEventListener(
   "keydown",
@@ -3599,9 +3816,9 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    INIT
-========================================================= */
+===================================================== */
 
 loadMemory();
 
@@ -3613,7 +3830,9 @@ memoryLabel.textContent =
 window.addEventListener(
   "resize",
   resize,
-  {passive:true}
+  {
+    passive:true
+  }
 );
 
 
