@@ -1,78 +1,47 @@
 /*
 ====================================================
-              AyAI DEVELOPMENT API
+                 AyAI DEVELOPMENT API
 ====================================================
 
-Environment Variables المطلوبة في Vercel:
+ENVIRONMENT VARIABLES:
 
 GITHUB_TOKEN
 GITHUB_OWNER
 GITHUB_REPO
 GITHUB_BRANCH
 
-اختياري:
+AYAI_APPROVAL_TOKEN
 
 AYAI_ALLOWED_PATHS
-
 مثال:
+index.html,api/,brain/
 
-index.html,brain/,api/
 ====================================================
 */
 
 export default async function handler(req, res) {
 
     if (req.method !== "POST") {
-
         return res.status(405).json({
-
-            error:
-                "Method not allowed"
-
+            error: "Only POST requests are allowed"
         });
-
     }
-
 
     try {
 
         const {
-
             action,
-
             path,
-
             content,
-
             message,
-
-            approved
-
+            approvalToken
         } = req.body || {};
 
 
         /*
-        ============================================
-        حماية أساسية
-        ============================================
-        */
-
-        if (approved !== true) {
-
-            return res.status(403).json({
-
-                error:
-                    "Development requires explicit approval."
-
-            });
-
-        }
-
-
-        /*
-        ============================================
-        Environment
-        ============================================
+        ====================================================
+        ENVIRONMENT
+        ====================================================
         */
 
         const TOKEN =
@@ -85,36 +54,55 @@ export default async function handler(req, res) {
             process.env.GITHUB_REPO;
 
         const BRANCH =
-            process.env.GITHUB_BRANCH ||
-            "main";
+            process.env.GITHUB_BRANCH || "main";
+
+        const SERVER_APPROVAL_TOKEN =
+            process.env.AYAI_APPROVAL_TOKEN;
 
 
         if (
             !TOKEN ||
             !OWNER ||
-            !REPO
+            !REPO ||
+            !SERVER_APPROVAL_TOKEN
         ) {
 
             return res.status(500).json({
-
                 error:
-                    "GitHub environment variables are not configured."
-
+                    "AyAI development environment is not configured."
             });
 
         }
 
 
         /*
-        ============================================
-        الملفات المسموح بتعديلها
-        ============================================
+        ====================================================
+        APPROVAL SECURITY
+        ====================================================
+        */
+
+        if (
+            typeof approvalToken !== "string" ||
+            approvalToken !== SERVER_APPROVAL_TOKEN
+        ) {
+
+            return res.status(403).json({
+                error:
+                    "Development requires valid approval."
+            });
+
+        }
+
+
+        /*
+        ====================================================
+        ALLOWED FILES
+        ====================================================
         */
 
         const allowedRaw =
             process.env.AYAI_ALLOWED_PATHS ||
-            "index.html,brain/,api/";
-
+            "index.html,api/,brain/";
 
         const allowed =
             allowedRaw
@@ -125,39 +113,52 @@ export default async function handler(req, res) {
 
         function isAllowed(filePath) {
 
-            return allowed.some(
-                rule => {
+            if (!filePath) {
+                return false;
+            }
 
-                    if (
-                        rule.endsWith("/")
-                    ) {
+            return allowed.some(rule => {
 
-                        return filePath
-                            .startsWith(rule);
+                if (rule.endsWith("/")) {
 
-                    }
-
-                    return filePath === rule;
+                    return filePath.startsWith(rule);
 
                 }
-            );
+
+                return filePath === rule;
+
+            });
 
         }
 
 
         /*
-        ============================================
-        VALIDATE PATH
-        ============================================
+        ====================================================
+        PATH VALIDATION
+        ====================================================
         */
 
         if (!path) {
 
             return res.status(400).json({
+                error: "Missing file path."
+            });
 
-                error:
-                    "Missing file path."
+        }
 
+
+        /*
+        منع الخروج من مجلد المشروع
+        */
+
+        if (
+            path.includes("..") ||
+            path.startsWith("/") ||
+            path.includes("\\")
+        ) {
+
+            return res.status(403).json({
+                error: "Invalid file path."
             });
 
         }
@@ -166,36 +167,30 @@ export default async function handler(req, res) {
         if (!isAllowed(path)) {
 
             return res.status(403).json({
-
                 error:
                     "This file is not allowed to be modified."
-
             });
 
         }
 
 
         /*
-        ============================================
+        ====================================================
         GITHUB API
-        ============================================
+        ====================================================
         */
 
         const base =
-            `https://api.github.com/repos/${encodeURIComponent(
-                OWNER
-            )}/${encodeURIComponent(
-                REPO
-            )}/contents/`;
+            `https://api.github.com/repos/` +
+            `${encodeURIComponent(OWNER)}/` +
+            `${encodeURIComponent(REPO)}/contents/`;
 
 
         const url =
             base +
             path
                 .split("/")
-                .map(
-                    encodeURIComponent
-                )
+                .map(encodeURIComponent)
                 .join("/");
 
 
@@ -208,7 +203,7 @@ export default async function handler(req, res) {
                 `Bearer ${TOKEN}`,
 
             "X-GitHub-Api-Version":
-                "2026-03-10",
+                "2022-11-28",
 
             "Content-Type":
                 "application/json"
@@ -217,25 +212,18 @@ export default async function handler(req, res) {
 
 
         /*
-        ============================================
-        READ FILE
-        ============================================
+        ====================================================
+        READ
+        ====================================================
         */
 
-        if (
-            action ===
-            "read"
-        ) {
+        if (action === "read") {
 
             const response =
                 await fetch(
-                    `${url}?ref=${encodeURIComponent(
-                        BRANCH
-                    )}`,
+                    `${url}?ref=${encodeURIComponent(BRANCH)}`,
                     {
-                        method:
-                            "GET",
-
+                        method: "GET",
                         headers
                     }
                 );
@@ -263,19 +251,12 @@ export default async function handler(req, res) {
             let decoded = "";
 
 
-            if (
-                data.encoding ===
-                "base64"
-            ) {
+            if (data.encoding === "base64") {
 
                 decoded =
                     Buffer
                         .from(
-                            data.content
-                                .replace(
-                                    /\n/g,
-                                    ""
-                                ),
+                            data.content.replace(/\n/g, ""),
                             "base64"
                         )
                         .toString("utf8");
@@ -285,17 +266,15 @@ export default async function handler(req, res) {
 
             return res.status(200).json({
 
-                success:
-                    true,
+                success: true,
 
-                path:
-                    data.path,
+                action: "read",
 
-                sha:
-                    data.sha,
+                path: data.path,
 
-                content:
-                    decoded
+                sha: data.sha,
+
+                content: decoded
 
             });
 
@@ -303,58 +282,45 @@ export default async function handler(req, res) {
 
 
         /*
-        ============================================
-        WRITE FILE
-        ============================================
+        ====================================================
+        WRITE
+        ====================================================
         */
 
-        if (
-            action ===
-            "write"
-        ) {
+        if (action === "write") {
 
             if (
-                typeof content !==
-                "string"
+                typeof content !== "string"
             ) {
 
                 return res.status(400).json({
-
                     error:
                         "Missing file content."
-
                 });
 
             }
 
 
             /*
-            ----------------------------------------
-            أولاً نقرأ الملف للحصول على SHA
-            ----------------------------------------
+            --------------------------------------------
+            READ CURRENT FILE
+            --------------------------------------------
             */
 
             const currentResponse =
                 await fetch(
-                    `${url}?ref=${encodeURIComponent(
-                        BRANCH
-                    )}`,
+                    `${url}?ref=${encodeURIComponent(BRANCH)}`,
                     {
-                        method:
-                            "GET",
-
+                        method: "GET",
                         headers
                     }
                 );
 
 
-            let current =
-                null;
+            let current = null;
 
 
-            if (
-                currentResponse.ok
-            ) {
+            if (currentResponse.ok) {
 
                 current =
                     await currentResponse.json();
@@ -363,17 +329,14 @@ export default async function handler(req, res) {
 
 
             /*
-            ----------------------------------------
-            تحويل المحتوى إلى Base64
-            ----------------------------------------
+            --------------------------------------------
+            BASE64
+            --------------------------------------------
             */
 
             const encoded =
                 Buffer
-                    .from(
-                        content,
-                        "utf8"
-                    )
+                    .from(content, "utf8")
                     .toString("base64");
 
 
@@ -381,7 +344,7 @@ export default async function handler(req, res) {
 
                 message:
                     message ||
-                    `AyAI development: update ${path}`,
+                    `AyAI approved development: update ${path}`,
 
                 content:
                     encoded,
@@ -393,9 +356,9 @@ export default async function handler(req, res) {
 
 
             /*
-            ----------------------------------------
-            إذا الملف موجود نرسل SHA
-            ----------------------------------------
+            --------------------------------------------
+            EXISTING FILE
+            --------------------------------------------
             */
 
             if (
@@ -410,9 +373,9 @@ export default async function handler(req, res) {
 
 
             /*
-            ----------------------------------------
-            الكتابة إلى GitHub
-            ----------------------------------------
+            --------------------------------------------
+            GITHUB WRITE
+            --------------------------------------------
             */
 
             const response =
@@ -420,15 +383,12 @@ export default async function handler(req, res) {
                     url,
                     {
 
-                        method:
-                            "PUT",
+                        method: "PUT",
 
                         headers,
 
                         body:
-                            JSON.stringify(
-                                payload
-                            )
+                            JSON.stringify(payload)
 
                     }
                 );
@@ -455,19 +415,17 @@ export default async function handler(req, res) {
 
             return res.status(200).json({
 
-                success:
-                    true,
+                success: true,
 
-                path:
-                    path,
+                action: "write",
+
+                path,
 
                 commit:
-                    data.commit
-                        ?.sha ||
-                    null,
+                    data.commit?.sha || null,
 
                 message:
-                    "Development applied successfully."
+                    "Approved development applied successfully."
 
             });
 
@@ -475,9 +433,9 @@ export default async function handler(req, res) {
 
 
         /*
-        ============================================
+        ====================================================
         UNKNOWN ACTION
-        ============================================
+        ====================================================
         */
 
         return res.status(400).json({
