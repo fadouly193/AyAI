@@ -2,8 +2,12 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <meta name="theme-color" content="#000000">
 
 <title>AyAI — Advanced Voice Assistant</title>
@@ -14,15 +18,24 @@
 box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
+
 margin:0;
 width:100%;
 height:100%;
+
 overflow:hidden;
+
 background:#000;
+
 color:#eef9ff;
-font-family:Inter,"Segoe UI",Arial,sans-serif;
+
+font-family:
+Inter,
+"Segoe UI",
+Arial,
+sans-serif;
+
 }
 
 body{
@@ -30,188 +43,309 @@ min-height:100dvh;
 }
 
 #app{
+
 width:100%;
 height:100%;
 min-height:100dvh;
+
 position:relative;
+
 background:#000;
+
 overflow:hidden;
+
 }
 
 canvas{
+
 position:absolute;
 inset:0;
+
 width:100%;
 height:100%;
+
 display:block;
+
 }
 
-/* STATUS */
+
+/* =========================
+STATUS
+========================= */
 
 #status{
+
 position:absolute;
+
 top:8%;
 left:50%;
+
 transform:translateX(-50%);
+
 direction:ltr;
+
 font-size:17px;
+
 letter-spacing:3px;
+
 font-weight:300;
+
 white-space:nowrap;
+
 text-shadow:0 0 18px #78cfff;
+
 transition:.25s;
+
 z-index:5;
+
 }
 
 #status:before,
 #status:after{
+
 content:"";
+
 display:inline-block;
+
 width:65px;
+
 height:1px;
+
 vertical-align:middle;
+
 margin:0 17px;
-background:linear-gradient(90deg,transparent,#72caff);
+
+background:
+linear-gradient(
+90deg,
+transparent,
+#72caff
+);
+
 }
 
 #status:after{
-background:linear-gradient(90deg,#72caff,transparent);
+
+background:
+linear-gradient(
+90deg,
+#72caff,
+transparent
+);
+
 }
 
-/* MEMORY */
+
+/* =========================
+MEMORY
+========================= */
 
 #memoryStatus{
+
 position:absolute;
+
 top:14%;
+
 right:4%;
+
 font-size:11px;
+
 letter-spacing:1.5px;
+
 color:#355765;
+
 direction:ltr;
+
 z-index:5;
+
 }
 
-/* DEVELOPMENT */
 
-#devStatus{
-position:absolute;
-top:14%;
-left:4%;
-font-size:11px;
-letter-spacing:1.5px;
-color:#355765;
-direction:ltr;
-z-index:5;
-}
-
-/* NAME */
+/* =========================
+NAME
+========================= */
 
 #name{
+
 position:absolute;
+
 left:50%;
 top:50%;
-transform:translate(-50%,-50%);
-font-size:clamp(45px,7vw,88px);
+
+transform:
+translate(-50%,-50%);
+
+font-size:
+clamp(45px,7vw,88px);
+
 font-weight:200;
+
 letter-spacing:9px;
+
 direction:ltr;
-text-shadow:0 0 25px rgba(130,210,255,.65);
+
+text-shadow:
+0 0 25px rgba(130,210,255,.65);
+
 pointer-events:none;
+
 z-index:4;
 
 transition:
+
 top .8s ease,
 transform .8s ease,
 font-size .8s ease,
 text-shadow .4s ease;
+
 }
 
 #app.active #name{
+
 top:33%;
-font-size:clamp(32px,5vw,62px);
-text-shadow:0 0 35px rgba(130,210,255,.9);
+
+font-size:
+clamp(32px,5vw,62px);
+
+text-shadow:
+0 0 35px rgba(130,210,255,.9);
+
 }
 
-/* ANSWER */
+
+/* =========================
+ANSWER BOX
+========================= */
 
 #answerBox{
+
 position:absolute;
+
 left:50%;
-top:55%;
+
+top:60%;
+
 transform:translateX(-50%);
 
 width:min(720px,86vw);
-max-height:25vh;
+
+max-height:23vh;
 
 overflow-y:auto;
 
 padding:14px 18px;
 
-border:1px solid rgba(130,215,255,.18);
+border:
+1px solid rgba(130,215,255,.18);
+
 border-radius:16px;
 
-background:rgba(3,10,15,.72);
+background:
+rgba(3,10,15,.72);
 
 box-shadow:
-0 0 30px rgba(70,190,255,.08),
-inset 0 0 25px rgba(80,190,255,.035);
+
+0 0 30px
+rgba(70,190,255,.08),
+
+inset 0 0 25px
+rgba(80,190,255,.035);
 
 backdrop-filter:blur(10px);
+
 -webkit-backdrop-filter:blur(10px);
 
 opacity:0;
+
 visibility:hidden;
 
 transition:
+
 opacity .35s ease,
 transform .35s ease,
 top .5s ease;
 
 z-index:6;
+
 }
 
 #answerBox.show{
+
 opacity:1;
 visibility:visible;
+
 }
 
 #answerText{
-color:rgba(225,245,255,.9);
+
+color:
+rgba(225,245,255,.9);
+
 font-size:15px;
+
 line-height:1.9;
+
 text-align:center;
+
 direction:rtl;
+
 white-space:pre-wrap;
+
 word-break:break-word;
+
 }
 
-/* HEARD */
+
+/* =========================
+HEARD
+========================= */
 
 #heard{
+
 position:absolute;
+
 left:50%;
+
 top:65%;
+
 transform:translateX(-50%);
+
 width:min(700px,80vw);
+
 text-align:center;
-color:rgba(220,242,252,.72);
+
+color:
+rgba(220,242,252,.72);
+
 font-size:15px;
+
 line-height:1.7;
+
 min-height:28px;
+
 direction:rtl;
+
 z-index:2;
+
 }
 
 #heard:empty{
 opacity:0;
 }
 
-/* MIC */
+
+/* =========================
+MIC
+========================= */
 
 #mic{
+
 position:absolute;
+
 left:50%;
+
 bottom:6%;
+
 transform:translateX(-50%);
 
 width:58px;
@@ -219,12 +353,15 @@ height:58px;
 
 border-radius:50%;
 
-border:1px solid rgba(145,220,255,.35);
+border:
+1px solid rgba(145,220,255,.35);
 
 background:#030a0f;
+
 color:#d9f5ff;
 
 display:grid;
+
 place-items:center;
 
 cursor:pointer;
@@ -237,51 +374,72 @@ transition:.25s;
 z-index:10;
 
 -webkit-tap-highlight-color:transparent;
+
 }
 
 #mic:hover,
 #mic.on{
+
 border-color:#bdeaff;
 
 box-shadow:
+
 0 0 34px rgba(80,200,255,.45),
+
 inset 0 0 18px rgba(80,180,255,.12);
+
 }
 
 #mic.on{
-animation:micPulse 1.4s infinite;
+
+animation:
+micPulse 1.4s infinite;
+
 }
 
 @keyframes micPulse{
 
 0%{
-box-shadow:0 0 18px rgba(80,200,255,.25);
+box-shadow:
+0 0 18px rgba(80,200,255,.25);
 }
 
 50%{
-box-shadow:0 0 42px rgba(80,200,255,.65);
+box-shadow:
+0 0 42px rgba(80,200,255,.65);
 }
 
 100%{
-box-shadow:0 0 18px rgba(80,200,255,.25);
+box-shadow:
+0 0 18px rgba(80,200,255,.25);
 }
 
 }
 
 #mic svg{
+
 width:23px;
 height:23px;
+
 fill:none;
+
 stroke:currentColor;
+
 stroke-width:1.5;
+
 }
 
-/* VOICE */
+
+/* =========================
+VOICE BUTTON
+========================= */
 
 #voiceToggle{
+
 position:absolute;
 
 bottom:6%;
+
 right:5%;
 
 width:42px;
@@ -289,12 +447,15 @@ height:42px;
 
 border-radius:50%;
 
-border:1px solid rgba(145,220,255,.25);
+border:
+1px solid rgba(145,220,255,.25);
 
 background:#030a0f;
+
 color:#6f9bab;
 
 display:grid;
+
 place-items:center;
 
 cursor:pointer;
@@ -302,30 +463,44 @@ cursor:pointer;
 z-index:10;
 
 transition:.25s;
+
 }
 
 #voiceToggle.active{
+
 color:#d9f5ff;
+
 border-color:#8ddcff;
 
 box-shadow:
 0 0 20px rgba(80,200,255,.3);
+
 }
 
 #voiceToggle svg{
+
 width:19px;
 height:19px;
+
 fill:none;
+
 stroke:currentColor;
+
 stroke-width:1.5;
+
 }
 
-/* DEVELOPMENT BUTTON */
+
+/* =========================
+DEVELOPMENT BUTTON
+========================= */
 
 #devButton{
+
 position:absolute;
 
 bottom:6%;
+
 left:5%;
 
 width:42px;
@@ -333,13 +508,15 @@ height:42px;
 
 border-radius:50%;
 
-border:1px solid rgba(145,220,255,.25);
+border:
+1px solid rgba(145,220,255,.25);
 
 background:#030a0f;
 
-color:#6f9bab;
+color:#66828e;
 
 display:grid;
+
 place-items:center;
 
 cursor:pointer;
@@ -347,176 +524,350 @@ cursor:pointer;
 z-index:10;
 
 transition:.25s;
+
 }
 
-#devButton:hover,
-#devButton.active{
+#devButton:hover{
+
 color:#d9f5ff;
+
 border-color:#8ddcff;
-box-shadow:0 0 20px rgba(80,200,255,.3);
+
+box-shadow:
+0 0 20px rgba(80,200,255,.3);
+
 }
 
 #devButton svg{
+
 width:19px;
 height:19px;
+
 fill:none;
+
 stroke:currentColor;
-stroke-width:1.5;
+
+stroke-width:1.4;
+
 }
 
-/* DEVELOPMENT PANEL */
 
-#devPanel{
+/* =========================
+DEVELOPMENT PANEL
+========================= */
+
+#developmentPanel{
 
 position:absolute;
 
-left:50%;
-top:50%;
-
-transform:
-translate(-50%,-50%)
-scale(.96);
-
-width:min(720px,90vw);
-
-padding:22px;
+inset:0;
 
 background:
-rgba(3,10,15,.94);
+rgba(0,3,6,.78);
 
-border:
-1px solid rgba(120,210,255,.25);
+backdrop-filter:blur(18px);
 
-border-radius:22px;
-
-box-shadow:
-0 0 60px rgba(50,170,255,.15);
-
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
-
-opacity:0;
-visibility:hidden;
+-webkit-backdrop-filter:blur(18px);
 
 z-index:30;
 
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+padding:20px;
+
+opacity:0;
+
+visibility:hidden;
+
 transition:.3s;
+
 }
 
-#devPanel.show{
+#developmentPanel.open{
+
 opacity:1;
 visibility:visible;
-transform:
-translate(-50%,-50%)
-scale(1);
+
+}
+
+#devCard{
+
+width:min(720px,94vw);
+
+max-height:88vh;
+
+overflow-y:auto;
+
+background:
+linear-gradient(
+145deg,
+rgba(8,18,25,.96),
+rgba(2,7,11,.96)
+);
+
+border:
+1px solid rgba(120,210,255,.22);
+
+border-radius:22px;
+
+padding:24px;
+
+box-shadow:
+0 0 60px rgba(60,180,255,.12);
+
+direction:rtl;
+
+}
+
+#devHeader{
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+direction:ltr;
+
+margin-bottom:20px;
+
 }
 
 #devTitle{
-font-size:18px;
+
+font-size:22px;
+
 letter-spacing:2px;
+
+color:#dff7ff;
+
 direction:ltr;
-margin-bottom:8px;
+
 }
 
-#devSubtitle{
-font-size:12px;
-color:#6f9bab;
-line-height:1.7;
-margin-bottom:15px;
+#closeDev{
+
+width:36px;
+height:36px;
+
+border-radius:50%;
+
+border:
+1px solid rgba(130,210,255,.2);
+
+background:#030a0f;
+
+color:#8caab6;
+
+cursor:pointer;
+
+font-size:18px;
+
+}
+
+.devLabel{
+
+font-size:11px;
+
+letter-spacing:2px;
+
+color:#547582;
+
+direction:ltr;
+
+margin-bottom:7px;
+
 }
 
 #devInput{
+
 width:100%;
+
 min-height:90px;
 
-resize:none;
+resize:vertical;
 
 background:#02070a;
 
 border:
-1px solid rgba(130,215,255,.18);
+1px solid rgba(130,210,255,.15);
 
 border-radius:12px;
 
-padding:12px;
+padding:13px;
 
-color:#e9f9ff;
-
-outline:none;
+color:#dff7ff;
 
 font-family:inherit;
 
+font-size:14px;
+
+outline:none;
+
 direction:rtl;
+
 }
 
-#devPreview{
+#devInput:focus{
+
+border-color:
+rgba(130,220,255,.45);
+
+}
+
+#analyzeDev{
 
 margin-top:12px;
 
-padding:12px;
+width:100%;
 
-min-height:60px;
+padding:13px;
+
+border:1px solid rgba(120,210,255,.25);
 
 border-radius:12px;
 
+background:#06131a;
+
+color:#dff7ff;
+
+cursor:pointer;
+
+font-size:14px;
+
+}
+
+#analyzeDev:hover{
+
+background:#0a202b;
+
+box-shadow:
+0 0 22px rgba(80,190,255,.15);
+
+}
+
+#devResult{
+
+margin-top:18px;
+
+display:none;
+
+}
+
+#devResult.show{
+
+display:block;
+
+}
+
+#proposal{
+
 background:
-rgba(20,50,65,.2);
+rgba(1,8,12,.8);
 
 border:
-1px solid rgba(130,215,255,.1);
+1px solid rgba(120,210,255,.14);
 
-color:#bfe7f8;
+border-radius:14px;
 
-font-size:13px;
+padding:16px;
 
-line-height:1.8;
+direction:rtl;
+
+line-height:1.9;
+
+color:#d4edf5;
 
 white-space:pre-wrap;
+
 }
 
-.devButtons{
+#devActions{
+
 display:flex;
-gap:8px;
+
+gap:10px;
+
 margin-top:12px;
+
 }
 
-.devBtn{
+#approveDev,
+#rejectDev{
 
 flex:1;
 
-padding:11px;
+padding:13px;
 
-border-radius:10px;
-
-border:1px solid rgba(130,215,255,.2);
-
-background:#061018;
-
-color:#d9f5ff;
+border-radius:11px;
 
 cursor:pointer;
 
 font-family:inherit;
+
 }
 
-.devBtn.approve{
-background:rgba(50,150,210,.18);
-border-color:#65c9f5;
+#approveDev{
+
+background:
+rgba(30,130,170,.22);
+
+border:
+1px solid rgba(110,220,255,.4);
+
+color:#dff9ff;
+
 }
 
-.devBtn.cancel{
-color:#78909c;
+#rejectDev{
+
+background:
+rgba(80,20,25,.2);
+
+border:
+1px solid rgba(255,120,120,.2);
+
+color:#dca8a8;
+
 }
 
-/* TIP */
+#devLog{
+
+margin-top:16px;
+
+font-size:11px;
+
+color:#52717e;
+
+line-height:1.8;
+
+direction:ltr;
+
+text-align:left;
+
+}
+
+
+/* =========================
+TIP
+========================= */
 
 #tip{
+
 position:absolute;
+
 bottom:2%;
+
 left:50%;
+
 transform:translateX(-50%);
 
 font-size:10px;
+
 letter-spacing:1.7px;
 
 color:#53707e;
@@ -526,84 +877,124 @@ direction:ltr;
 white-space:nowrap;
 
 z-index:2;
+
 }
 
-/* MOBILE */
+
+/* =========================
+MOBILE
+========================= */
 
 @media(max-width:600px){
 
 #status{
+
 font-size:12px;
 letter-spacing:2px;
 top:7%;
+
 }
 
 #status:before,
 #status:after{
+
 width:28px;
 margin:0 8px;
+
 }
 
-#memoryStatus,
-#devStatus{
+#memoryStatus{
+
 top:13%;
+right:4%;
 font-size:9px;
+
 }
 
 #name{
+
 font-size:52px;
 letter-spacing:7px;
+
 }
 
 #app.active #name{
-top:31%;
-font-size:42px;
-}
 
-#heard{
-top:61%;
-width:86vw;
-font-size:14px;
+top:30%;
+font-size:42px;
+
 }
 
 #answerBox{
-top:50%;
+
+top:51%;
+
 width:88vw;
+
 max-height:28vh;
+
 padding:12px 15px;
+
 }
 
 #answerText{
+
 font-size:14px;
+
+}
+
+#heard{
+
+top:61%;
+
+width:86vw;
+
+font-size:14px;
+
 }
 
 #voiceToggle{
+
 right:5%;
+
 bottom:6.2%;
+
 width:38px;
 height:38px;
+
 }
 
 #devButton{
+
 left:5%;
+
 bottom:6.2%;
+
 width:38px;
 height:38px;
+
 }
 
 #tip{
+
 font-size:8px;
+
 letter-spacing:1.1px;
+
 }
 
-#devPanel{
-width:92vw;
+#devCard{
+
 padding:18px;
-}
 
 }
 
-/* SMALL */
+}
+
+
+/* =========================
+SMALL HEIGHT
+========================= */
 
 @media(max-height:700px){
 
@@ -620,13 +1011,18 @@ top:27%;
 }
 
 #answerBox{
-top:46%;
+top:47%;
 max-height:27vh;
+}
+
+#mic{
+bottom:7%;
 }
 
 }
 
 </style>
+
 </head>
 
 
@@ -636,23 +1032,24 @@ max-height:27vh;
 
 <canvas id="orb"></canvas>
 
+
 <div id="status">
 AYAI IS READY
 </div>
+
 
 <div id="memoryStatus">
 MEMORY: ON
 </div>
 
-<div id="devStatus">
-DEVELOPMENT: LOCKED
-</div>
 
 <div id="name">
 AyAI
 </div>
 
+
 <div id="heard"></div>
+
 
 <div id="answerBox">
 <div id="answerText"></div>
@@ -686,15 +1083,19 @@ title="Voice ON/OFF"
 <button
 id="devButton"
 type="button"
-aria-label="Development Brain"
-title="Development Brain"
+aria-label="Self Development"
+title="AyAI Self Development"
 >
 
 <svg viewBox="0 0 24 24">
 
-<path d="M9 3a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 3 3h1v-6a3 3 0 0 1 0-6V3H9Z"/>
+<path d="M12 3a3 3 0 0 0-3 3v1.2a7 7 0 1 0 6 0V6a3 3 0 0 0-3-3Z"/>
 
-<path d="M15 3a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-2 5v1a3 3 0 0 1-3 3h-1v-6a3 3 0 0 0 0-6V3h1Z"/>
+<path d="M9 18v3h6v-3"/>
+
+<path d="M12 10v4"/>
+
+<path d="M10 12h4"/>
 
 </svg>
 
@@ -739,52 +1140,82 @@ TAP ONCE TO TALK • TAP AGAIN TO STOP
 
 <!-- DEVELOPMENT PANEL -->
 
-<div id="devPanel">
+<div id="developmentPanel">
+
+<div id="devCard">
+
+<div id="devHeader">
 
 <div id="devTitle">
-AYAI DEVELOPMENT BRAIN
+AYAI SELF DEVELOPMENT
 </div>
 
-<div id="devSubtitle">
-اطلب من AyAI فكرة تطوير. سيحللها ويخبرك ماذا سيغير قبل تنفيذ أي تعديل.
+<button
+id="closeDev"
+type="button"
+>
+×
+</button>
+
 </div>
+
+
+<div class="devLabel">
+DEVELOPMENT REQUEST
+</div>
+
 
 <textarea
 id="devInput"
-placeholder="مثال: أريد AyAI يتذكر اسم المشروع ويتعامل ويا ملفات المشروع..."
+placeholder="مثلاً: حلل نفسك وشوف شنو أفضل تطوير ممكن نضيفه..."
 ></textarea>
 
-<div id="devPreview">
-بانتظار فكرة التطوير...
-</div>
-
-<div class="devButtons">
 
 <button
-class="devBtn"
 id="analyzeDev"
+type="button"
 >
-تحليل التطوير
+ANALYZE & PROPOSE DEVELOPMENT
 </button>
 
+
+<div id="devResult">
+
+<div class="devLabel">
+DEVELOPMENT PROPOSAL
+</div>
+
+
+<div id="proposal"></div>
+
+
+<div id="devActions">
+
 <button
-class="devBtn approve"
 id="approveDev"
-disabled
+type="button"
 >
-APPROVE
+✓ APPROVE DEVELOPMENT
 </button>
 
 <button
-class="devBtn cancel"
-id="closeDev"
+id="rejectDev"
+type="button"
 >
-إغلاق
+✕ REJECT
 </button>
 
 </div>
 
+
+<div id="devLog"></div>
+
 </div>
+
+</div>
+
+</div>
+
 
 </div>
 
@@ -797,7 +1228,7 @@ id="closeDev"
 
 
 /* =========================
-   ELEMENTS
+ELEMENTS
 ========================= */
 
 const canvas=
@@ -811,6 +1242,9 @@ document.getElementById("status");
 
 const heard=
 document.getElementById("heard");
+
+const name=
+document.getElementById("name");
 
 const mic=
 document.getElementById("mic");
@@ -830,33 +1264,39 @@ document.getElementById("voiceToggle");
 const memoryStatus=
 document.getElementById("memoryStatus");
 
-const devStatus=
-document.getElementById("devStatus");
-
 const devButton=
 document.getElementById("devButton");
 
-const devPanel=
-document.getElementById("devPanel");
-
-const devInput=
-document.getElementById("devInput");
-
-const devPreview=
-document.getElementById("devPreview");
-
-const analyzeDev=
-document.getElementById("analyzeDev");
-
-const approveDev=
-document.getElementById("approveDev");
+const developmentPanel=
+document.getElementById("developmentPanel");
 
 const closeDev=
 document.getElementById("closeDev");
 
+const devInput=
+document.getElementById("devInput");
+
+const analyzeDev=
+document.getElementById("analyzeDev");
+
+const devResult=
+document.getElementById("devResult");
+
+const proposal=
+document.getElementById("proposal");
+
+const approveDev=
+document.getElementById("approveDev");
+
+const rejectDev=
+document.getElementById("rejectDev");
+
+const devLog=
+document.getElementById("devLog");
+
 
 /* =========================
-   VARIABLES
+VARIABLES
 ========================= */
 
 let W=0;
@@ -876,7 +1316,7 @@ let mode="idle";
 
 
 /* =========================
-   AUDIO
+AUDIO
 ========================= */
 
 let audioCtx=null;
@@ -886,7 +1326,7 @@ let stream=null;
 
 
 /* =========================
-   RECOGNITION
+RECOGNITION
 ========================= */
 
 let recognition=null;
@@ -900,14 +1340,14 @@ let restartTimer=null;
 
 
 /* =========================
-   VOICE
+VOICE
 ========================= */
 
 let voiceEnabled=true;
 
 
 /* =========================
-   MEMORY
+MEMORY
 ========================= */
 
 let conversation=[];
@@ -917,14 +1357,16 @@ const MEMORY_KEY=
 
 
 /* =========================
-   DEVELOPMENT
+DEVELOPMENT
 ========================= */
 
-let developmentPlan=null;
+let currentProposal=null;
+
+let developmentBusy=false;
 
 
 /* =========================
-   MEMORY LOAD
+MEMORY LOAD
 ========================= */
 
 function loadMemory(){
@@ -966,7 +1408,7 @@ memoryStatus.textContent=
 
 
 /* =========================
-   MEMORY SAVE
+MEMORY SAVE
 ========================= */
 
 function saveMemory(){
@@ -986,7 +1428,7 @@ conversation.slice(-30)
 
 
 /* =========================
-   CLEAR MEMORY
+CLEAR MEMORY
 ========================= */
 
 function clearMemory(){
@@ -1017,7 +1459,7 @@ speak(
 
 
 /* =========================
-   SCREEN
+SCREEN
 ========================= */
 
 function resize(){
@@ -1034,6 +1476,7 @@ window.innerWidth;
 H=
 window.innerHeight;
 
+
 canvas.width=
 Math.max(
 1,
@@ -1046,20 +1489,19 @@ Math.max(
 Math.floor(H*DPR)
 );
 
+
 ctx.setTransform(
-DPR,
-0,
-0,
-DPR,
-0,
-0
+DPR,0,0,DPR,0,0
 );
 
+
 cx=W/2;
+
 cy=H/2;
 
 R=
 Math.min(W,H)*.235;
+
 
 makePts();
 
@@ -1067,7 +1509,7 @@ makePts();
 
 
 /* =========================
-   PARTICLES
+PARTICLES
 ========================= */
 
 function makePts(){
@@ -1091,19 +1533,24 @@ i++
 pts.push({
 
 a:
-Math.random()*Math.PI*2,
+Math.random()*
+Math.PI*2,
 
 r:
-R*(.78+Math.random()*.29),
+R*
+(.78+
+Math.random()*.29),
 
 s:
 (Math.random()-.5)*.001,
 
 ph:
-Math.random()*Math.PI*2,
+Math.random()*
+Math.PI*2,
 
 op:
-.2+Math.random()*.7,
+.2+
+Math.random()*.7,
 
 z:
 Math.random()
@@ -1116,7 +1563,7 @@ Math.random()
 
 
 /* =========================
-   MODE
+MODE
 ========================= */
 
 function setMode(m,text){
@@ -1129,7 +1576,7 @@ status.textContent=text;
 
 
 /* =========================
-   ANSWER
+ANSWER
 ========================= */
 
 function showAnswer(text){
@@ -1137,15 +1584,13 @@ function showAnswer(text){
 answerText.textContent=
 text||"";
 
-answerBox.classList.add(
-"show"
-);
+answerBox.classList.add("show");
 
 }
 
 
 /* =========================
-   ORB
+ORB
 ========================= */
 
 function animate(t){
@@ -1162,10 +1607,8 @@ t*.001;
 
 let measured=0;
 
-if(
-analyser&&
-audioData
-){
+
+if(analyser&&audioData){
 
 analyser.getByteTimeDomainData(
 audioData
@@ -1196,43 +1639,50 @@ sum/audioData.length
 
 }
 
+
 target=
 Math.max(
 
 measured,
 
 mode==="listening"
-?.035:
+? .035
+
+:
 
 mode==="speaking"
-?.06:
+? .06
+
+:
 
 mode==="thinking"
-?.025:
+? .025
+
+:
 
 .012
 
 );
 
+
 level+=
 (target-level)*.1;
 
 
-/* GLOW */
+/* glow */
 
 const glow=
 ctx.createRadialGradient(
-cx,
-cy,
-R*.1,
-cx,
-cy,
-R*1.55
+cx,cy,R*.1,
+cx,cy,R*1.55
 );
 
 glow.addColorStop(
 0,
-`rgba(60,170,255,${.025+level*.09})`
+`rgba(
+60,170,255,
+${.025+level*.09}
+)`
 );
 
 glow.addColorStop(
@@ -1245,17 +1695,14 @@ ctx.fillStyle=glow;
 ctx.beginPath();
 
 ctx.arc(
-cx,
-cy,
-R*1.55,
-0,
-Math.PI*2
+cx,cy,R*1.55,
+0,Math.PI*2
 );
 
 ctx.fill();
 
 
-/* RINGS */
+/* rings */
 
 for(
 let k=0;
@@ -1278,10 +1725,16 @@ level*12,
 
 0,
 Math.PI*2
+
 );
 
 ctx.strokeStyle=
-`rgba(120,210,255,${.045+level*.025})`;
+`rgba(
+120,
+210,
+255,
+${.045+level*.025}
+)`;
 
 ctx.lineWidth=.6;
 
@@ -1290,7 +1743,7 @@ ctx.stroke();
 }
 
 
-/* PARTICLES */
+/* particles */
 
 for(
 let i=0;
@@ -1319,8 +1772,6 @@ const y=
 cy+
 Math.sin(p.a)*rr;
 
-
-/* CONNECTIONS */
 
 for(
 let j=i+1;
@@ -1360,11 +1811,16 @@ ctx.moveTo(x,y);
 ctx.lineTo(qx,qy);
 
 ctx.strokeStyle=
-`rgba(150,225,255,${Math.max(
+`rgba(
+150,
+225,
+255,
+${Math.max(
 0,
 (.17-d/520)*
 (.7+level*2.3)
-)})`;
+)}
+)`;
 
 ctx.lineWidth=.45;
 
@@ -1375,23 +1831,24 @@ ctx.stroke();
 }
 
 
-/* PARTICLE */
-
 ctx.beginPath();
 
 ctx.arc(
-x,
-y,
+x,y,
 p.op*.8+level*1.8,
-0,
-Math.PI*2
+0,Math.PI*2
 );
 
 ctx.fillStyle=
-`rgba(210,242,255,${Math.min(
+`rgba(
+210,
+242,
+255,
+${Math.min(
 1,
 p.op*(.45+level*1.5)
-)})`;
+)}
+)`;
 
 ctx.shadowBlur=
 7+level*15;
@@ -1406,7 +1863,7 @@ ctx.shadowBlur=0;
 }
 
 
-/* ARCS */
+/* rotating arcs */
 
 for(
 let k=0;
@@ -1418,8 +1875,7 @@ const a=
 time*
 (.18+k*.035)*
 (k%2?1:-1)
-+
-k*1.6;
++k*1.6;
 
 ctx.beginPath();
 
@@ -1432,7 +1888,12 @@ a+.65+level*1.1
 );
 
 ctx.strokeStyle=
-`rgba(190,238,255,${.22+level*.55})`;
+`rgba(
+190,
+238,
+255,
+${.22+level*.55}
+)`;
 
 ctx.lineWidth=
 1.1+level*2;
@@ -1441,15 +1902,14 @@ ctx.stroke();
 
 }
 
-requestAnimationFrame(
-animate
-);
+
+requestAnimationFrame(animate);
 
 }
 
 
 /* =========================
-   AUDIO
+AUDIO SETUP
 ========================= */
 
 async function setupAudio(){
@@ -1469,6 +1929,7 @@ return;
 
 }
 
+
 if(
 !navigator.mediaDevices||
 !navigator.mediaDevices.getUserMedia
@@ -1480,24 +1941,30 @@ throw new Error(
 
 }
 
+
 stream=
 await navigator.mediaDevices.getUserMedia({
 audio:true
 });
 
+
 const AC=
 window.AudioContext||
 window.webkitAudioContext;
 
+
 if(!AC)return;
+
 
 audioCtx=
 new AC();
+
 
 const src=
 audioCtx.createMediaStreamSource(
 stream
 );
+
 
 analyser=
 audioCtx.createAnalyser();
@@ -1515,41 +1982,42 @@ src.connect(analyser);
 
 
 /* =========================
-   ARABIC VOICE
+ARABIC VOICE
 ========================= */
 
 function getArabicVoice(){
 
 if(
 !("speechSynthesis" in window)
-){
+)return null;
 
-return null;
-
-}
 
 const voices=
 speechSynthesis.getVoices()||[];
+
 
 return
 
 voices.find(
 v=>
-(v.lang||"").toLowerCase()==="ar-iq"
+(v.lang||"")
+.toLowerCase()==="ar-iq"
 )
 
 ||
 
 voices.find(
 v=>
-(v.lang||"").toLowerCase()==="ar-sa"
+(v.lang||"")
+.toLowerCase()==="ar-sa"
 )
 
 ||
 
 voices.find(
 v=>
-(v.lang||"").toLowerCase().startsWith("ar")
+(v.lang||"")
+.toLowerCase().startsWith("ar")
 )
 
 ||
@@ -1560,7 +2028,7 @@ null;
 
 
 /* =========================
-   SPEAK
+SPEAK
 ========================= */
 
 function speak(text){
@@ -1573,6 +2041,7 @@ return;
 
 }
 
+
 if(
 !("speechSynthesis" in window)
 ){
@@ -1583,21 +2052,24 @@ return;
 
 }
 
+
 try{
 
 speechSynthesis.cancel();
 
+
 const u=
-new SpeechSynthesisUtterance(
-text
-);
+new SpeechSynthesisUtterance(text);
+
 
 const voice=
 getArabicVoice();
 
+
 if(voice){
 
 u.voice=voice;
+
 u.lang=voice.lang;
 
 }else{
@@ -1606,18 +2078,24 @@ u.lang="ar-SA";
 
 }
 
+
 u.rate=.9;
+
 u.pitch=.95;
+
 u.volume=1;
+
 
 speaking=true;
 
 app.classList.add("active");
 
+
 setMode(
 "speaking",
 "AYAI IS SPEAKING"
 );
+
 
 u.onstart=()=>{
 
@@ -1632,11 +2110,13 @@ setMode(
 
 };
 
+
 u.onend=()=>{
 
 speaking=false;
 
 app.classList.remove("active");
+
 
 if(handsFree){
 
@@ -1654,6 +2134,7 @@ setMode(
 }
 
 };
+
 
 u.onerror=()=>{
 
@@ -1661,6 +2142,7 @@ speaking=false;
 
 app.classList.remove("active");
 
+
 if(handsFree){
 
 waitingForReply=false;
@@ -1678,29 +2160,9 @@ setMode(
 
 };
 
+
 speechSynthesis.speak(u);
 
-const keepAlive=
-setInterval(()=>{
-
-if(!speaking){
-
-clearInterval(
-keepAlive
-);
-
-return;
-
-}
-
-try{
-
-speechSynthesis.pause();
-speechSynthesis.resume();
-
-}catch(e){}
-
-},10000);
 
 }catch(e){
 
@@ -1716,24 +2178,29 @@ resumeConversation();
 
 
 /* =========================
-   NORMALIZE
+NORMALIZE
 ========================= */
 
 function normalizeArabic(s){
 
 return s
 .toLowerCase()
+
 .replace(/[أإآ]/g,"ا")
+
 .replace(/ة/g,"ه")
+
 .replace(/[؟?!.،,]/g," ")
+
 .replace(/\s+/g," ")
+
 .trim();
 
 }
 
 
 /* =========================
-   QUICK COMMANDS
+QUICK COMMANDS
 ========================= */
 
 function quickCommand(text){
@@ -1742,17 +2209,15 @@ const t=
 normalizeArabic(text);
 
 
-/* TIME */
+/* time */
 
 if(
 /(شكد|كم|شنو الوقت|الوقت|الساعه|الساعة)/
 .test(t)
 ){
 
-const now=new Date();
-
 return `الساعة الآن ${
-now.toLocaleTimeString(
+new Date().toLocaleTimeString(
 "ar-IQ",
 {
 hour:"numeric",
@@ -1764,17 +2229,15 @@ minute:"2-digit"
 }
 
 
-/* DATE */
+/* date */
 
 if(
 /(تاريخ اليوم|شنو التاريخ|التاريخ|اليوم شنو)/
 .test(t)
 ){
 
-const now=new Date();
-
 return `اليوم ${
-now.toLocaleDateString(
+new Date().toLocaleDateString(
 "ar-IQ",
 {
 weekday:"long",
@@ -1788,7 +2251,7 @@ day:"numeric"
 }
 
 
-/* YOUTUBE */
+/* youtube */
 
 if(
 /^(افتح|شغل|روح ل)\s*(يوتيوب|youtube)/
@@ -1805,7 +2268,7 @@ return "فتحتلك يوتيوب.";
 }
 
 
-/* GOOGLE */
+/* google */
 
 if(
 /^(افتح|روح ل)\s*(جوجل|گوگل|google)/
@@ -1822,7 +2285,7 @@ return "فتحتلك Google.";
 }
 
 
-/* SEARCH */
+/* search */
 
 let m=
 t.match(
@@ -1831,8 +2294,7 @@ t.match(
 
 if(m){
 
-const q=
-m[1].trim();
+const q=m[1].trim();
 
 if(q){
 
@@ -1849,7 +2311,7 @@ return `بحثتلك عن ${q}.`;
 }
 
 
-/* CALCULATOR */
+/* calculator */
 
 m=
 t.match(
@@ -1860,12 +2322,22 @@ if(m){
 
 let expr=
 m[1]
+
 .replace(/ضرب|في/g,"*")
-.replace(/قسمة على|قسمه على|على/g,"/")
+
+.replace(
+/قسمة على|قسمه على|على/g,
+"/"
+)
+
 .replace(/زائد/g,"+")
+
 .replace(/ناقص/g,"-")
+
 .replace(/×/g,"*")
+
 .replace(/÷/g,"/");
+
 
 if(
 /^[0-9+\-*/().\s]+$/.test(expr)
@@ -1893,7 +2365,7 @@ return `النتيجة هي ${result}.`;
 }
 
 
-/* CLEAR MEMORY */
+/* clear memory */
 
 if(
 /(مسح الذاكره|امسح الذاكره|انس كلشي|انسى كلشي)/
@@ -1913,20 +2385,22 @@ return null;
 
 
 /* =========================
-   AI CHAT
+AI CHAT
 ========================= */
 
 async function reply(text){
 
-const t=text.trim();
+const t=
+text.trim();
 
 if(!t)return;
 
 
-/* QUICK */
+/* quick */
 
 const quick=
 quickCommand(t);
+
 
 if(quick){
 
@@ -1955,14 +2429,17 @@ return;
 }
 
 
-/* SAVE */
+/* memory */
 
 conversation.push({
+
 role:"user",
 content:t
+
 });
 
 saveMemory();
+
 
 showAnswer("");
 
@@ -1977,16 +2454,19 @@ setMode(
 );
 
 
-/* MEMORY */
-
 const memoryText=
+
 conversation
 .slice(-12)
 .map(
 m=>
-(m.role==="user"
-?"المستخدم: "
-:"AyAI: ")+
+(
+m.role==="user"
+?
+"المستخدم: "
+:
+"AyAI: "
+)+
 m.content
 )
 .join("\n");
@@ -1994,18 +2474,11 @@ m.content
 
 const prompt=
 
-`أنت AyAI، مساعد شخصي ذكي ومتطور.
+`أنت AyAI، مساعد شخصي ذكي.
 
-تحدث بالعربية ويمكن استخدام اللهجة العراقية بشكل طبيعي.
+تحدث بالعربية، ويمكنك استخدام اللهجة العراقية بشكل طبيعي.
 
-أنت مساعد ذكي شبيه بمساعدات الخيال العلمي.
-كن واضحاً ومختصراً عندما يكون السؤال بسيطاً.
-وفي المهام المعقدة فكر بطريقة منظمة.
-
-لديك ذاكرة للمحادثة السابقة.
-
-إذا طلب المستخدم تطوير النظام، لا تدّعي أنك عدلت الكود.
-قل له ما الذي يحتاج إلى تغييره وانتظر موافقته.
+كن واضحاً ومختصراً.
 
 ذاكرة المحادثة:
 
@@ -2032,7 +2505,8 @@ headers:{
 "application/json"
 },
 
-body:JSON.stringify({
+body:
+JSON.stringify({
 message:prompt
 })
 
@@ -2041,6 +2515,7 @@ message:prompt
 
 const data=
 await response.json();
+
 
 if(!response.ok){
 
@@ -2051,23 +2526,28 @@ data.error||
 
 }
 
+
 const answer=
 (
 data.answer||
 "ما حصلت جواب."
-)
-.trim();
+).trim();
+
 
 conversation.push({
+
 role:"assistant",
 content:answer
+
 });
 
 saveMemory();
 
+
 showAnswer(answer);
 
 heard.textContent="";
+
 
 if(voiceEnabled){
 
@@ -2079,14 +2559,34 @@ resumeConversation();
 
 }
 
+
 }catch(error){
 
 console.error(error);
 
+
+if(
+conversation.length &&
+conversation[
+conversation.length-1
+].role==="user"
+){
+
+conversation.pop();
+
+saveMemory();
+
+}
+
+
 const msg=
 "صار خطأ بالاتصال بالذكاء الاصطناعي. حاول مرة ثانية.";
 
+
 showAnswer(msg);
+
+heard.textContent="";
+
 
 if(voiceEnabled){
 
@@ -2104,7 +2604,7 @@ resumeConversation();
 
 
 /* =========================
-   SPEECH RECOGNITION
+SPEECH RECOGNITION
 ========================= */
 
 function startRecognition(){
@@ -2113,6 +2613,7 @@ const SR=
 window.SpeechRecognition||
 window.webkitSpeechRecognition;
 
+
 if(!SR){
 
 setMode(
@@ -2120,21 +2621,30 @@ setMode(
 "VOICE NOT SUPPORTED"
 );
 
-heard.textContent=
-"المتصفح الحالي لا يدعم التعرف على الصوت.";
-
 handsFree=false;
 
 return;
 
 }
 
+
 if(!handsFree)return;
 
 if(recognizing)return;
 
+
+if(recognition){
+
+try{
+recognition.abort();
+}catch(e){}
+
+}
+
+
 recognition=
 new SR();
+
 
 recognition.lang="ar-IQ";
 
@@ -2168,7 +2678,9 @@ heard.textContent="";
 recognition.onresult=e=>{
 
 let finalText="";
+
 let interim="";
+
 
 for(
 let i=e.resultIndex;
@@ -2178,6 +2690,7 @@ i++
 
 const tx=
 e.results[i][0].transcript;
+
 
 if(e.results[i].isFinal){
 
@@ -2191,18 +2704,20 @@ interim+=tx;
 
 }
 
+
 heard.textContent=
 finalText||interim;
+
 
 if(finalText){
 
 waitingForReply=true;
 
+
 try{
-
 recognition.stop();
-
 }catch(e){}
+
 
 reply(finalText);
 
@@ -2216,6 +2731,7 @@ recognition.onerror=e=>{
 recognizing=false;
 
 mic.classList.remove("on");
+
 
 if(
 e.error==="not-allowed"||
@@ -2236,6 +2752,7 @@ return;
 
 }
 
+
 if(
 handsFree &&
 !speaking &&
@@ -2254,6 +2771,7 @@ recognition.onend=()=>{
 recognizing=false;
 
 mic.classList.remove("on");
+
 
 if(
 handsFree &&
@@ -2278,7 +2796,11 @@ recognizing=false;
 
 mic.classList.remove("on");
 
+if(handsFree){
+
 scheduleRecognition();
+
+}
 
 }
 
@@ -2286,7 +2808,7 @@ scheduleRecognition();
 
 
 /* =========================
-   AUTO LISTEN
+AUTO RESTART
 ========================= */
 
 function scheduleRecognition(){
@@ -2297,6 +2819,7 @@ if(recognizing)return;
 
 if(speaking)return;
 
+
 if(restartTimer){
 
 clearTimeout(
@@ -2304,6 +2827,7 @@ restartTimer
 );
 
 }
+
 
 restartTimer=
 setTimeout(()=>{
@@ -2325,12 +2849,13 @@ startRecognition();
 
 
 /* =========================
-   RESUME
+RESUME
 ========================= */
 
 function resumeConversation(){
 
 waitingForReply=false;
+
 
 if(
 handsFree &&
@@ -2357,18 +2882,20 @@ setMode(
 
 
 /* =========================
-   AUDIO UNLOCK
+MOBILE SPEECH UNLOCK
 ========================= */
 
 function unlockSpeech(){
 
 if(
-!("speechSynthesis"in window)
+!("speechSynthesis" in window)
 )return;
+
 
 try{
 
 speechSynthesis.cancel();
+
 
 const u=
 new SpeechSynthesisUtterance(" ");
@@ -2378,6 +2905,7 @@ u.volume=0;
 u.rate=10;
 
 speechSynthesis.speak(u);
+
 
 setTimeout(()=>{
 
@@ -2393,7 +2921,7 @@ speechSynthesis.cancel();
 
 
 /* =========================
-   VOICE TOGGLE
+VOICE TOGGLE
 ========================= */
 
 voiceToggle.addEventListener(
@@ -2403,15 +2931,17 @@ voiceToggle.addEventListener(
 voiceEnabled=
 !voiceEnabled;
 
+
 voiceToggle.classList.toggle(
 "active",
 voiceEnabled
 );
 
+
 if(!voiceEnabled){
 
 if(
-"speechSynthesis"in window
+"speechSynthesis" in window
 ){
 
 speechSynthesis.cancel();
@@ -2419,17 +2949,6 @@ speechSynthesis.cancel();
 }
 
 speaking=false;
-
-if(handsFree){
-
-setMode(
-"listening",
-"LISTENING..."
-);
-
-scheduleRecognition();
-
-}
 
 }else{
 
@@ -2442,7 +2961,7 @@ unlockSpeech();
 
 
 /* =========================
-   MIC
+MIC BUTTON
 ========================= */
 
 mic.addEventListener(
@@ -2451,13 +2970,12 @@ async()=>{
 
 try{
 
-/* STOP */
-
 if(handsFree){
 
 handsFree=false;
 
 waitingForReply=false;
+
 
 if(restartTimer){
 
@@ -2469,6 +2987,7 @@ restartTimer=null;
 
 }
 
+
 if(recognition){
 
 try{
@@ -2477,15 +2996,18 @@ recognition.abort();
 
 }
 
+
 if(
-"speechSynthesis"in window
+"speechSynthesis" in window
 ){
 
 speechSynthesis.cancel();
 
 }
 
+
 speaking=false;
+
 recognizing=false;
 
 mic.classList.remove("on");
@@ -2505,8 +3027,6 @@ return;
 }
 
 
-/* START */
-
 handsFree=true;
 
 waitingForReply=false;
@@ -2516,6 +3036,7 @@ unlockSpeech();
 await setupAudio();
 
 startRecognition();
+
 
 }catch(e){
 
@@ -2543,19 +3064,19 @@ heard.textContent=
 
 
 /* =========================================================
-   DEVELOPMENT BRAIN
+SELF DEVELOPMENT SYSTEM
 ========================================================= */
 
 
-/* OPEN PANEL */
+/* =========================
+OPEN PANEL
+========================= */
 
 devButton.addEventListener(
 "click",
 ()=>{
 
-devPanel.classList.add("show");
-
-devButton.classList.add("active");
+developmentPanel.classList.add("open");
 
 devInput.focus();
 
@@ -2563,50 +3084,130 @@ devInput.focus();
 );
 
 
-/* CLOSE */
+/* =========================
+CLOSE PANEL
+========================= */
 
 closeDev.addEventListener(
 "click",
 ()=>{
 
-devPanel.classList.remove("show");
-
-devButton.classList.remove("active");
+developmentPanel.classList.remove("open");
 
 }
 );
 
 
-/* ANALYZE */
+/* =========================
+CLICK OUTSIDE
+========================= */
+
+developmentPanel.addEventListener(
+"click",
+e=>{
+
+if(e.target===developmentPanel){
+
+developmentPanel.classList.remove("open");
+
+}
+
+}
+);
+
+
+/* =========================
+ANALYZE DEVELOPMENT
+========================= */
 
 analyzeDev.addEventListener(
 "click",
 async()=>{
 
-const idea=
+if(developmentBusy)return;
+
+
+const request=
 devInput.value.trim();
 
-if(!idea){
 
-devPreview.textContent=
-"اكتب فكرة التطوير أولاً.";
+if(!request){
+
+devInput.focus();
 
 return;
 
 }
 
-devStatus.textContent=
-"DEVELOPMENT: ANALYZING";
 
-approveDev.disabled=true;
+developmentBusy=true;
 
-developmentPlan=null;
+analyzeDev.disabled=true;
 
-devPreview.textContent=
-"AyAI يقوم بتحليل التطوير...";
+analyzeDev.textContent=
+"ANALYZING...";
+
+devResult.classList.add("show");
+
+proposal.textContent=
+"جاري تحليل AyAI واقتراح التطوير...";
+
+devLog.textContent=
+"Analyzing current capabilities...";
 
 
 try{
+
+const currentCapabilities=
+
+`AyAI capabilities:
+- Arabic voice recognition
+- Arabic speech synthesis
+- Continuous hands-free conversation
+- Local conversation memory
+- Quick commands
+- YouTube opening
+- Google opening
+- Google search
+- Calculator
+- AI chat through /api/chat
+- Voice ON/OFF
+- Animated AI orb
+- User-approved development proposal system`;
+
+
+const developmentPrompt=
+
+`أنت مهندس النظام الخاص بـ AyAI.
+
+مهمتك ليست تنفيذ أي تعديل.
+
+مهمتك فقط تحليل النظام واقتراح تطوير آمن.
+
+${currentCapabilities}
+
+طلب المستخدم:
+
+${request}
+
+حلل النظام واقترح تطويراً واحداً أو أكثر.
+
+أرجع النتيجة بهذا الشكل:
+
+اسم التطوير:
+الهدف:
+المشكلة الحالية:
+ما الذي سيتغير:
+الملفات المتأثرة:
+المخاطر:
+الفوائد:
+خطة التنفيذ:
+هل يحتاج صلاحيات إضافية:
+
+ممنوع تنفيذ أي كود.
+ممنوع الادعاء أن التعديل تم.
+المستخدم هو صاحب القرار النهائي.`;
+
 
 const response=
 await fetch(
@@ -2620,36 +3221,9 @@ headers:{
 "application/json"
 },
 
-body:JSON.stringify({
-
-message:
-
-`أنت مهندس تطوير لنظام AyAI.
-
-حلل طلب التطوير التالي:
-
-${idea}
-
-أريد منك إنشاء خطة تطوير فقط.
-
-لا تنفذ أي شيء.
-
-اكتب:
-
-1. اسم التطوير
-2. المشكلة التي يحلها
-3. ماذا سيتغير
-4. الملفات التي تحتاج تعديل
-5. المخاطر المحتملة
-6. طريقة اختبار التطوير
-
-وفي النهاية اكتب:
-
-WAITING FOR APPROVAL
-
-الطلب:
-${idea}`
-
+body:
+JSON.stringify({
+message:developmentPrompt
 })
 
 });
@@ -2658,73 +3232,114 @@ ${idea}`
 const data=
 await response.json();
 
+
 if(!response.ok){
 
 throw new Error(
 data.error||
-"Development API Error"
+"API Error"
 );
 
 }
 
-developmentPlan={
-idea:idea,
-plan:data.answer||
-"لا توجد خطة."
+
+const result=
+(
+data.answer||
+"لم أستطع إنشاء اقتراح تطوير."
+).trim();
+
+
+currentProposal={
+
+request:request,
+
+proposal:result,
+
+createdAt:
+new Date().toISOString()
+
 };
 
-devPreview.textContent=
-developmentPlan.plan;
 
-approveDev.disabled=false;
+proposal.textContent=
+result;
 
-devStatus.textContent=
-"DEVELOPMENT: WAITING APPROVAL";
+
+devLog.textContent=
+"STATUS: PROPOSAL READY — WAITING FOR USER APPROVAL";
 
 }catch(error){
 
 console.error(error);
 
-devPreview.textContent=
-"تعذر تحليل التطوير. تأكد أن /api/chat يعمل.";
+proposal.textContent=
+"حدث خطأ أثناء تحليل التطوير.";
 
-devStatus.textContent=
-"DEVELOPMENT: ERROR";
+devLog.textContent=
+"STATUS: ANALYSIS FAILED";
+
+}finally{
+
+developmentBusy=false;
+
+analyzeDev.disabled=false;
+
+analyzeDev.textContent=
+"ANALYZE & PROPOSE DEVELOPMENT";
 
 }
 
-});
+}
+);
 
 
-/* APPROVE */
+/* =========================
+APPROVE DEVELOPMENT
+========================= */
 
 approveDev.addEventListener(
 "click",
 async()=>{
 
-if(!developmentPlan)return;
+if(!currentProposal){
 
-const confirmed=
-confirm(
-"هل تريد إعطاء AyAI صلاحية تنفيذ هذا التطوير؟\n\nلن يتم تنفيذ أي تعديل إلا من خلال نظام التطوير الآمن."
-);
+devLog.textContent=
+"ERROR: NO DEVELOPMENT PROPOSAL";
 
-if(!confirmed)return;
+return;
 
-devStatus.textContent=
-"DEVELOPMENT: APPROVED";
-
-devPreview.textContent=
-"تمت الموافقة.\n\nجاري إرسال خطة التطوير إلى نظام التنفيذ...";
+}
 
 
-/*
-   ملاحظة:
-   هذا endpoint سنضيفه بالخطوة التالية.
-   لا يتم تعديل ملفات المشروع من المتصفح مباشرة.
-*/
+if(developmentBusy)return;
+
+
+developmentBusy=true;
+
+approveDev.disabled=true;
+
+rejectDev.disabled=true;
+
+approveDev.textContent=
+"EXECUTING...";
+
+
+devLog.textContent=
+"USER APPROVAL RECEIVED. SENDING DEVELOPMENT REQUEST...";
+
 
 try{
+
+/*
+IMPORTANT:
+
+index.html لا يملك صلاحية
+تعديل ملفات السيرفر مباشرة.
+
+هذا الطلب يذهب إلى Backend
+بعد موافقة المستخدم فقط.
+*/
 
 const response=
 await fetch(
@@ -2738,72 +3353,102 @@ headers:{
 "application/json"
 },
 
-body:JSON.stringify({
+body:
+JSON.stringify({
 
-idea:
-developmentPlan.idea,
+approved:true,
 
-plan:
-developmentPlan.plan,
+request:
+currentProposal.request,
 
-approved:true
+proposal:
+currentProposal.proposal,
+
+approvedAt:
+new Date().toISOString(),
+
+source:
+"user-approved-ayai-development"
 
 })
 
 });
 
 
-if(!response.ok){
-
 const data=
-await response.json()
-.catch(()=>({}));
+await response.json();
+
+
+if(!response.ok){
 
 throw new Error(
 data.error||
-"Development endpoint unavailable"
+"Development API Error"
 );
 
 }
 
-const data=
-await response.json();
 
-devPreview.textContent=
-data.message||
-"تم إرسال التطوير بنجاح.";
+devLog.textContent=
+"DEVELOPMENT REQUEST ACCEPTED BY SERVER.";
 
-devStatus.textContent=
-"DEVELOPMENT: COMPLETE";
+
+proposal.textContent=
+(data.message||
+"تم إرسال التطوير للتنفيذ. سيتم تطبيقه وفق صلاحيات النظام.");
 
 }catch(error){
 
 console.error(error);
 
-devPreview.textContent=
-`تمت الموافقة على التطوير، لكن نظام التنفيذ غير مضاف بعد.
+devLog.textContent=
+"DEVELOPMENT FAILED: "+
+(error.message||"Unknown error");
 
-الخطوة التالية:
-نضيف api/develop.js حتى يستطيع AyAI إنشاء نسخة احتياطية، تعديل الكود، اختباره، ثم يعرض لك النتيجة قبل اعتمادها.
+}finally{
 
-الخطأ:
-${error.message}`;
+developmentBusy=false;
 
-devStatus.textContent=
-"DEVELOPMENT: AWAITING ENGINE";
+approveDev.disabled=false;
+
+rejectDev.disabled=false;
+
+approveDev.textContent=
+"✓ APPROVE DEVELOPMENT";
 
 }
 
-});
+}
+);
 
 
 /* =========================
-   INITIALIZE
+REJECT
+========================= */
+
+rejectDev.addEventListener(
+"click",
+()=>{
+
+currentProposal=null;
+
+devResult.classList.remove("show");
+
+proposal.textContent="";
+
+devLog.textContent=
+"DEVELOPMENT REJECTED BY USER.";
+
+}
+);
+
+
+/* =========================
+INITIALIZE
 ========================= */
 
 loadMemory();
 
-voiceToggle.classList.add("active");
 
 if(
 "speechSynthesis" in window
@@ -2820,21 +3465,28 @@ speechSynthesis.getVoices();
 
 }
 
+
 window.addEventListener(
 "resize",
 resize,
 {passive:true}
 );
 
+
 resize();
 
-requestAnimationFrame(
-animate
+requestAnimationFrame(animate);
+
+
+voiceToggle.classList.add(
+"active"
 );
+
 
 })();
 
 </script>
 
 </body>
+
 </html>
