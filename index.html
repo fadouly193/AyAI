@@ -201,39 +201,25 @@ z-index:2;
 
 
 /* =====================================================
-   CONTROL BUTTON
+   DEVELOPMENT OPEN BUTTON
 ===================================================== */
 
 #devOpen{
 position:absolute;
 top:20px;
 left:20px;
-
 width:44px;
 height:44px;
-
 border-radius:50%;
-
-border:
-1px solid
-rgba(120,210,255,.25);
-
-background:
-rgba(3,10,15,.75);
-
+border:1px solid rgba(120,210,255,.25);
+background:rgba(3,10,15,.75);
 color:#bdeaff;
-
 font-size:20px;
-
 display:grid;
 place-items:center;
-
 cursor:pointer;
-
 z-index:20;
-
 backdrop-filter:blur(10px);
-
 box-shadow:
 0 0 20px
 rgba(80,190,255,.08);
@@ -246,23 +232,13 @@ rgba(80,190,255,.08);
 
 #development{
 position:fixed;
-
 inset:0;
-
-background:
-rgba(0,0,0,.92);
-
-backdrop-filter:
-blur(18px);
-
+background:rgba(0,0,0,.92);
+backdrop-filter:blur(18px);
 z-index:100;
-
 display:none;
-
 overflow:auto;
-
-padding:
-40px 18px;
+padding:40px 18px;
 }
 
 #development.active{
@@ -270,131 +246,79 @@ display:block;
 }
 
 .devShell{
-width:
-min(900px,100%);
-
+width:min(900px,100%);
 margin:auto;
-
-border:
-1px solid
-rgba(100,210,255,.25);
-
+border:1px solid rgba(100,210,255,.25);
 border-radius:28px;
-
-background:
-rgba(3,10,15,.92);
-
+background:rgba(3,10,15,.92);
 box-shadow:
 0 0 80px
 rgba(40,170,230,.08);
-
 padding:26px;
-
 position:relative;
 }
 
 .devClose{
 position:absolute;
-
 top:20px;
 left:20px;
-
 width:48px;
 height:48px;
-
 border-radius:50%;
-
-background:
-transparent;
-
-border:
-1px solid
-rgba(120,210,255,.25);
-
+background:transparent;
+border:1px solid rgba(120,210,255,.25);
 color:#bdeaff;
-
 font-size:24px;
-
 cursor:pointer;
 }
 
 .devTitle{
 font-size:clamp(28px,5vw,48px);
-
 font-weight:300;
-
 letter-spacing:1px;
-
 color:#dff7ff;
-
 margin-bottom:4px;
 }
 
 .devSubtitle{
 color:#678796;
-
 font-size:14px;
-
 letter-spacing:1px;
-
 margin-bottom:30px;
 }
 
 .devBox{
-border:
-1px solid
-rgba(100,210,255,.15);
-
+border:1px solid rgba(100,210,255,.15);
 border-radius:22px;
-
-background:
-rgba(0,5,8,.7);
-
+background:rgba(0,5,8,.7);
 padding:20px;
-
 margin-bottom:18px;
 }
 
 .devLabel{
 font-size:13px;
-
 color:#6d9aaa;
-
 letter-spacing:1px;
-
 margin-bottom:10px;
 }
 
 #devRequest{
 width:100%;
-
 min-height:140px;
-
 resize:vertical;
-
-border:
-1px solid
-rgba(120,210,255,.2);
-
+border:1px solid rgba(120,210,255,.2);
 border-radius:15px;
-
 background:#02070a;
-
 color:#eafaff;
-
 padding:16px;
-
 font-size:16px;
-
 line-height:1.8;
-
 outline:none;
+direction:rtl;
 }
 
 #devRequest:focus{
-border-color:
-rgba(120,220,255,.55);
-
+border-color:rgba(120,220,255,.55);
 box-shadow:
 0 0 25px
 rgba(80,190,255,.08);
@@ -402,41 +326,25 @@ rgba(80,190,255,.08);
 
 .devButtons{
 display:flex;
-
 gap:12px;
-
 flex-wrap:wrap;
-
 justify-content:flex-end;
-
 margin-top:15px;
 }
 
 .devBtn{
-border:
-1px solid
-rgba(120,210,255,.25);
-
+border:1px solid rgba(120,210,255,.25);
 border-radius:14px;
-
-padding:
-13px 20px;
-
+padding:13px 20px;
 background:#030b10;
-
 color:#dff8ff;
-
 font-size:14px;
-
 cursor:pointer;
-
 transition:.2s;
 }
 
 .devBtn:hover{
-border-color:
-rgba(120,220,255,.65);
-
+border-color:rgba(120,220,255,.65);
 box-shadow:
 0 0 20px
 rgba(80,190,255,.12);
@@ -449,7 +357,6 @@ linear-gradient(
 #06384b,
 #07556f
 );
-
 border-color:
 rgba(100,220,255,.65);
 }
@@ -461,7 +368,6 @@ linear-gradient(
 #075b48,
 #08775b
 );
-
 border-color:
 rgba(80,255,200,.55);
 }
@@ -477,89 +383,64 @@ cursor:not-allowed;
 
 #devResult{
 white-space:pre-wrap;
-
 direction:rtl;
-
 font-size:15px;
-
 line-height:1.9;
-
 color:#ccebf5;
-
 min-height:80px;
 }
 
 #devStatus{
 font-size:12px;
-
 letter-spacing:2px;
-
 color:#628899;
-
 margin-top:10px;
-
 direction:ltr;
 }
 
 .devPlan{
 margin-top:15px;
-
 padding:15px;
-
 border-radius:14px;
-
 background:
 rgba(100,200,255,.035);
-
-border:
-1px solid
-rgba(100,200,255,.1);
-
+border:1px solid rgba(100,200,255,.1);
 line-height:1.8;
+}
+
+.devChanges{
+margin-top:12px;
+padding-right:20px;
+}
+
+.devChanges li{
+margin-bottom:7px;
 }
 
 .devFiles{
 display:flex;
-
 gap:8px;
-
 flex-wrap:wrap;
-
 margin-top:10px;
 }
 
 .devFile{
-padding:
-7px 12px;
-
+padding:7px 12px;
 border-radius:10px;
-
 background:
 rgba(80,190,255,.07);
-
-border:
-1px solid
-rgba(100,200,255,.12);
-
+border:1px solid rgba(100,200,255,.12);
 font-size:12px;
-
 direction:ltr;
 }
 
 #devApproval{
 display:none;
-
 margin-top:20px;
-
-border:
-1px solid
-rgba(80,255,200,.2);
-
+border:1px solid rgba(80,255,200,.2);
 background:
 rgba(0,40,30,.22);
-
 border-radius:18px;
-
 padding:18px;
 }
 
@@ -569,36 +450,55 @@ display:block;
 
 .approvalTitle{
 color:#9dffdc;
-
 font-size:17px;
-
 margin-bottom:8px;
 }
 
 .approvalText{
 color:#a9c5cc;
-
 font-size:13px;
-
 line-height:1.8;
 }
 
 #devError{
-color:#ffaaaA;
-
+color:#ffaaaa;
 white-space:pre-wrap;
-
 margin-top:10px;
-
 direction:ltr;
+line-height:1.7;
 }
 
 #devSuccess{
 color:#91ffd8;
-
 white-space:pre-wrap;
-
 margin-top:10px;
+line-height:1.7;
+}
+
+.devBadge{
+display:inline-block;
+padding:5px 10px;
+border-radius:20px;
+font-size:11px;
+margin-top:10px;
+}
+
+.devBadge.low{
+color:#8dffd5;
+background:rgba(50,220,150,.08);
+border:1px solid rgba(50,220,150,.2);
+}
+
+.devBadge.medium{
+color:#ffe18d;
+background:rgba(255,200,50,.08);
+border:1px solid rgba(255,200,50,.2);
+}
+
+.devBadge.high{
+color:#ffaaaa;
+background:rgba(255,60,60,.08);
+border:1px solid rgba(255,60,60,.2);
 }
 
 @media(max-width:600px){
@@ -637,8 +537,7 @@ right:10px;
 }
 
 #development{
-padding:
-20px 10px;
+padding:20px 10px;
 }
 
 .devShell{
@@ -663,30 +562,23 @@ width:100%;
 
 <body>
 
-
 <div id="app">
 
-
 <canvas id="orb"></canvas>
-
 
 <div id="status">
 AYAI IS READY
 </div>
 
-
 <div id="memory">
 MEMORY: ON
 </div>
-
 
 <div id="name">
 AyAI
 </div>
 
-
 <div id="heard"></div>
-
 
 <button
 id="mic"
@@ -715,11 +607,9 @@ d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v4M9 21h6"
 
 </button>
 
-
 <div id="tip">
 TAP TO SPEAK • TALK TO AYAI
 </div>
-
 
 <button
 id="devOpen"
@@ -729,9 +619,7 @@ aria-label="Open Development Core"
 ⚙
 </button>
 
-
 </div>
-
 
 
 <!-- ===================================================
@@ -742,7 +630,6 @@ aria-label="Open Development Core"
 
 <div class="devShell">
 
-
 <button
 class="devClose"
 id="devClose"
@@ -751,24 +638,24 @@ type="button"
 ×
 </button>
 
-
 <div class="devTitle">
 AyAI Development Core
 </div>
-
 
 <div class="devSubtitle">
 SELF DEVELOPMENT • APPROVAL REQUIRED
 </div>
 
 
-<div class="devBox">
+<!-- =================================================
+     REQUEST
+================================================= -->
 
+<div class="devBox">
 
 <div class="devLabel">
 WHAT SHOULD AYAI DEVELOP?
 </div>
-
 
 <textarea
 id="devRequest"
@@ -784,7 +671,6 @@ placeholder="مثال:
 حسن واجهة AyAI بدون تغيير التصميم الأساسي"
 ></textarea>
 
-
 <div class="devButtons">
 
 <button
@@ -794,7 +680,6 @@ type="button"
 >
 CANCEL
 </button>
-
 
 <button
 class="devBtn primary"
@@ -809,26 +694,23 @@ ANALYZE DEVELOPMENT
 </div>
 
 
+<!-- =================================================
+     DEVELOPMENT PLAN
+================================================= -->
 
 <div class="devBox">
-
 
 <div class="devLabel">
 DEVELOPMENT PLAN
 </div>
 
-
 <div id="devResult">
 اكتب طلب التطوير ثم اضغط ANALYZE DEVELOPMENT.
 </div>
 
-
-<div
-id="devStatus"
->
+<div id="devStatus">
 DEVELOPMENT CORE READY
 </div>
-
 
 <div
 class="devPlan"
@@ -845,6 +727,15 @@ class="devFiles"
 id="devFiles"
 ></div>
 
+<div
+id="devChanges"
+class="devChanges"
+></div>
+
+<div
+id="devRisk"
+></div>
+
 </div>
 
 
@@ -853,31 +744,44 @@ id="devFiles"
 <div id="devSuccess"></div>
 
 
-<div id="devApproval">
+<!-- =================================================
+     APPROVAL
+================================================= -->
 
+<div id="devApproval">
 
 <div class="approvalTitle">
 ⚠ APPROVAL REQUIRED
 </div>
 
-
 <div class="approvalText">
 
-AyAI قام بتحليل الطلب.
+تم تحليل طلب التطوير.
 
-لن يتم تعديل أي ملف الآن.
+<strong>
+لم يتم تعديل أي ملف حتى الآن.
+</strong>
 
-عند الضغط على
-<strong>APPROVE & APPLY</strong>
-سيتم إرسال المحتوى الجديد إلى
-GitHub
-وتنفيذ التعديل.
+بعد الضغط على:
+
+<strong>
+APPROVE & APPLY
+</strong>
+
+سيتم:
+
+1. توليد النسخة الجديدة من
+index.html
+
+2. إرسالها إلى GitHub.
+
+3. إنشاء Commit جديد.
+
+4. نشر التغيير عبر Vercel.
 
 </div>
 
-
 <div class="devButtons">
-
 
 <button
 class="devBtn danger"
@@ -887,7 +791,6 @@ type="button"
 REJECT
 </button>
 
-
 <button
 class="devBtn approve"
 id="devApprove"
@@ -896,18 +799,15 @@ type="button"
 APPROVE & APPLY
 </button>
 
-
 </div>
 
 </div>
 
 </div>
 
-
 </div>
 
 </div>
-
 
 
 <script>
@@ -1018,13 +918,9 @@ JSON.stringify(conversation)
 function addMemory(role,text){
 
 conversation.push({
-
 role:role,
-
 text:text,
-
 time:Date.now()
-
 });
 
 saveMemory();
@@ -1929,7 +1825,6 @@ recognition.onresult=
 (e)=>{
 
 let finalText="";
-
 let interim="";
 
 
@@ -2169,6 +2064,16 @@ document.getElementById(
 "devFiles"
 );
 
+const devChanges=
+document.getElementById(
+"devChanges"
+);
+
+const devRisk=
+document.getElementById(
+"devRisk"
+);
+
 const devError=
 document.getElementById(
 "devError"
@@ -2181,17 +2086,12 @@ document.getElementById(
 
 
 /*
-المحتوى الذي سيتم تطبيقه
-بعد الموافقة.
+=====================================================
+DEVELOPMENT STATE
+=====================================================
 */
 
 let pendingDevelopment=null;
-
-
-/*
-الملفات المسموح لـ Core
-بالتعامل معها.
-*/
 
 const DEVELOPMENT_FILES=[
 "index.html"
@@ -2199,7 +2099,179 @@ const DEVELOPMENT_FILES=[
 
 
 /*
-فتح Core
+=====================================================
+HELPERS
+=====================================================
+*/
+
+function resetDevelopmentMessages(){
+
+devError.textContent="";
+devSuccess.textContent="";
+
+}
+
+
+function normalizeResult(result){
+
+if(!result)
+return null;
+
+if(result.result)
+return result.result;
+
+if(result.analysis)
+return result.analysis;
+
+return result;
+
+}
+
+
+function renderRisk(risk){
+
+const value=
+String(risk||"متوسط")
+.trim();
+
+const lower=
+value.toLowerCase();
+
+let cls="medium";
+
+if(
+lower.includes("منخفض") ||
+lower.includes("low")
+){
+
+cls="low";
+
+}
+
+if(
+lower.includes("مرتفع") ||
+lower.includes("high")
+){
+
+cls="high";
+
+}
+
+devRisk.innerHTML=
+`<span class="devBadge ${cls}">
+RISK: ${escapeHtml(value)}
+</span>`;
+
+}
+
+
+function escapeHtml(value){
+
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function renderChanges(changes){
+
+devChanges.innerHTML="";
+
+if(!Array.isArray(changes))
+return;
+
+if(!changes.length)
+return;
+
+const title=
+document.createElement("div");
+
+title.textContent=
+"التغييرات المقترحة:";
+
+devChanges.appendChild(
+title
+);
+
+const ul=
+document.createElement("ul");
+
+for(
+const change of changes
+){
+
+const li=
+document.createElement("li");
+
+li.textContent=
+String(change);
+
+ul.appendChild(li);
+
+}
+
+devChanges.appendChild(ul);
+
+}
+
+
+function showDevelopmentPlan(result){
+
+const parsed=
+normalizeResult(result)||{};
+
+const summary=
+parsed.summary||
+parsed.description||
+parsed.message||
+"تم تحليل طلب التطوير.";
+
+devResult.textContent=
+summary;
+
+devFiles.innerHTML="";
+
+DEVELOPMENT_FILES.forEach(
+file=>{
+
+const el=
+document.createElement(
+"span"
+);
+
+el.className=
+"devFile";
+
+el.textContent=
+file;
+
+devFiles.appendChild(el);
+
+}
+);
+
+renderChanges(
+parsed.changes||[]
+);
+
+renderRisk(
+parsed.risk||"متوسط"
+);
+
+devPlan.style.display=
+"block";
+
+}
+
+
+/*
+=====================================================
+OPEN / CLOSE
+=====================================================
 */
 
 devOpen.addEventListener(
@@ -2215,10 +2287,6 @@ devRequest.focus();
 }
 );
 
-
-/*
-إغلاق Core
-*/
 
 function closeDevelopment(){
 
@@ -2242,7 +2310,9 @@ closeDevelopment
 
 
 /*
-رفض التعديل
+=====================================================
+REJECT
+=====================================================
 */
 
 devReject.addEventListener(
@@ -2259,7 +2329,10 @@ devStatus.textContent=
 "DEVELOPMENT REJECTED";
 
 devResult.textContent=
-"لم يتم تعديل أي ملف.";
+"تم رفض التطوير. لم يتم تعديل أي ملف.";
+
+devSuccess.textContent="";
+devError.textContent="";
 
 }
 );
@@ -2267,66 +2340,27 @@ devResult.textContent=
 
 /*
 =====================================================
-READ FILE FROM GITHUB
-=====================================================
-*/
-
-async function readGithubFile(path){
-
-const response=
-await fetch(
-"/api/develop",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":
-"application/json"
-},
-
-body:
-JSON.stringify({
-
-action:"read",
-
-path:path,
-
-approved:true
-
-})
-
-}
-);
-
-
-const result=
-await response.json();
-
-
-if(!response.ok){
-
-throw new Error(
-result?.error||
-"GitHub read failed"
-);
-
-}
-
-
-return result;
-
-}
-
-
-/*
-=====================================================
-GENERATE DEVELOPMENT PLAN
+ANALYZE DEVELOPMENT
 =====================================================
 
-نستخدم Chat API فقط للتحليل.
+مهم جداً:
 
-لا يتم تعديل GitHub هنا.
+لا نستخدم:
+
+action:"read"
+
+ولا:
+
+action:"write"
+
+لأن api/develop.js الحالي عندك
+يستخدم:
+
+action:"analyze"
+
+و:
+
+action:"apply"
 
 =====================================================
 */
@@ -2351,86 +2385,38 @@ devAnalyze.disabled=true;
 
 devApprove.disabled=true;
 
+devReject.disabled=false;
+
 devApproval.classList.remove(
 "visible"
 );
 
-devError.textContent="";
-
-devSuccess.textContent="";
+resetDevelopmentMessages();
 
 devPlan.style.display=
 "none";
 
+pendingDevelopment=null;
 
-devStatus.textContent=
-"READING CURRENT CODE...";
-
-
-try{
-
-
-/*
-نقرأ index الحالي
-من GitHub.
-*/
-
-const current=
-await readGithubFile(
-"index.html"
-);
-
-
-/*
-نطلب من الذكاء تحليل الطلب
-وإعداد نسخة جديدة من الملف.
-
-مهم:
-هذا الجزء لا يكتب إلى GitHub.
-*/
 
 devStatus.textContent=
 "ANALYZING DEVELOPMENT...";
 
 
-const developmentPrompt=
+try{
 
-`
-أنت Development Core الخاص بـ AyAI.
+/*
+نرسل الطلب مباشرة إلى
+Development API.
 
-المستخدم يريد تطوير النظام.
+الـ API هو الذي يتعامل
+مع GitHub ويقرأ الملفات
+المسموحة للتحليل.
+*/
 
-طلب المستخدم:
-${request}
-
-الملف الحالي:
----BEGIN INDEX.HTML---
-
-${current.content}
-
----END INDEX.HTML---
-
-حلل التعديل المطلوب.
-
-أعد لي JSON فقط بهذا الشكل:
-
-{
-  "summary":"وصف مختصر للتطوير",
-  "changes":[
-    "التغيير الأول",
-    "التغيير الثاني"
-  ],
-  "risk":"منخفض أو متوسط أو مرتفع",
-  "apply":"نعم"
-}
-
-ممنوع إعادة كتابة الكود في هذه المرحلة.
-`;
-
-
-const analysisResponse=
+const response=
 await fetch(
-"/api/chat",
+"/api/develop",
 {
 
 method:"POST",
@@ -2443,8 +2429,13 @@ headers:{
 body:
 JSON.stringify({
 
-message:
-developmentPrompt
+action:"analyze",
+
+request:request,
+
+files:[
+"index.html"
+]
 
 })
 
@@ -2452,14 +2443,15 @@ developmentPrompt
 );
 
 
-const analysis=
-await analysisResponse.json();
+const result=
+await response.json();
 
 
-if(!analysisResponse.ok){
+if(!response.ok){
 
 throw new Error(
-analysis?.error||
+result?.error||
+result?.message||
 "Development analysis failed"
 );
 
@@ -2467,250 +2459,37 @@ analysis?.error||
 
 
 /*
-نحاول قراءة JSON.
+عرض نتيجة التحليل.
 */
 
-let parsed=null;
-
-
-try{
-
-let raw=
-analysis.answer||"";
-
-
-raw=
-raw
-.replace(
-/```json/gi,
-""
-)
-.replace(
-/```/g,
-""
-)
-.trim();
-
-
-parsed=
-JSON.parse(raw);
-
-}catch(e){
-
-parsed={
-summary:
-analysis.answer||
-"تم تحليل الطلب.",
-
-changes:[
-"سيتم تطوير index.html حسب طلب المستخدم."
-],
-
-risk:
-"متوسط",
-
-apply:
-"نعم"
-};
-
-}
-
-
-/*
-عرض الخطة.
-*/
-
-devResult.textContent=
-parsed.summary||
-"تم إعداد خطة التطوير.";
-
-
-devFiles.innerHTML="";
-
-
-DEVELOPMENT_FILES
-.forEach(
-file=>{
-
-const el=
-document.createElement(
-"span"
-);
-
-el.className=
-"devFile";
-
-el.textContent=
-file;
-
-devFiles.appendChild(
-el
-);
-
-}
-);
-
-
-devPlan.style.display=
-"block";
-
-
-/*
-نحتاج المحتوى الجديد
-قبل APPLY.
-
-في هذه المرحلة نطلب من
-Chat API نسخة كاملة.
-*/
-
-devStatus.textContent=
-"PREPARING DEVELOPMENT...";
-
-
-const generationPrompt=
-
-`
-أنت مبرمج مسؤول عن تطوير AyAI.
-
-طلب المستخدم:
-${request}
-
-الخطة:
-${JSON.stringify(parsed)}
-
-هذا هو index.html الحالي:
-
----BEGIN CURRENT FILE---
-
-${current.content}
-
----END CURRENT FILE---
-
-قم بتعديل الملف حسب طلب المستخدم.
-
-قواعد مهمة:
-
-1. حافظ على جميع الوظائف الحالية.
-2. لا تحذف Voice Assistant.
-3. لا تحذف Orb.
-4. لا تحذف Microphone.
-5. لا تكسر الاتصال مع /api/chat.
-6. لا تكسر Development Core.
-7. لا تضف API keys داخل HTML.
-8. أعد الملف كاملاً.
-9. أعد HTML فقط بدون Markdown.
-`;
-
-
-const generatedResponse=
-await fetch(
-"/api/chat",
-{
-
-method:"POST",
-
-headers:{
-"Content-Type":
-"application/json"
-},
-
-body:
-JSON.stringify({
-
-message:
-generationPrompt
-
-})
-
-}
-);
-
-
-const generated=
-await generatedResponse.json();
-
-
-if(!generatedResponse.ok){
-
-throw new Error(
-generated?.error||
-"Could not generate updated code"
-);
-
-}
-
-
-let newContent=
-generated.answer||"";
-
-
-/*
-تنظيف Markdown إذا رجعه النموذج.
-*/
-
-newContent=
-newContent
-.replace(
-/^```html\s*/i,
-""
-)
-.replace(
-/^```\s*/i,
-""
-)
-.replace(
-/\s*```$/i,
-""
-)
-.trim();
-
-
-if(
-!newContent.toLowerCase()
-.includes("<!doctype html") &&
-!newContent.toLowerCase()
-.includes("<html")
-){
-
-throw new Error(
-"AI did not return valid HTML."
-);
-
-}
-
-
-/*
-نخزن التطوير بانتظار الموافقة.
-*/
-
-pendingDevelopment={
-
-path:"index.html",
-
-content:newContent,
-
-sha:current.sha,
-
-summary:
-parsed.summary,
-
-changes:
-parsed.changes||[],
-
-risk:
-parsed.risk||"متوسط"
-
-};
-
+showDevelopmentPlan(result);
 
 devStatus.textContent=
 "READY FOR APPROVAL";
 
 
+/*
+نخزن الطلب فقط.
+
+لا يتم تعديل GitHub
+في هذه المرحلة.
+*/
+
+pendingDevelopment={
+
+request:request,
+
+file:"index.html",
+
+analysis:
+normalizeResult(result)||{}
+
+};
+
+
 devApproval.classList.add(
 "visible"
 );
-
 
 devApprove.disabled=false;
 
@@ -2725,7 +2504,7 @@ devStatus.textContent=
 devError.textContent=
 "ERROR:\n"+
 (error.message||
-"Unknown error");
+"Unknown development error");
 
 }finally{
 
@@ -2737,13 +2516,167 @@ devAnalyze.disabled=false;
 
 
 /*
-زر Analyze
+=====================================================
+GENERATE UPDATED INDEX
+=====================================================
+
+يتم تنفيذ هذه الخطوة فقط
+بعد ضغط APPROVE & APPLY.
+
+=====================================================
 */
 
-devAnalyze.addEventListener(
-"click",
-analyzeDevelopment
+async function generateUpdatedIndex(){
+
+/*
+نأخذ نسخة HTML الحالية
+المعروضة في الصفحة.
+
+هذا يمنع الحاجة إلى
+action:"read" القديم.
+*/
+
+const currentHtml=
+"<!doctype html>\n"+
+document.documentElement.outerHTML;
+
+
+/*
+الخطة التي رجعها
+Development API.
+*/
+
+const plan=
+pendingDevelopment?.analysis||{};
+
+
+const prompt=
+`
+أنت الآن مبرمج AyAI المسؤول عن تنفيذ تطوير تمت الموافقة عليه.
+
+طلب المستخدم:
+${pendingDevelopment.request}
+
+خطة التطوير:
+${JSON.stringify(plan,null,2)}
+
+الملف المطلوب تعديله:
+index.html
+
+هذا هو index.html الحالي:
+---BEGIN CURRENT INDEX---
+${currentHtml}
+---END CURRENT INDEX---
+
+قواعد إلزامية:
+
+1. أعد ملف index.html كاملاً.
+2. حافظ على واجهة AyAI الأساسية.
+3. حافظ على Orb.
+4. حافظ على الميكروفون.
+5. حافظ على نظام الصوت.
+6. حافظ على localStorage memory.
+7. حافظ على /api/chat.
+8. حافظ على Development Core.
+9. حافظ على APPROVE & APPLY.
+10. لا تضف أي API key.
+11. لا تضف أسرار أو tokens.
+12. لا تغيّر ملفات أخرى.
+13. لا تستخدم Markdown.
+14. لا تضع ```html.
+15. يجب أن يبدأ الناتج بـ <!doctype html>.
+16. يجب أن يكون الناتج HTML صالحاً كاملاً.
+
+نفذ فقط التغييرات المطلوبة من المستخدم.
+`;
+
+
+devStatus.textContent=
+"GENERATING APPROVED DEVELOPMENT...";
+
+
+const response=
+await fetch(
+"/api/chat",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:
+JSON.stringify({
+
+message:prompt
+
+})
+
+}
 );
+
+
+const result=
+await response.json();
+
+
+if(!response.ok){
+
+throw new Error(
+result?.error||
+result?.message||
+"Could not generate updated code"
+);
+
+}
+
+
+let content=
+result.answer||
+result.content||
+"";
+
+
+/*
+تنظيف Markdown.
+*/
+
+content=
+content
+.replace(
+/^\s*```html\s*/i,
+""
+)
+.replace(
+/^\s*```\s*/i,
+""
+)
+.replace(
+/\s*```\s*$/i,
+""
+)
+.trim();
+
+
+if(
+!content.toLowerCase()
+.startsWith("<!doctype html") &&
+!content.toLowerCase()
+.startsWith("<html")
+){
+
+throw new Error(
+"AI did not return a complete HTML file."
+);
+
+}
+
+
+return content;
+
+}
 
 
 /*
@@ -2782,21 +2715,32 @@ devReject.disabled=true;
 
 devAnalyze.disabled=true;
 
-
-devStatus.textContent=
-"APPLYING DEVELOPMENT...";
-
-devError.textContent="";
-
-devSuccess.textContent="";
+resetDevelopmentMessages();
 
 
 try{
 
+/*
+===============================================
+STEP 1
+Generate code
+===============================================
+*/
+
+const newContent=
+await generateUpdatedIndex();
+
 
 /*
-هنا فقط يتم الكتابة إلى GitHub.
+===============================================
+STEP 2
+Send approved content to GitHub
+===============================================
 */
+
+devStatus.textContent=
+"APPLYING TO GITHUB...";
+
 
 const response=
 await fetch(
@@ -2813,18 +2757,13 @@ headers:{
 body:
 JSON.stringify({
 
-action:"write",
+action:"apply",
 
-path:
-pendingDevelopment.path,
+approved:true,
 
-content:
-pendingDevelopment.content,
+file:"index.html",
 
-message:
-`AyAI Development: ${pendingDevelopment.summary || "approved development"}`,
-
-approved:true
+content:newContent
 
 })
 
@@ -2840,24 +2779,58 @@ if(!response.ok){
 
 throw new Error(
 result?.error||
-"GitHub write failed"
+result?.message||
+"GitHub apply failed"
 );
 
 }
 
 
 /*
-نجح التطوير.
+===============================================
+SUCCESS
+===============================================
 */
 
 devStatus.textContent=
 "DEVELOPMENT APPLIED";
 
+let successMessage=
+"تم تطبيق التطوير بنجاح على GitHub.\n\n";
+
+if(result.message){
+
+successMessage+=
+result.message+"\n\n";
+
+}
+
+if(result.file){
+
+successMessage+=
+"File: "+
+result.file+"\n";
+
+}
+
+if(result.commit){
+
+successMessage+=
+"Commit: "+
+result.commit;
+
+}
 
 devSuccess.textContent=
-"تم تطبيق التطوير بنجاح على GitHub.\n\n"+
-"Commit: "+
-(result.commit||"created");
+successMessage;
+
+
+devResult.textContent=
+"تم تطبيق التطوير بنجاح.\n\n"+
+(
+pendingDevelopment.analysis?.summary||
+pendingDevelopment.request
+);
 
 
 devApproval.classList.remove(
@@ -2865,13 +2838,9 @@ devApproval.classList.remove(
 );
 
 
-devResult.textContent=
-"تم تطبيق التطوير.\n\n"+
-(
-pendingDevelopment.summary||
-"Development completed."
-);
-
+/*
+نترك رسالة النجاح ظاهرة.
+*/
 
 pendingDevelopment=null;
 
@@ -2902,7 +2871,9 @@ devAnalyze.disabled=false;
 
 
 /*
-ESC لإغلاق Development Core
+=====================================================
+ESC
+=====================================================
 */
 
 document.addEventListener(
@@ -2923,14 +2894,17 @@ closeDevelopment();
 });
 
 
-/* =====================================================
-   INIT
-===================================================== */
+/*
+=====================================================
+INIT
+=====================================================
+*/
 
 loadMemory();
 
 memoryLabel.textContent=
 "MEMORY: ON";
+
 
 window.addEventListener(
 "resize",
@@ -2938,7 +2912,9 @@ resize,
 {passive:true}
 );
 
+
 resize();
+
 
 requestAnimationFrame(
 animate
